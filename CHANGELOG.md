@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- The "≈160× faster" claim withdrawn and the `/deliver` instruction that generated it removed;
+  the metrics report gains a Productivity section with the measured side only and the four things
+  a legitimate ratio would require; a C8 invariant blocks an unqualified delivery-throughput ratio
+  from returning (#55).
 - First monitoring cycle executed, `docs/sre/monitoring/2026-09-13-first-cycle.md`; the plan gains
   a fifth signal family (corpus integrity) because in a repository with no runtime the other four
   are unobservable and four empty rows are not a monitoring plan (#54).

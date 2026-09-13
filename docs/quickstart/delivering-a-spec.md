@@ -119,7 +119,9 @@ After the phases run it writes `reports/<slug>/FINAL-REPORT.md`:
 1. **Summary + gate results** — one line per phase: `PASS` / `FAIL` / `N-A` / `BLOCKED` / `WAIVED`
    (+ `SIMULATED` for a DRY-RUN Phase 6), plus every `TIER_ESCALATION`.
 2. **Requirement-traceability table** — one row per acceptance criterion (`§12` of your spec).
-3. **Task/sub-task table** — agent wall-clock vs human-equivalent estimate, with a speedup ratio.
+3. **Task/sub-task table** — measured agent wall-clock beside a human-equivalent **estimate**,
+   with no ratio between them (issue #55: a measured number divided by an estimate is not a
+   measurement).
 4. **Evidence appendix** — validation-log excerpts.
 5. **Open-HITL-items list** — every gate that needs a real human, with its payload.
 

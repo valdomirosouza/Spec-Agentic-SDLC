@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 59 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 62 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 2 (span 2 days) | — |
-| Commits per active day | 29.5 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-09-13T09:57:03 | — |
+| Commits per active day | 31.0 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-09-13T10:18:21 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -29,9 +29,9 @@ against.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Completed CI runs | 43 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
+| Completed CI runs | 44 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
 | Failed runs | 4 | — |
-| Change failure rate | 9.3% | failed ÷ completed |
+| Change failure rate | 9.1% | failed ÷ completed |
 | Median run duration | 26 s | — |
 | Recoveries observed | 4, median 94 s | gap from a failed run to the next success |
 
@@ -39,12 +39,12 @@ against.
 
 | Metric | Value |
 | --- | --- |
-| Markdown files | 530 |
-| Markdown lines | 60019 |
-| Executable lines (scripts + hooks) | 2591 |
-| Test lines | 904 |
-| Prose to executable ratio | 23.2 : 1 |
-| Check families in `check-corpus.sh` | 11 |
+| Markdown files | 531 |
+| Markdown lines | 60141 |
+| Executable lines (scripts + hooks) | 2934 |
+| Test lines | 985 |
+| Prose to executable ratio | 20.5 : 1 |
+| Check families in `check-corpus.sh` | 12 |
 | ADRs | 95 |
 
 **Why the ratio is a metric and not trivia.** The maturity assessment named governance mass
@@ -52,7 +52,36 @@ outgrowing verification as a structural risk. Tracking the ratio makes that visi
 should fall when verification is added and rise when documents are. A rising ratio across
 two reports is the signal to stop writing and start checking.
 
-## 4. Not measurable here, and why
+## 4. Productivity — measured, and why there is no ratio
+
+| Metric | Value | Method |
+| --- | --- | --- |
+| Commits on the default branch | 62 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 11.1 h | first commit to last |
+| Commits per elapsed hour | 5.6 | — |
+| Cumulative diff | 457 files changed, 14084 insertions(+), 1459 deletions(-) | `git diff --shortstat` from the first commit |
+
+**There is deliberately no speedup ratio here.** The corpus previously published
+"≈160× faster" by dividing a measured agent wall-clock by a sum of t-shirt estimates —
+a confident figure nobody observed, which Constitution IX forbids. That claim was
+withdrawn (issue #55) and the instruction that generated it was removed from the
+`/deliver` skill, because correcting the output while leaving the generator would have
+produced the same claim on the next run.
+
+*No human baseline exists for this work, so no speedup is computed. Elapsed time also is not effort: a figure that ignores pauses and review would overstate throughput in the other direction.*
+
+**What a legitimate ratio would require**, none of which exists yet:
+
+1. A **baseline**: the same scope delivered without agent assistance, timed, by a
+   comparable team — not estimated from t-shirt sizes after the fact.
+2. **Effort, not elapsed time**, on both sides, counted the same way.
+3. A **defined scope boundary**: drafting artefacts and writing production code are
+   different work, and the previous claim mixed them.
+4. **More than one sample**, since a single run measures the run, not the method.
+
+Until those exist, this section reports what was produced and stops.
+
+## 5. Not measurable here, and why
 
 | Metric | Why not |
 | --- | --- |

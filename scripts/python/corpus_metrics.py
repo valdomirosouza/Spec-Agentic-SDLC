@@ -143,6 +143,35 @@ def corpus_metrics():
     }
 
 
+def session_throughput():
+    """What an agent-assisted session actually produced, measured — with no comparison attached.
+
+    The corpus previously published "≈160× faster" by dividing a measured wall-clock by a sum of
+    t-shirt estimates. This reports only the measured side. A ratio needs a baseline nobody has
+    collected, and §Productivity of the report says what collecting one would require.
+    """
+    log = sh("git", "log", "--format=%H|%ad", "--date=iso-strict")
+    rows = [l.split("|") for l in log.split("\n") if l]
+    if not rows:
+        return {"available": False, "reason": "no commit history"}
+    dates = sorted(datetime.fromisoformat(r[1]) for r in rows)
+    hours = (dates[-1] - dates[0]).total_seconds() / 3600
+    first = rows[-1][0]
+    stat = sh("git", "diff", "--shortstat", f"{first}..HEAD")
+    return {
+        "available": True,
+        "commits": len(rows),
+        "elapsed_hours": round(hours, 1),
+        "commits_per_hour": round(len(rows) / hours, 1) if hours else None,
+        "diff_since_first_commit": stat,
+        "method": ("wall-clock from the first to the last commit on the default branch; this is "
+                   "elapsed time, not effort, and includes every pause"),
+        "not_a_ratio": ("No human baseline exists for this work, so no speedup is computed. "
+                        "Elapsed time also is not effort: a figure that ignores pauses and "
+                        "review would overstate throughput in the other direction."),
+    }
+
+
 def unavailable():
     """Stated, not omitted: a metric the corpus defines and this repository cannot produce."""
     return [
@@ -166,6 +195,7 @@ def build():
         "git": git_metrics(),
         "ci": ci_metrics(),
         "corpus": corpus_metrics(),
+        "session": session_throughput(),
         "unavailable": unavailable(),
     }
 
@@ -237,7 +267,44 @@ def render(m):
         "should fall when verification is added and rise when documents are. A rising ratio across",
         "two reports is the signal to stop writing and start checking.",
         "",
-        "## 4. Not measurable here, and why",
+        "## 4. Productivity — measured, and why there is no ratio",
+        "",
+    ]
+    t = m.get("session", {})
+    if t.get("available"):
+        L += [
+            "| Metric | Value | Method |",
+            "| --- | --- | --- |",
+            f"| Commits on the default branch | {t['commits']} | {t['method']} |",
+            f"| Elapsed wall-clock | {t['elapsed_hours']} h | first commit to last |",
+            f"| Commits per elapsed hour | {t['commits_per_hour']} | — |",
+            f"| Cumulative diff | {t['diff_since_first_commit']} | `git diff --shortstat` from the first commit |",
+            "",
+            "**There is deliberately no speedup ratio here.** The corpus previously published",
+            "\"≈160× faster\" by dividing a measured agent wall-clock by a sum of t-shirt estimates —",
+            "a confident figure nobody observed, which Constitution IX forbids. That claim was",
+            "withdrawn (issue #55) and the instruction that generated it was removed from the",
+            "`/deliver` skill, because correcting the output while leaving the generator would have",
+            "produced the same claim on the next run.",
+            "",
+            f"_{t['not_a_ratio']}_",
+            "",
+            "**What a legitimate ratio would require**, none of which exists yet:",
+            "",
+            "1. A **baseline**: the same scope delivered without agent assistance, timed, by a",
+            "   comparable team — not estimated from t-shirt sizes after the fact.",
+            "2. **Effort, not elapsed time**, on both sides, counted the same way.",
+            "3. A **defined scope boundary**: drafting artefacts and writing production code are",
+            "   different work, and the previous claim mixed them.",
+            "4. **More than one sample**, since a single run measures the run, not the method.",
+            "",
+            "Until those exist, this section reports what was produced and stops.",
+            "",
+        ]
+    else:
+        L += [f"Session throughput unavailable: {t.get('reason')}.", ""]
+    L += [
+        "## 5. Not measurable here, and why",
         "",
         "| Metric | Why not |",
         "| --- | --- |",

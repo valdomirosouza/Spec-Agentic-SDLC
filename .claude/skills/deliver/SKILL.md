@@ -13,7 +13,8 @@ description: >-
   Ansible), or another stack to build the spec in that language. Produces a plan, a
   decomposed backlog, per-phase execution via the phase-executor subagent, and a
   FINAL-REPORT with requirement-traceability, agent timing, and a human-vs-agent
-  speedup ratio. Never invents a spec; never autonomously merges, pushes, releases,
+  timing table (measured agent wall-clock beside an explicitly-labelled human estimate, with no
+  ratio between them). Never invents a spec; never autonomously merges, pushes, releases,
   deploys, or changes autonomy flags.
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, Task
 ---
@@ -339,7 +340,12 @@ Write the FINAL-REPORT containing, in order (W13-T6, issue #371):
    - *Agent wall-clock* = end − start from the recorded timestamps.
    - *Human-equiv estimate* = from `estimate_tshirt`: **XS≈0.5h · S≈2h · M≈4h · L≈8h · XL≈24h**,
      and **clearly label the column an ESTIMATE**.
-   - End with **totals** for both columns and a **speedup ratio** (human-equiv ÷ agent wall-clock).
+   - End with **totals** for both columns. **Do not compute a speedup ratio.** The agent column is
+     measured and the human column is a t-shirt estimate with no baseline, no method and no sample;
+     dividing one by the other produces a confident number that was never observed, which
+     Constitution IX forbids. Label the human column **ESTIMATE, not a baseline** and stop there.
+     A ratio may be published only against a measured baseline — see
+     `docs/sre/corpus-metrics-*.md` §Productivity for what collecting one would require.
 4. **Evidence appendix** — log excerpts, **≤ 20 lines each**, referencing files in `logs/`.
 5. **Open-HITL-items list** — every gate that would need a real human, with its payload.
 6. **Ambiguity ledger** (W13-T9) — the union of every phase's `open_questions` and `assumptions`

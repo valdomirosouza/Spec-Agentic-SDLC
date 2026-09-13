@@ -54,7 +54,9 @@ No `TIER_ESCALATION` fired.
 | W13-T7 | Spec, discovery, NFR, report, retro | 2–4   | ADR-0085 | 0.3 h            | M ≈ 4 h                         | done   |
 | —      | **Totals**                          |       |          | **0.7 h**        | **6 h**                         |        |
 
-Speedup ratio (human-equiv ÷ agent wall-clock): **≈ 8.6×** (estimate).
+Speedup ratio: **withdrawn (2026-09-13, issue #55)** — it divided a measured wall-clock by a
+t-shirt estimate. The agent column stands as measured; the human column is an **ESTIMATE, not a
+baseline**. See `docs/sre/corpus-metrics-2026-09-13.md` §Productivity.
 
 ## 4. Evidence appendix
 

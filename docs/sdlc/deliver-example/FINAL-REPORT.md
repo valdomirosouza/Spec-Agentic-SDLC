@@ -105,10 +105,16 @@ the single executor's span (sub-items share it).
 - **Agent wall-clock (sum of per-phase executor spans):** ≈ **27.4 min** (1,645 s).
   - Real orchestration wall-clock was ≈30 min because doc phases ran in **parallel waves**.
 - **Human-equiv (ESTIMATE, sum of t-shirt sizes):** ≈ **73 h** (≈9 working days).
-- **Speedup ratio (human-equiv ÷ agent wall-clock):** **≈ 160×** (73 h ÷ 0.457 h).
-  - *Caveat:* this is a **dry-run** — agents drafted artefacts and ran validation, they did not
-    write the ~36h (L×3 + M) of production code in LGS-6a–d. The ratio measures planning/analysis
-    throughput, not end-to-end implementation. A CODE-mode run is the apples-to-apples comparison.
+- **Speedup ratio: withdrawn (2026-09-13, issue #55).** This line read "**≈ 160×** (73 h ÷ 0.457 h)".
+  The numerator was a sum of t-shirt estimates — no baseline, no method, no sample — and the
+  denominator was measured. Dividing one by the other produced a confident figure nobody observed,
+  which Constitution IX forbids, and it was the corpus's only published performance claim.
+  - What survives: the agent wall-clock above is **measured**. The 73 h beside it is an
+    **ESTIMATE, not a baseline**, and is kept only as the planning input it was.
+  - The original caveat was correct as far as it went — a dry-run drafts artefacts and does not
+    write the ~36 h of production code — but a caveat on an unfounded ratio does not found it.
+  - What a real ratio would need is defined in `docs/sre/corpus-metrics-2026-09-13.md`
+    §Productivity. Until someone collects it, the corpus publishes no ratio.
 
 ---
 

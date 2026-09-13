@@ -61,11 +61,24 @@ class Measurement(unittest.TestCase):
         for u in self.m["unavailable"]:
             self.assertIn(u["metric"], text)
 
-    def test_report_contains_no_estimated_ratio(self):
-        """The defect this script replaces: a productivity ratio with an estimated denominator."""
-        text = cm.render(self.m).lower()
-        for phrase in ("human-equivalent", "speedup", "× faster", "x faster"):
-            self.assertNotIn(phrase, text)
+    def test_report_states_no_ratio_rather_than_computing_one(self):
+        """The defect this script replaces: a productivity ratio with an estimated denominator.
+
+        The report may DISCUSS why there is no ratio — the first version of this test forbade the
+        word and so forbade the explanation too. What it must not contain is a computed one."""
+        text = cm.render(self.m)
+        self.assertIn("no speedup ratio", text.lower())
+        self.assertIn("What a legitimate ratio would require", text)
+        import re as _re
+        claimed = _re.search(r"(speedup ratio|human-equiv[^|\n]*÷)[^|\n]*\d+(\.\d+)?\s*[×x]", text)
+        self.assertIsNone(claimed, f"the report computes a ratio: {claimed.group(0) if claimed else ''}")
+
+    def test_the_measured_side_is_reported(self):
+        t = self.m.get("session", {})
+        self.assertTrue(t.get("available"))
+        self.assertGreater(t["commits"], 0)
+        self.assertTrue(t["method"])
+        self.assertTrue(t["not_a_ratio"])
 
     def test_json_mode_is_machine_readable(self):
         r = subprocess.run([sys.executable, SCRIPT, "--json"], capture_output=True, text=True,

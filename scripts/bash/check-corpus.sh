@@ -21,7 +21,7 @@
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept;
 #      vcs.sh keeps its refusal list; asdd_state.py touches no version control; the gate counts
 #      (13 blocking, 9 human) still match the agents and phase-gates.yaml; the coverage floor is
-#      referenced, not restated, in the constitution and CLAUDE.md
+#      referenced, not restated, in the constitution and CLAUDE.md; no unqualified speedup ratio
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
@@ -191,6 +191,13 @@ cov_bad=$(grep -nE 'coverage (MUST be|≥|>=) *(7[0-9]|8[0-9]|9[0-9])%' memory/c
 [ -z "$cov_bad" ] && result "constitution and CLAUDE.md reference the floor, not a bare number" ok || result "constitution and CLAUDE.md reference the floor, not a bare number" fail "$cov_bad"
 cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testing-strategy.md | grep -oE '[0-9]{2}%' | sort -u)
 [ "$(printf '%s' "$cov_n" | wc -w | tr -d ' ')" = 1 ] && result "ADR-0022 declares exactly one floor" ok "$cov_n" || result "ADR-0022 declares exactly one floor" fail "found: ${cov_n:-none}"
+# No unqualified performance ratio. The corpus published "≈160×" by dividing a measured
+# wall-clock by a sum of t-shirt estimates (issue #55). The claim was withdrawn AND the
+# instruction that produced it was removed, because fixing only the output regenerates it.
+# Narrow on purpose: this targets a DELIVERY-THROUGHPUT ratio (agent vs human), not a technical
+# benchmark. "uv is 10-100x faster than pip" is a tool comparison and stays.
+ratio_bad=$(grep -rnoE '(speedup ratio|human.equiv[^|]*÷|÷ *agent wall.clock)[^|]*[0-9]+(\.[0-9]+)?\s*(×|x)' --include='*.md' . 2>/dev/null | grep -v '^\./\.git/' | grep -viE 'withdrawn|no ratio|not a ratio|forbids|would require' || true)
+[ -z "$ratio_bad" ] && result "no unqualified speedup ratio is published" ok || { result "no unqualified speedup ratio is published" fail "$(printf '%s' "$ratio_bad" | head -3)"; }
 n_human=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | wc -l | tr -d " ")
 n_block=$(grep -c "blocking: true" docs/process/gates/phase-gates.yaml | tr -d " ")
 if [ "$n_human" = 9 ] && [ "$n_block" = 13 ]; then
