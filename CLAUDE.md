@@ -8,7 +8,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> **Version:** 2.8.0 | **Last updated:** 2026-06-14
+> **Version:** 2.9.0 | **Last updated:** 2026-09-12
 > This file is the authoritative behavioral contract for Claude Code in this repository.
 > Read it at the start of every session and follow all rules without exception. It overrides any default behavior.
 
@@ -195,6 +195,22 @@ Full 15-phase (0–14) lifecycle: `docs/process/WORKFLOW.md` (ADR-0052, ADR-0058
 ---
 
 ## 3. Inviolable Rules
+
+> **Normative core.** These rules are condensed into the nine articles of
+> `memory/constitution.md` (v1.0.0, ratified 2026-09-12). The constitution is the root of
+> authority: if this section and an article ever diverge, the article wins and this file is
+> amended in the same change (Constitution §Governance). Articles I, II, V, VII and IX are
+> protected — they may be strengthened, never weakened (`/sdd-constitution`).
+>
+> | Subsection                  | Constitution article(s)                                   |
+> | --------------------------- | --------------------------------------------------------- |
+> | §3.1 Privacy                | III Privacy by Design                                     |
+> | §3.2 Security               | IV Security Gates Are Not Optional                        |
+> | §3.3 AI Governance          | V Human Oversight of Agents (HITL/HOTL)                   |
+> | §3.4 Architecture           | I Specification First · VIII Simplicity and No Gold-Plating |
+> | §3.5 Quality                | II Test-Backed Change · VI Observability Is Part of Done  |
+> | §3.6 Grounding              | IX Grounding and Non-Fabrication                          |
+> | §6 Commits · §7 PR checklist | VII Traceability and Auditability                        |
 
 ### 3.1 Privacy
 
@@ -537,6 +553,8 @@ Full ADR: `docs/adr/ADR-0034-agentic-escalation-protocol.md`
 
 ## 15. See Also
 
+- [`memory/constitution.md`](memory/constitution.md) — the nine binding articles this file condenses; root of authority.
+- [`CHANGELOG.md`](CHANGELOG.md) · [`version.txt`](version.txt) — version of record (ADR-0057).
 - [`AGENTS.md`](AGENTS.md) — concise cross-tool contract for AI coding agents (files not to edit, hard prohibitions, validation commands). This `CLAUDE.md` is the deeper authoritative contract.
 - [`SETUP.md`](SETUP.md) — first-run setup (`make template-init`, `make doctor`).
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — common first-run failures.

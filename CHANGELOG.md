@@ -12,6 +12,12 @@ authorises them.
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
 
+### Changed
+
+- `CLAUDE.md` 2.9.0 (2026-09-12): §3 now maps each subsection to the constitution article it
+  condenses and states the constitution's precedence; `CLAUDE_SESSION_INIT.md` rewritten for
+  the corpus (identity, corpus-vs-adopter paths, critical paths, `/sdd-*` quick reference) (#4).
+
 ## [1.0.0] — 2026-09-12
 
 ### Added

@@ -7,30 +7,56 @@
 
 ## Repo Identity
 
-- **Repo:** Repository-Template-v2
-- **Type:** Multi-language enterprise monorepo template (Python/FastAPI, Java/Spring Boot, Go, Next.js)
-- **Current version:** see `version.txt`
-- **Active branch convention:** `develop` for work-in-progress; `main` for releases
+- **Repo:** Spec-Agentic-SDLC — https://github.com/valdomirosouza/Spec-Agentic-SDLC
+- **Type:** Documentation, governance and agent-operating **corpus**. No application code.
+  Meant to be copied into, or referenced from, a product repository (see `SETUP.md`).
+- **Current version:** `version.txt` (1.0.0) · changes in `CHANGELOG.md`
+- **Root of authority:** `memory/constitution.md` (nine articles) → `CLAUDE.md` (operating contract)
+- **Branch convention:** `main` only; feature work on `feature/SPEC-<DOMAIN>-NNN-<slug>` (ADR-0085)
+- **Provenance:** Repository-Template-v2 (Waves 11–15) + github/spec-kit primitives (ADR-0090,
+  upstream pinned at `d848fb4`, v1.0.6)
+
+## What exists here vs. what the adopting repository provides
+
+| Provided by this corpus                                           | Provided by the adopting product repository                |
+| ----------------------------------------------------------------- | ---------------------------------------------------------- |
+| `memory/`, `templates/`, `scripts/bash/`, `.claude/`, `harness/`  | `src/`, `tests/`, `Makefile` / `make` targets              |
+| `specs/`, `docs/` (ADRs, process, SRE, privacy, compliance, audit) | `services.yaml`, `.github/workflows/`, `scripts/governance/` |
+| `skills/` (plain-Markdown skills), `prompts/`                     | `pyproject.toml`, `.env.example`, CODEOWNERS               |
+
+Any document that names a path from the right-hand column describes the adopting repository.
+Do not create those files here; do not treat their absence as a defect.
 
 ## Critical Paths (highest sensitivity — escalate before touching)
 
-| Path                            | Why sensitive                           |
-| ------------------------------- | --------------------------------------- |
-| `src/agents/hitl_gateway.py`    | Dual-approval: Security + AI Governance |
-| `src/guardrails/`               | Security Lead approval required         |
-| `src/shared/feature_flags.py`   | Controls HITL/HOTL autonomy — ADR-0015  |
-| `infrastructure/feature-flags/` | Governance review required              |
-| `.github/workflows/`            | DevOps Lead ownership                   |
+| Path                                 | Why sensitive                                                    |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `memory/constitution.md`             | Root of authority; protected articles I, II, V, VII, IX          |
+| `.claude/hooks/`, `.claude/settings.json` | High-risk-action guard (never push/merge/release/deploy)    |
+| `.claude/skills/sdd-*/`              | The `/sdd-*` workflow; changes must stay consistent with ADR-0090 |
+| `templates/`, `scripts/bash/`        | Executable templates and helpers every feature bundle depends on |
+| `docs/adr/`                          | Binding decisions; numbering must stay contiguous                |
+| `specs/security/*.yaml`              | Authoritative OWASP control matrices (ADR-0072)                  |
 
 ## Open Work
 
-Check current open issues before starting:
-
 ```bash
-gh issue list --repo valdomirosouza/Repository-Template-v2 --state open --label agentic-sdlc
+gh issue list --repo valdomirosouza/Spec-Agentic-SDLC --state open
 ```
 
-Wave labels: `wave-1` (done) → `wave-2` → `wave-3` → `wave-4` → `wave-5`
+Improvement plan (spec-kit comparison, 2026-09-12): `wave-0` Foundations → `wave-1`
+Demonstrable flow → `wave-2` Verified corpus → `wave-3` Portable and syncable.
+
+## The /sdd-* workflow (ADR-0090)
+
+```text
+/sdd-constitution → /sdd-specify → /sdd-clarify → [Spec-as-PR approval] → /sdd-plan
+  → /sdd-checklist → /sdd-tasks → /sdd-analyze → /sdd-implement ⇄ /sdd-converge → PR (Phase 7)
+```
+
+Helper scripts: `scripts/bash/create-new-feature.sh --json "<description>"`,
+`check-prerequisites.sh --json [--require-approved]`, `setup-plan.sh --json`. Active feature
+is resolved from `SDD_FEATURE_DIRECTORY`, `.sdd/feature.json` or the branch name.
 
 ## Task Atomicity Kickoff (ADR-0060, CLAUDE.md §4)
 
@@ -45,21 +71,20 @@ Wave labels: `wave-1` (done) → `wave-2` → `wave-3` → `wave-4` → `wave-5`
 
 ## Session Bootstrap Checklist
 
-- [ ] CLAUDE.md read and §14 escalation triggers noted
-- [ ] `services.yaml` scanned for affected service
+- [ ] `memory/constitution.md` read; `CLAUDE.md` §14 escalation triggers noted
 - [ ] Work decomposed so each task needs ≤ 2 skills and yields one artifact (ADR-0060)
 - [ ] Relevant skill(s) loaded (max 2)
 - [ ] Cross-cutting control triggers checked (control-applicability-matrix)
 - [ ] GitHub Issue identified with spec reference
-- [ ] Spec status confirmed as `Approved`
+- [ ] Spec status confirmed as `approved` before any code-generating step
+- [ ] _(adopting repository only)_ `services.yaml` scanned for the affected service
 
 ## ADR Quick Index (most recent)
 
-<!-- Kept honest by scripts/governance/check_doc_consistency.py (C3): the highest ADR here must be the highest ADR on disk. Regenerate: the last 20 rows of docs/adr/README.md. -->
+<!-- The highest ADR here must be the highest ADR on disk. Regenerate: the last 20 rows of docs/adr/README.md. -->
 
 | ADR      | Decision                                          |
 | -------- | ------------------------------------------------- |
-| ADR-0070 | Governance gate enforcement lifecycle (report-mod… |
 | ADR-0071 | Repository settings as code (branch protection co… |
 | ADR-0072 | Versioned security control matrices (OWASP ASVS v… |
 | ADR-0073 | SLO-driven canary thresholds (per-service config,… |
@@ -79,6 +104,7 @@ Wave labels: `wave-1` (done) → `wave-2` → `wave-3` → `wave-4` → `wave-5`
 | ADR-0087 | Marker-based three-way template sync (.template-v… |
 | ADR-0088 | Provider-neutral Terraform layering (partial back… |
 | ADR-0089 | Documented-capability reachability as a tested in… |
+| ADR-0090 | Adopt spec-kit workflow primitives (constitution,… |
 
 Full index: `docs/adr/README.md`
 
@@ -87,6 +113,7 @@ Full index: `docs/adr/README.md`
 | Document                   | Path                                        | Use when                               |
 | -------------------------- | ------------------------------------------- | -------------------------------------- |
 | Delivery model (canonical) | `docs/sdlc/agentic-spec-driven-delivery.md` | Understand the workflow + positioning  |
+| spec-kit comparison        | `docs/sdlc/spec-kit-comparison.md`          | Why a `/sdd-*` command works as it does |
 | Phase lifecycle            | `docs/process/WORKFLOW.md`                  | Any feature task — check current phase |
 | HITL governance            | `docs/process/HITL-GOVERNANCE.md`           | Creating discovery/spec artefacts      |
 | Definition of Ready        | `docs/process/DEFINITION_OF_READY.md`       | Grooming ceremony / sprint entry       |
