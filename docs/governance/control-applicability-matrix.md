@@ -50,7 +50,7 @@ treating any control as mandatory.
 | -------------------------- | --------------------------------------------------------------- | ---------------------------- |
 | SOX (ADR-0026)             | Is the org a U.S.-listed public company / SEC-regulated entity? | _e.g. No → SOX out of scope_ |
 | Data-subject jurisdictions | Whose personal data is processed? (EU → GDPR, BR → LGPD, …)     | _e.g. EU + BR → GDPR + LGPD_ |
-| Data residency             | Where must data be stored / may it leave a region?              | _e.g. EU-only_               |
+| Data residency             | Where must data be stored / may it leave a region? **Answered by [ADR-0094](../adr/ADR-0094-data-residency-and-sovereignty.md)**: per data class; a prompt is a transfer. The adopter records its primary region. | _per class; L1 never leaves_ |
 | PCI-DSS                    | Are cardholder/payment data handled?                            | _e.g. No_                    |
 | HIPAA                      | Is protected health information (PHI) handled?                  | _e.g. No_                    |
 | Sector / other regimes     | Any sector-specific obligation (FedRAMP, ISO 27001 cert, …)?    | _e.g. ISO 27001 (ADR-0027)_  |

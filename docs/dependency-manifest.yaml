@@ -111,7 +111,7 @@ ai_dependencies:
       monthly_token_budget_output: 2_000_000
       budget_gauge_metric: "llm_tokens_budget_total"
 
-    data_residency: "US (Anthropic cloud)"
+    data_residency: "US (Anthropic cloud)" # governed fact per ADR-0094 §2; re-verified at model promotion
     data_retention_at_provider: "30 days (API request logs per Anthropic policy)"
     audit_logging: "src/guardrails/audit_logger.py"
 

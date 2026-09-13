@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- ADR-0094 — data residency per data class (L1 never leaves the primary region), the rule that a
+  prompt is a transfer and a model's processing region is a governed fact, sovereignty separated
+  from residency, and backups, logs and telemetry following the data; answers the three open
+  questions in the control-applicability matrix (#36).
 - `specs/privacy/test-data-management.md` — no production copy into lower environments, environment
   classification, synthetic-first provisioning, the five masking techniques with their failure
   modes, the verify-after-load step, and the two agent-specific cases (prompts and traces are test
