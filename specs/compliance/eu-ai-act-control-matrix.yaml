@@ -81,7 +81,7 @@ controls:
     implemented_by:
       - specs/privacy/training-data-governance.md
       - templates/datasheet-template.md
-      - planned:#28:docs/data/data-governance-charter.md
+      - docs/data/data-governance-charter.md
     verified_by:
       - specs/data/data-quality.md
       - docs/data/data-catalog.md
@@ -101,7 +101,7 @@ controls:
     implemented_by:
       - docs/ai-governance/system-card.md
       - docs/ai-governance/model-card.md
-      - planned:#42:docs/ai-governance/model-registry.md
+      - docs/ai-governance/model-registry.md
     verified_by:
       - specs/compliance/eu-ai-act-control-matrix.yaml
       - docs/audit/big-four-evidence-map.md
@@ -307,7 +307,7 @@ controls:
     applies_from: "2025-08-02"
     implemented_by:
       - docs/dependency-manifest.yaml
-      - planned:#42:docs/ai-governance/model-registry.md
+      - docs/ai-governance/model-registry.md
     verified_by:
       - docs/ai-governance/model-card.md
     gate: ["Phase 12 — Release Candidate"]

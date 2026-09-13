@@ -99,5 +99,5 @@ proposes.
 
 - [`../../templates/model-card-template.md`](../../templates/model-card-template.md) — the template
 - [`system-card.md`](system-card.md) — the system this model sits inside
-- `docs/ai-governance/model-registry.md` (#42) — versions, provenance and promotion history
+- [`model-registry.md`](model-registry.md) — versions, provenance and promotion history
 - [`../ai/model-lifecycle.md`](../ai/model-lifecycle.md) — the promotion path

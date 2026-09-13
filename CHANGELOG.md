@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/ai-governance/model-registry.md` — the governance layer around the dependency manifest:
+  model states with a recorded refusal, a ten-row AI component inventory including prompts and the
+  embedding model, the promotion record, and the three GPAI provenance items a deployer must retain
+  and has not (#42).
 - `specs/ai/red-team-program.md` — ten techniques mapped to OWASP LLM ids, rules of engagement,
   five cadence triggers including a blocking exercise before any autonomy increase, and every
   Critical/High/Medium finding required to become an abuse case; the exercise log records the

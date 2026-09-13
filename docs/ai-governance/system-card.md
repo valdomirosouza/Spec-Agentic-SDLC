@@ -132,6 +132,6 @@ contact** required by Art. 50 and ISO/IEC 42001 A.8; it is deliberately not inve
 
 ## Related
 
-- [`model-card.md`](model-card.md) · `model-registry.md` (#42) · [`autonomy-boundaries.md`](autonomy-boundaries.md)
+- [`model-card.md`](model-card.md) · [`model-registry.md`](model-registry.md) · [`autonomy-boundaries.md`](autonomy-boundaries.md)
 - [`eu-ai-act-compliance.md`](eu-ai-act-compliance.md) — the obligations this card evidences
 - [ADR-0093](../adr/ADR-0093-eu-ai-act-role-and-risk-classification.md) · [ADR-0092](../adr/ADR-0092-command-lifecycle-hooks-vs-claude-code-hooks.md)

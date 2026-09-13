@@ -140,8 +140,7 @@ scientific one.
 5. Licences confirmed to permit training, including any upstream model's terms.
 6. Evaluation set confirmed disjoint from training data.
 7. Approval: **DPO and AI Governance Lead**, both required.
-8. The run is recorded in the model registry
-   (`docs/ai-governance/model-registry.md`, #42) with the exact dataset versions used.
+8. The run is recorded in the [model registry](../../docs/ai-governance/model-registry.md) with the exact dataset versions used.
 
 A run that cannot complete step 1 does not start. There is no expedited path, because the
 irreversibility in §2 makes an expedited path meaningless.
