@@ -7,7 +7,7 @@
 **Authors:** DPO with Tech Lead (drafted with Claude Code)
 **Spec:** `specs/privacy/training-data-governance.md` · `docs/privacy/data-processing-register.md`
 **Supersedes:** None | **Superseded by:** None
-**Relates to:** [ADR-0012](ADR-0012-pii-masking-strategy.md) (PII masking), [ADR-0013](ADR-0013-data-retention-policy.md) (retention), [ADR-0018](ADR-0018-database-encryption-at-rest.md) (encryption at rest), [ADR-0019](ADR-0019-redis-tls-value-encryption.md) (Redis TLS), [ADR-0093](ADR-0093-eu-ai-act-role-and-risk-classification.md) (EU AI Act role)
+**Relates to:** [ADR-0012](ADR-0012-pii-masking-strategy.md) (PII masking), [ADR-0013](ADR-0013-data-retention-policy.md) (retention), [ADR-0018](ADR-0018-db-encryption-at-rest.md) (encryption at rest), [ADR-0019](ADR-0019-redis-tls-value-encryption.md) (Redis TLS), [ADR-0093](ADR-0093-eu-ai-act-role-and-risk-classification.md) (EU AI Act role)
 
 ---
 
@@ -142,4 +142,4 @@ the next quarterly review.
 
 - `docs/privacy/data-processing-register.md` — transfer instruments per destination
 - `docs/governance/control-applicability-matrix.md` — the questions this ADR answers
-- [ADR-0043](ADR-0043-otel-pii-redaction-tail-sampling.md) — when telemetry becomes L4
+- [ADR-0043](ADR-0043-otel-collector-pii-redaction-tail-sampling.md) — when telemetry becomes L4
