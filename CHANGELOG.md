@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/data/data-governance-charter.md` — scope, seven principles, the data owner / steward /
+  custodian split, the data governance council with decision rights and two vetoes, the path a
+  dataset takes to become governed, time-boxed exceptions, and an honest table of what is enforced
+  versus review-only; RACI matrix §5 Data Governance added with 16 processes (#28).
 - `specs/compliance/ai-post-market-monitoring.md` — EU AI Act Art. 72 monitoring plan (four signal
   families, thresholds, cadence, ownership) and the Art. 73 serious-incident procedure, including
   the near-miss rule and the refusal to invent a reporting authority (#27).

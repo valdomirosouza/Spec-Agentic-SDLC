@@ -2,7 +2,7 @@
 
 # RACI Matrix
 
-> **Status:** Active · **Version:** 1.0 · **Last updated:** 2026-05-31
+> **Status:** Active · **Version:** 1.1 · **Last updated:** 2026-09-13
 > **Owner:** Tech Lead
 > **Related:** `docs/governance/owner-onboarding.md` · `.github/CODEOWNERS` · `docs/compliance/iso27001-annex-a-control-matrix.md`
 
@@ -21,6 +21,9 @@ RACI defines accountability for every key process in this system.
 | ----- | ----------------------- | ------------------------------ |
 | TL    | Tech Lead               | `@your-org/tech-lead`          |
 | PO    | Product Owner           | —                              |
+| DO    | Data Owner              | — (domain lead; charter §4)    |
+| DS    | Data Steward            | — (charter §4)                 |
+| DC    | Data Custodian          | — (platform/SRE; charter §4)   |
 | ENG   | Engineering Team        | `@your-org/engineering-team`   |
 | SEC   | Security Lead           | `@your-org/security-lead`      |
 | DPO   | Data Protection Officer | `@your-org/dpo`                |
@@ -94,7 +97,33 @@ RACI defines accountability for every key process in this system.
 
 ---
 
-## 5. Change Management & Release
+## 5. Data Governance
+
+> Roles, council and decision rights: [`../data/data-governance-charter.md`](../data/data-governance-charter.md).
+> **DO** = data owner (domain lead), **DS** = data steward, **DC** = data custodian (platform/SRE).
+
+| Process                                                     | TL  | DO    | DS  | DC  | SEC | DPO   | AIGOV | SRE |
+| ----------------------------------------------------------- | --- | ----- | --- | --- | --- | ----- | ----- | --- |
+| Dataset declaration in the catalog                          | C   | **A** | R   | C   | —   | C     | —     | —   |
+| Data classification (L1–L4) of a non-personal dataset       | C   | **A** | R   | —   | C   | C     | —     | —   |
+| Data classification of a personal dataset                   | C   | C     | R   | —   | C   | **A** | —     | —   |
+| Business glossary term definition                           | C   | **A** | R   | —   | —   | —     | —     | —   |
+| Data contract: creation and non-breaking change             | C   | **A** | R   | I   | —   | C     | —     | I   |
+| Data contract: breaking change approval                     | C   | **A** | C   | I   | —   | C     | —     | I   |
+| Data quality rules and thresholds                           | C   | **A** | R   | —   | —   | C     | —     | C   |
+| Data quality incident triage                                | I   | C     | **A** | C | —   | C     | —     | R   |
+| Data lineage capture and maintenance                        | C   | C     | **A** | R | —   | C     | —     | C   |
+| Retention execution and deletion verification               | I   | C     | C   | R   | C   | **A** | —     | C   |
+| Access grant to a dataset                                   | C   | **A** | C   | R   | C   | C     | —     | —   |
+| Dataset datasheet before model use                          | C   | R     | R   | —   | C   | **A** | C     | —   |
+| Training-data lawful basis and licensing                    | C   | C     | —   | —   | C   | **A** | C     | —   |
+| Test-data provisioning and masking                          | C   | C     | R   | R   | C   | **A** | —     | C   |
+| Data governance council convening and minutes               | **A** | R   | C   | C   | C   | C     | C     | C   |
+| Exception approval and expiry tracking                      | **A** | C   | C   | —   | C   | C     | C     | —   |
+
+---
+
+## 6. Change Management & Release
 
 | Process                                   | TL    | PO  | ENG   | SEC | DPO | AIGOV | SRE   | DEV   |
 | ----------------------------------------- | ----- | --- | ----- | --- | --- | ----- | ----- | ----- |
@@ -111,7 +140,7 @@ RACI defines accountability for every key process in this system.
 
 ---
 
-## 6. SRE & Observability
+## 7. SRE & Observability
 
 | Process                                    | TL    | PO  | ENG | SEC | DPO | AIGOV | SRE     | DEV |
 | ------------------------------------------ | ----- | --- | --- | --- | --- | ----- | ------- | --- |
@@ -128,7 +157,7 @@ RACI defines accountability for every key process in this system.
 
 ---
 
-## 7. Infrastructure & Pipeline
+## 8. Infrastructure & Pipeline
 
 | Process                                        | TL    | PO  | ENG | SEC   | DPO | AIGOV | SRE | DEV     |
 | ---------------------------------------------- | ----- | --- | --- | ----- | --- | ----- | --- | ------- |
