@@ -81,3 +81,9 @@ CLAUDE.md · AGENTS.md           the detailed operating contract for agents (the
   describe where a control is implemented in a product repository that adopts this corpus.
 - spec-kit reference: github/spec-kit `d848fb4` (2026-09-11). What was adopted, adapted or
   deliberately left out is recorded in `docs/sdlc/spec-kit-comparison.md`.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE). Cite with [`CITATION.cff`](CITATION.cff). The spec-kit
+primitives adopted here are © GitHub, Inc., MIT-licensed; attribution is recorded in
+ADR-0090 and `docs/sdlc/spec-kit-comparison.md`.

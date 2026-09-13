@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this corpus, please cite it as below."
+type: software
+title: "Spec-Agentic-SDLC"
+abstract: >-
+  The documentation, governance and agent-operating layer of an enterprise
+  Agentic Spec-Driven SDLC: a constitution, feature-directory bundle,
+  /sdd-* commands adopted from github/spec-kit, a 15-phase lifecycle with
+  nine human gates, ADRs, control matrices and compliance evidence.
+authors:
+  - family-names: Souza
+    given-names: Valdomiro
+version: 1.0.0
+date-released: 2026-09-12
+license: MIT
+repository-code: "https://github.com/valdomirosouza/Spec-Agentic-SDLC"
+keywords:
+  - spec-driven-development
+  - agentic-sdlc
+  - governance
+  - spec-kit
+references:
+  - type: software
+    title: "Spec Kit"
+    authors:
+      - name: "GitHub, Inc."
+    repository-code: "https://github.com/github/spec-kit"
+    version: 1.0.6
+    notes: "Workflow primitives adopted per ADR-0090 (commit d848fb4)."
