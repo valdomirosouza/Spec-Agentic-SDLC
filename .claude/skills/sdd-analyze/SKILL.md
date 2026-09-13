@@ -33,7 +33,8 @@ deterministic gates (`build_spec_registry.py` S1–S7, `check_open_questions.py`
    decision, missing Golden Signals, missing threat-model delta, Phase 10 not planned for
    agent changes) · E coverage (FR with zero tasks; task with no Refs; AC without a named
    test; §10 footer K > 0) · F inconsistency (terminology vs glossary; entities in plan absent
-   from spec; task order contradictions; topic in plan not in `services.yaml`).
+   from spec; task order contradictions; topic in plan not in the adopting
+   repository's service registry — `services.yaml`, checked only when that file exists).
 5. **Severity**: CRITICAL (constitution/ADR MUST violated, missing core artefact, P1 requirement
    uncovered) · HIGH (conflict, duplicate, untestable AC, ambiguous security/privacy attribute)
    · MEDIUM (terminology drift, missing NFR task, underspecified edge case) · LOW (wording).

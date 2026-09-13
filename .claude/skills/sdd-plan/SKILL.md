@@ -29,7 +29,8 @@ $ARGUMENTS
    `CONTRACTS` (copies `templates/{plan,research,data-model,quickstart,contracts-README}-template.md`;
    never overwrites an existing file).
 2. **Load** spec.md, `memory/constitution.md`, governing ADRs from the frontmatter,
-   `specs/system/architecture.md`, and `services.yaml` when topics/services are involved.
+   `specs/system/architecture.md`, and the adopting repository's service registry (`services.yaml`)
+   when topics/services are involved and the file exists.
 3. **Technical Context**: fill every field; unknowns become `NEEDS CLARIFICATION` items that
    Phase 0 research must resolve. Never guess a library version or API (Constitution IX).
 4. **Constitution Check** (gate): answer every article row with pass / justified / FAIL.

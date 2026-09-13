@@ -17,6 +17,9 @@ authorises them.
 
 ### Changed
 
+- `/sdd-plan`, `/sdd-analyze`, `/sdd-tasks`, `/sdd-implement` now treat `services.yaml`, `src/…`
+  and `make` targets as adopter-provided and conditional; `.claude/skills/README.md` documents the
+  rule (#8).
 - `templates/research-template.md`, `data-model-template.md`, `quickstart-template.md`,
   `contracts-README-template.md` added; `setup-plan.sh` copies all five plan artefacts and
   `/sdd-plan` cites them (#7).

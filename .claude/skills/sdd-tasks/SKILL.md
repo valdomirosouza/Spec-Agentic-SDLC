@@ -31,7 +31,7 @@ $ARGUMENTS
    - Entities → the earliest story that needs them; contracts → the story they serve; field
      constraints quoted verbatim from data-model.md.
    - Governance tasks the spec §7 implies: PII masking, DPIA artefact, abuse-case tests when
-     `src/agents/` or `src/guardrails/` are touched, threat-model update, runbook/dashboard.
+     the adopting repository's `src/agents/` or `src/guardrails/` are touched, threat-model update, runbook/dashboard.
    - Format (strict): `- [ ] T001 [P] [US1] Description in path/to/file — Refs: FR-01, AC-01`.
    - `[P]` only for different files with no dependency on an incomplete task.
 4. **Dependencies & strategy** sections: story order, parallel opportunities, MVP-first plan,

@@ -28,14 +28,16 @@ Scoping is expected for anything non-trivial: `only the Setup and Foundational p
 3. **Load** tasks.md, plan.md, data-model.md, contracts/, research.md, quickstart.md,
    `memory/constitution.md`, and the ≤ 2 skills each task declares (a task that needs a third
    is split first — ADR-0060).
-4. **Session bootstrap** (CLAUDE.md §2): `CLAUDE_SESSION_INIT.md`, `services.yaml`, the spec,
+4. **Session bootstrap** (CLAUDE.md §2): `CLAUDE_SESSION_INIT.md`, the adopting repository's
+   service registry (`services.yaml`) when it exists, the spec,
    the GitHub issue; confirm the branch is `feature/<SPEC-ID>-<slug>`.
 5. **Execute** phase by phase, in order; `[P]` tasks may run together (different files);
    same-file tasks sequentially. Within a story: tests first and **watch them fail**, then
    models → services → endpoints → guardrails → observability. Mark each finished task `[X]`
    immediately. Halt on a failing non-parallel task; report failed `[P]` tasks and continue
    with the rest.
-6. **Hard stops** (`[HITL-ESCALATE]`, CLAUDE.md §14.1): touching `src/guardrails/` or the HITL
+6. **Hard stops** (`[HITL-ESCALATE]`, CLAUDE.md §14.1): touching the adopting repository's
+   `src/guardrails/` or the HITL
    gateway · any feature-flag change · > 3 ADRs · coverage would drop below 75% · a spec
    reference cannot be found · a requirement contradicts an ADR or another approved spec.
 7. **Never**: bypass a gate (`--no-verify`), weaken or delete a test, reduce the abuse-case
@@ -43,7 +45,8 @@ Scoping is expected for anything non-trivial: `only the Setup and Foundational p
 8. **Per task** commit with the conventional message and trailer
    `Refs: #<issue>, <SPEC-ID>, ADR-NNNN` (CLAUDE.md §6). Record any divergence from the spec
    as a `SPEC_DEVIATION` marker with reason and reference (skills/sdlc/spec-lifecycle.md).
-9. **Completion validation**: lint/type/test gates green; coverage ≥ floors; spec frontmatter
+9. **Completion validation**: the adopting repository's lint/type/test gates green (its
+   `make` targets or CI equivalents — none exist in this corpus); coverage ≥ floors; spec frontmatter
    `implemented_by` / `verified_by` filled; quickstart.md scenarios pass.
 
 ## Completion report
