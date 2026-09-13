@@ -81,6 +81,58 @@ class Behaviour(unittest.TestCase):
             self.run_with({"scripts/python/x.py"}, cc.UNRELEASED, waiver="   "), 1)
 
 
+class NextVersion(unittest.TestCase):
+    """R7-T5. A rule written ("the version of record follows SemVer") with nothing that acts on it."""
+
+    def check(self, changelog, version="1.0.0"):
+        import contextlib, io, tempfile
+        real_root = cc.ROOT
+        with tempfile.TemporaryDirectory() as d:
+            with open(os.path.join(d, cc.CHANGELOG), "w", encoding="utf-8") as fh:
+                fh.write(changelog)
+            with open(os.path.join(d, cc.VERSION_FILE), "w", encoding="utf-8") as fh:
+                fh.write(version + "\n")
+            cc.ROOT = d
+            out, err = io.StringIO(), io.StringIO()
+            try:
+                with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                    rc = cc.main(["--version", "--quiet"])
+            finally:
+                cc.ROOT = real_root
+            return rc, out.getvalue() + err.getvalue()
+
+    def test_breaking_without_a_declared_version_fails(self):
+        rc, out = self.check(f"{cc.UNRELEASED}\n\n- BREAKING: the schema changed\n")
+        self.assertEqual(rc, 1)
+        self.assertIn("does not declare the next version", out)
+
+    def test_breaking_with_only_a_minor_bump_fails(self):
+        rc, out = self.check(
+            f"{cc.UNRELEASED}\n\n> **Next version:** 1.1.0\n\n- BREAKING: the schema changed\n")
+        self.assertEqual(rc, 1)
+        self.assertIn("major bump", out)
+
+    def test_breaking_with_a_major_bump_passes(self):
+        rc, _ = self.check(
+            f"{cc.UNRELEASED}\n\n> **Next version:** 2.0.0\n\n- BREAKING: the schema changed\n")
+        self.assertEqual(rc, 0)
+
+    def test_no_breaking_needs_no_declaration(self):
+        rc, _ = self.check(f"{cc.UNRELEASED}\n\n- a quiet fix\n")
+        self.assertEqual(rc, 0)
+
+    def test_a_declared_version_behind_the_current_one_fails(self):
+        rc, out = self.check(f"{cc.UNRELEASED}\n\n> **Next version:** 0.9.0\n\n- a fix\n")
+        self.assertEqual(rc, 1)
+        self.assertIn("not ahead of", out)
+
+    def test_breaking_in_an_older_release_does_not_count(self):
+        """The block stops at the next release heading, so a break shipped long ago cannot keep
+        demanding a bump for ever."""
+        rc, _ = self.check(f"{cc.UNRELEASED}\n\n- a fix\n\n## [1.0.0]\n\n- BREAKING: old news\n")
+        self.assertEqual(rc, 0)
+
+
 class LiveTree(unittest.TestCase):
     def test_it_runs_against_this_repository(self):
         r = subprocess.run([sys.executable, SCRIPT], capture_output=True, text=True,

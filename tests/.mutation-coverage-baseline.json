@@ -1,9 +1,10 @@
 {
   "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering it \u2014 including by deleting checks \u2014 is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 53,
-  "proved": 17,
+  "named": 54,
+  "proved": 18,
   "checks": [
     "ADR-0022 declares exactly one floor",
+    "a BREAKING entry declares the next version",
     "adopter-paths",
     "adr-index",
     "asdd_state.py runs no git or gh",

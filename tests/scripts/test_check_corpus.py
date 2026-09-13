@@ -209,6 +209,13 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("specs/data/data-quality.md", "## 10. Open items", "## 10. Pending"),
             "open items carry a date")
 
+    def test_a_breaking_entry_without_a_declared_next_version_is_caught(self):
+        """R7-T5. ADR-0057 says version.txt follows SemVer and nothing exercised it. A BREAKING
+        entry sat under [Unreleased] with the version at 1.0.0 and no link between the two."""
+        self.assert_mutation_is_caught(
+            Mutation("CHANGELOG.md", "> **Next version:** 2.0.0", "> Next release: soon"),
+            "declares the next version")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

@@ -334,6 +334,16 @@ else
     printf '%s\n' "$out" | head -8 | sed 's/^/      /'
 fi
 
+# ADR-0057 makes version.txt the version of record and says it follows SemVer, and nothing
+# exercised that. The changelog records a BREAKING schema change while version.txt sits at 1.0.0;
+# in three months nobody would remember a break was pending (R7-T5).
+if out=$(python3 scripts/python/check_changelog.py --version --quiet 2>&1); then
+    result "a BREAKING entry declares the next version" ok
+else
+    result "a BREAKING entry declares the next version" fail
+    printf '%s\n' "$out" | head -5 | sed 's/^/      /'
+fi
+
 # A change to something that executes or binds owes a changelog entry. CLAUDE.md §7 has said so
 # all along and §7.1 describes the gate that enforces it — in the ADOPTING repository. Nothing
 # enforced it here, and seven commits of round 5, including a breaking schema change, landed with

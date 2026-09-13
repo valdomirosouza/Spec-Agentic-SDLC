@@ -16,6 +16,7 @@ the kind of change that owes an entry.
 """
 import argparse
 import os
+import re
 import subprocess
 import sys
 
@@ -26,6 +27,10 @@ UNRELEASED = "## [Unreleased]"
 # What owes an entry: things that execute, and things that bind. Prose that documents an unchanged
 # behaviour does not, which is why `docs/` and `specs/` are absent.
 WATCHED = ("scripts/", ".github/workflows/", ".claude/hooks/", "memory/", "CLAUDE.md", "AGENTS.md")
+
+VERSION_FILE = "version.txt"
+NEXT_VERSION = re.compile(r"\*\*Next version:\*\*\s*v?(\d+)\.(\d+)\.(\d+)")
+BREAKING = re.compile(r"\bBREAKING\b")
 
 # Generated on nearly every run as a side effect of measuring; an entry for each would be noise
 # that teaches people to ignore the gate.
@@ -72,10 +77,71 @@ def problems():
     return errs, owing
 
 
+def unreleased_block():
+    with open(os.path.join(ROOT, CHANGELOG), encoding="utf-8") as fh:
+        text = fh.read()
+    if UNRELEASED not in text:
+        return ""
+    rest = text.split(UNRELEASED, 1)[1]
+    # Up to the next release heading, so a BREAKING note in an older release does not count.
+    return re.split(r"\n## \[", rest, maxsplit=1)[0]
+
+
+def current_version():
+    with open(os.path.join(ROOT, VERSION_FILE), encoding="utf-8") as fh:
+        raw = fh.read().strip()
+    m = re.match(r"v?(\d+)\.(\d+)\.(\d+)", raw)
+    return tuple(int(x) for x in m.groups()) if m else None
+
+
+def version_problems():
+    """A BREAKING entry has to say what version it forces.
+
+    ADR-0057 makes version.txt the version of record and says it follows SemVer. Nothing exercised
+    that. The changelog now records a schema change as BREAKING under [Unreleased] while
+    version.txt sits at 1.0.0, and in three months nobody will remember a break was pending — the
+    rule was written and never made to act on anything (R7-T5)."""
+    errs = []
+    block = unreleased_block()
+    cur = current_version()
+    if cur is None:
+        return [f"{VERSION_FILE} does not hold a SemVer version"]
+    declared = NEXT_VERSION.search(block)
+    nxt = tuple(int(x) for x in declared.groups()) if declared else None
+
+    if BREAKING.search(block):
+        if nxt is None:
+            errs.append(f"{UNRELEASED} records a BREAKING change and does not declare the next "
+                        f"version. Add a line: `> **Next version:** {cur[0] + 1}.0.0`")
+        elif nxt[0] <= cur[0]:
+            errs.append(f"a BREAKING change needs a major bump: declared "
+                        f"{'.'.join(map(str, nxt))}, current is {'.'.join(map(str, cur))}")
+    if nxt is not None and nxt <= cur:
+        errs.append(f"declared next version {'.'.join(map(str, nxt))} is not ahead of "
+                    f"{'.'.join(map(str, cur))}")
+    return errs
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--version", action="store_true", dest="version_mode",
+                    help="check that a BREAKING entry declares the next version")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
+    if a.version_mode:
+        verrs = version_problems()
+        if verrs:
+            for e in verrs:
+                print(e, file=sys.stderr)
+            return 1
+        if not a.quiet:
+            block = unreleased_block()
+            d = NEXT_VERSION.search(block)
+            print(f"version: {'.'.join(map(str, current_version()))}"
+                  + (f", next declared {d.group(1)}.{d.group(2)}.{d.group(3)}" if d else
+                     ", no next version declared and none required"))
+        return 0
+
     errs, owing = problems()
     waiver = (os.environ.get("CHANGELOG_WAIVER") or "").strip()
 

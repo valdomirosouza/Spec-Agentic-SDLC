@@ -9,6 +9,11 @@ authorises them.
 
 ## [Unreleased]
 
+> **Next version:** 2.0.0 — major, because the delivery-state schema change below is
+> BREAKING for adopters holding a `asdd_state_v1` file. `version.txt` is the version of
+> record (ADR-0057) and moves when the release is cut, not before; this line is what ties
+> the two together, and `check_changelog.py --version` enforces it.
+
 ### Added
 
 - `tests/scripts/test_check_corpus.py` — the mutation harness: every entry injects the defect a
@@ -26,6 +31,9 @@ authorises them.
 - `tests/scripts/test_corpus_measure_workflow.py` — eight assertions on the scheduled job, the
   substitute for being able to run it: token scope, ordering, the delta file written and read under
   one variable, the pull request that forms the series, and the verbs Constitution V forbids (#74).
+- `check_changelog.py --version` ties a BREAKING entry to the version it forces. ADR-0057 makes
+  `version.txt` the version of record and says it follows SemVer; nothing exercised that, and a
+  BREAKING schema change sat under `[Unreleased]` with the version at 1.0.0 (#83).
 - Open-item deadlines are spread across the quarter by the owner who reviews them, and the checker
   alerts when too many share one date. Round 6 put all eleven on 2026-12-13, which turns the build
   red for everyone on one morning and makes pushing eleven dates cheaper than reading one (#82).
