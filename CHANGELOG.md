@@ -11,6 +11,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- Worked example of the feature bundle: `specs/features/SPEC-LGS-001-log-based-golden-signals/`
+  (spec, plan, research, data-model, contracts, quickstart, requirements checklist, tasks); the
+  flat `SPEC-LGS-001-golden-signals-feature-spec.md` is `superseded` by it (#5).
 
 ### Changed
 

@@ -1,0 +1,125 @@
+openapi: 3.1.0
+info:
+  title: Golden Signals service — delta for SPEC-LGS-001
+  version: 0.1.0
+  description: Five paths added by SPEC-LGS-001. Merge into the published OpenAPI document.
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    LogEntry:
+      type: object
+      required: [timestamp, path, method, status_code, response_time_ms, bytes_sent, client_ip]
+      properties:
+        timestamp: { type: integer, description: epoch milliseconds }
+        path: { type: string, maxLength: 2048 }
+        method: { type: string }
+        status_code: { type: integer, minimum: 100, maximum: 599 }
+        response_time_ms: { type: number, minimum: 0 }
+        bytes_sent: { type: integer, minimum: 0 }
+        client_ip: { type: string, description: masked on entry (FR-02) }
+        backend_name: { type: string }
+    IngestionResult:
+      type: object
+      required: [accepted, rejected]
+      properties:
+        accepted: { type: integer }
+        rejected: { type: integer }
+    Bucket:
+      type: object
+      required: [bucket_start, count]
+      properties:
+        bucket_start: { type: integer, description: epoch seconds, left-closed }
+        p50: { type: [number, "null"] }
+        p95: { type: [number, "null"] }
+        p99: { type: [number, "null"] }
+        count: { type: integer }
+        error_rate: { type: [number, "null"] }
+        saturation_pct: { type: [number, "null"] }
+    Governance:
+      type: object
+      required: [data_classification, pii_sanitized, retention_policy, audit_trail, recommended_action_mode, human_approval_required]
+      properties:
+        data_classification: { type: string, const: telemetry-L2 }
+        pii_sanitized: { type: boolean }
+        retention_policy: { type: string, example: "1m:2h,5m:24h" }
+        audit_trail: { type: string, example: /audit }
+        recommended_action_mode: { type: string, enum: [HOTL, HITL] }
+        human_approval_required: { type: boolean }
+    AnalyticsResponse:
+      type: object
+      required: [buckets, summary, _governance]
+      properties:
+        buckets: { type: array, items: { $ref: "#/components/schemas/Bucket" } }
+        summary: { type: object, additionalProperties: true }
+        _governance: { $ref: "#/components/schemas/Governance" }
+    Health:
+      type: object
+      required: [status, redis_connected, tracked_paths]
+      properties:
+        status: { type: string }
+        redis_connected: { type: boolean }
+        tracked_paths: { type: integer }
+    AuditRecord:
+      type: object
+      required: [ts, endpoint, hashed_key, trace_id, status]
+      properties:
+        ts: { type: integer }
+        endpoint: { type: string }
+        hashed_key: { type: string, description: SHA-256 of the API key }
+        trace_id: { type: string }
+        status: { type: integer }
+paths:
+  /ingestion:
+    post:
+      summary: Submit a batch of HAProxy log entries (FR-01)
+      security: [{ ApiKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: "#/components/schemas/LogEntry" } }
+      responses:
+        "202": { description: accepted, content: { application/json: { schema: { $ref: "#/components/schemas/IngestionResult" } } } }
+        "401": { description: missing or invalid key (FR-10) }
+        "422": { description: malformed batch }
+        "429": { description: rate limit exceeded (FR-11); Retry-After header, headers: { Retry-After: { schema: { type: integer } } } }
+  /analytics:
+    get:
+      summary: Percentiles per path, signal and window (FR-07, FR-12, FR-13)
+      security: [{ ApiKey: [] }]
+      parameters:
+        - { name: path, in: query, required: true, schema: { type: string } }
+        - { name: signal, in: query, required: true, schema: { type: string, enum: [traffic, latency, error, saturation] } }
+        - { name: window, in: query, required: true, schema: { type: string, enum: [1m, 5m] } }
+        - { name: from, in: query, required: false, schema: { type: string, format: date-time } }
+        - { name: to, in: query, required: false, schema: { type: string, format: date-time } }
+      responses:
+        "200": { description: buckets + summary + _governance, content: { application/json: { schema: { $ref: "#/components/schemas/AnalyticsResponse" } } } }
+        "401": { description: missing or invalid key }
+        "422": { description: missing path or invalid enum }
+  /analytics/paths:
+    get:
+      summary: List tracked paths (FR-08)
+      security: [{ ApiKey: [] }]
+      responses:
+        "200": { description: paths, content: { application/json: { schema: { type: array, items: { type: string } } } } }
+        "401": { description: missing or invalid key }
+  /analytics/health:
+    get:
+      summary: Liveness and store status (FR-09); no key required
+      responses:
+        "200": { description: healthy, content: { application/json: { schema: { $ref: "#/components/schemas/Health" } } } }
+        "503": { description: store unreachable }
+  /audit:
+    get:
+      summary: Last N audit records (FR-14)
+      security: [{ ApiKey: [] }]
+      parameters:
+        - { name: limit, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 1000, default: 100 } }
+      responses:
+        "200": { description: records, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/AuditRecord" } } } } }
+        "401": { description: missing or invalid key }

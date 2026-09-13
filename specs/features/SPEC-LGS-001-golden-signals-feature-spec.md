@@ -1,7 +1,7 @@
 ---
 id: SPEC-LGS-001
 kind: feature-spec
-status: draft # draft | in-review | approved | implemented | superseded (ADR-0085)
+status: superseded # draft | in-review | approved | implemented | superseded (ADR-0085)
 status_source: body-header:draft # carried by migrate_spec_frontmatter.py, never promoted
 owner: valdomirosouza
 issue: null # GitHub issue number that delivered/owns this spec
@@ -16,8 +16,14 @@ governing_adrs:
 implemented_by: []
 verified_by: []
 related_specs: []
+superseded_by: specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md
 last_updated: 2026-09-12
 ---
+
+> **Superseded (2026-09-12).** This flat file was split into the feature bundle
+> `specs/features/SPEC-LGS-001-log-based-golden-signals/` (spec.md, plan.md, tasks.md, research,
+> data-model, contracts, quickstart, checklists) per ADR-0090. Its stack-level content now lives
+> in that bundle's `plan.md`. Kept for history — supersede, never delete (Constitution VII).
 
 # Feature Spec — SPEC-LGS-001 Log-Based Golden Signals (Java 21 / Spring Boot 3.4.5)
 
