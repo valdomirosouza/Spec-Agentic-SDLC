@@ -47,10 +47,11 @@ We adopt spec-kit's workflow primitives as **Claude Code skills and templates**,
 roadmap,constitution}-template.md` as its executable templates. The spec template keeps the EARS
   FR table, the canonical AC table and the coverage footer of `specs/SPEC-TEMPLATE.md`, and adds
   spec-kit's prioritised, independently testable user stories and `## Clarifications`.
-- Nine commands `/sdd-constitution`, `/sdd-specify`, `/sdd-clarify`, `/sdd-plan`, `/sdd-checklist`,
-  `/sdd-tasks`, `/sdd-analyze`, `/sdd-implement`, `/sdd-converge` under `.claude/skills/sdd-*/`,
+- Ten commands `/sdd-constitution`, `/sdd-specify`, `/sdd-clarify`, `/sdd-plan`, `/sdd-checklist`,
+  `/sdd-tasks`, `/sdd-analyze`, `/sdd-implement`, `/sdd-converge`, `/sdd-taskstoissues` (added 2026-09-12, #10) under
+  `.claude/skills/sdd-*/`,
   each bound to an ADR-0058 phase and to the human gate it must stop at.
-- `scripts/bash/{common,create-new-feature,check-prerequisites,setup-plan}.sh` with JSON output;
+- `scripts/bash/{common,create-new-feature,check-prerequisites,setup-plan,tasks-to-issues}.sh` with JSON output;
   numbering is per `SPEC-<DOMAIN>`; `--require-approved` refuses a spec that is not
   `approved`/`implemented`; no script creates or switches git branches.
 - Tests remain **mandatory** in `tasks.md` (spec-kit makes them optional); every task carries

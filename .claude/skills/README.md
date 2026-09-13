@@ -5,7 +5,7 @@ Two families live here:
 
 | Family                          | Skills                                                                                                                   | Source of truth                                  |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
-| Spec-kit-style workflow (ADR-0090) | `sdd-constitution`, `sdd-specify`, `sdd-clarify`, `sdd-plan`, `sdd-checklist`, `sdd-tasks`, `sdd-analyze`, `sdd-implement`, `sdd-converge`; `deliver` for the 15 phases | `memory/constitution.md`, `templates/`, `scripts/bash/` |
+| Spec-kit-style workflow (ADR-0090) | `sdd-constitution`, `sdd-specify`, `sdd-clarify`, `sdd-plan`, `sdd-checklist`, `sdd-tasks`, `sdd-analyze`, `sdd-implement`, `sdd-converge`, `sdd-taskstoissues`; `deliver` for the 15 phases | `memory/constitution.md`, `templates/`, `scripts/bash/` |
 | Domain skills (`/`-command copies) | `pii`, `gdpr`, `lgpd`, `owasp-top10`, `otel`, `golden-signals`, `prr`, `rest-api-design`, … (one per `skills/**/*.md`) | `skills/` (plain Markdown; load ≤ 2 per task — ADR-0060) |
 
 ## Adopter-provided paths

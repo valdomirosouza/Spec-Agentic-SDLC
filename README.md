@@ -32,6 +32,7 @@
 /sdd-plan           plan.md with Constitution Check + research / data-model / contracts / quickstart (+ ADR, threat model, DPIA decisions)
 /sdd-checklist      reviewer-owned "unit tests for the requirements" (security, privacy, observability, audit …)
 /sdd-tasks          tasks.md — Setup → Foundational → per user story (tests first) → Polish
+/sdd-taskstoissues  optional: one GitHub issue per open task (gh CLI; approved spec only)
 /sdd-analyze        read-only cross-artifact consistency report (constitution & ADR conflicts = CRITICAL)
 /sdd-implement      execute tasks phase by phase, scoped runs, hard stops at every HITL trigger
 /sdd-converge       append remaining gaps as tasks; repeat until "Converged"
@@ -48,7 +49,7 @@ The persistence rules for specs are in
 ```text
 memory/constitution.md          nine binding articles; every plan and analysis is checked against them
 templates/                      spec, plan, research, data-model, quickstart, contracts, tasks, checklist, roadmap, constitution templates
-scripts/bash/                   create-new-feature.sh · check-prerequisites.sh · setup-plan.sh (JSON output for agents)
+scripts/bash/                   create-new-feature.sh · check-prerequisites.sh · setup-plan.sh · tasks-to-issues.sh (JSON output for agents)
 specs/                          system, api, ai, privacy, security (control matrices), compliance, observability, features/
 docs/adr/                       ADR-0001 … ADR-0090 (index in docs/adr/README.md)
 docs/process/                   WORKFLOW (15 phases), RACI, HITL-GOVERNANCE, DoR / DoD / DoR-Release, gates/phase-gates.yaml

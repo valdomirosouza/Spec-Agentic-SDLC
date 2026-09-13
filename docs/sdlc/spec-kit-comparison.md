@@ -38,6 +38,7 @@
 | **Spec of specs / roadmap** for epics too large for one cycle                                                                    | `templates/roadmap-template.md`; `roadmap:` frontmatter field                                      | Bidirectional plain-text links; immutable R-ids as traceability anchors                                                                                           |
 | **Spec persistence models** made explicit (flow-back / flow-forward / living)                                                    | `docs/sdlc/spec-persistence-model.md`                                                              | This repo chooses **flow-forward + living spec**: supersede, never delete (audit)                                                                                 |
 | **Helper scripts** (`create-new-feature`, `check-prerequisites`, `setup-plan`) with JSON output for agents                       | `scripts/bash/*.sh`                                                                                | Rewritten for the SPEC-ID grammar and bash 3.2; they never create git branches (human decision)                                                                   |
+| **`/taskstoissues`**: one GitHub issue per task, deduplicated by task id                                                          | `/sdd-taskstoissues` + `scripts/bash/tasks-to-issues.sh`                                            | gh CLI instead of the GitHub MCP server; refuses unapproved specs; `Refs:` grammar; issue number written back to the task line                    |
 | **Sync Impact Report** on constitution amendments                                                                                | `/sdd-constitution` step 4                                                                         | Lists dependent templates/skills that must change in the same PR                                                                                                  |
 
 ## 3. What this repository does better (kept, and now wired to the spec-kit flow)
@@ -87,7 +88,7 @@
 
 - Port the deterministic gate scripts (`scripts/governance/*.py`) from the source template so
   `/sdd-analyze` can cite their output instead of re-deriving it.
-- Add a `/sdd-taskstoissues` equivalent that respects the repository's issue templates and
-  the `Refs:` grammar (spec-kit's version depends on the GitHub MCP server).
+- ~~Add a `/sdd-taskstoissues` equivalent~~ — done 2026-09-12 (#10): `.claude/skills/sdd-taskstoissues/`
+  backed by `scripts/bash/tasks-to-issues.sh` (gh CLI, approved specs only, `(#N)` written back).
 - Decide whether `docs/delivery/<SPEC-ID>/FINAL-REPORT.md` should embed the `/sdd-converge`
   findings table as Phase 7 evidence.
