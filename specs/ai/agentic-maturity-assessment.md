@@ -8,7 +8,7 @@ issue: null # GitHub issue number that delivered/owns this spec
 governing_adrs: 
   - ADR-0040
 implemented_by:
-  - scripts/agentic_maturity_check.py
+  - adopter:scripts/agentic_maturity_check.py # measures the adopting product's runtime, not this corpus (R4-T8)
 verified_by: []
 related_specs: []
 last_updated: 2026-09-12

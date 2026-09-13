@@ -106,6 +106,21 @@ def reg_implemented_has_tests():
     return (len(bad), f"implemented without verified_by: {bad[:3]}" if bad else "")
 
 
+@rule("DQ-REG-007", "spec-registry", "accuracy",
+      "count(implemented/approved specs citing an unmarked path that does not resolve)", "== 0", "major")
+def reg_evidence_resolves():
+    """Evidence a spec names either resolves here or is marked as the adopting repository's.
+    SPEC-FEAT-001 claimed `implemented` against two src/ files that do not exist, which is the
+    mirror of DQ-REG-006: there the status named nothing, here it named what was not there."""
+    bad = []
+    for e in _specs():
+        if e.get("status") not in ("implemented", "approved"):
+            continue
+        if e.get("unresolved_evidence"):
+            bad.append(f"{e['path']}: {', '.join(e['unresolved_evidence'][:2])}")
+    return (len(bad), f"{len(bad)} spec(s) cite evidence that does not resolve: {bad[:2]}" if bad else "")
+
+
 # ---- ADR index ----------------------------------------------------------------------------------
 @rule("DQ-ADR-001", "adr-index", "completeness",
       "count(ADR files absent from docs/adr/README.md)", "== 0", "critical", "block")

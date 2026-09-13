@@ -6,12 +6,12 @@ owner: Tech Lead
 issue: 357
 governing_adrs: [ADR-0006, ADR-0043, ADR-0089]
 new_adrs_required: []
-implemented_by:
-  - src/api/rest/middleware/golden_signals.py
-  - src/api/rest/main.py
+implemented_by: # adopter: paths live in the product repository, not in this corpus (R4-T8)
+  - adopter:src/api/rest/middleware/golden_signals.py
+  - adopter:src/api/rest/main.py
 verified_by:
-  - tests/unit/api/test_golden_signals_middleware.py
-  - tests/integration/test_lifespan_wiring.py
+  - adopter:tests/unit/api/test_golden_signals_middleware.py
+  - adopter:tests/integration/test_lifespan_wiring.py
 related_specs:
   - docs/product/FEAT-001/discovery.md
   - docs/product/FEAT-001/nfr.md
@@ -24,7 +24,9 @@ last_updated: 2026-09-12
 
 > **⚡ Agent-Generated:** drafted by Claude Code on 2026-09-12 (Wave 12 · W12-T4, Wave 13 · W13-T7).
 > **Human Review Required:** Tech Lead (observability) — no security surface change.
-> **Review Status:** implemented — back-filled as the worked example of `specs/features/`.
+> **Review Status:** implemented **in the product repository this corpus was extracted from**;
+> the paths below are `adopter:`-prefixed because they do not exist here and nothing in this
+> repository verifies them (R4-T8). Back-filled as a worked example of the layout only.
 > **Reviewer:** Tech Lead | **Approved:** via PR #365 (Wave 12)
 
 ---

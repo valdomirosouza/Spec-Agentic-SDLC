@@ -89,15 +89,26 @@ def validate(entry):
     return errs
 
 
+# The corpus already maintains one list of what the adopting repository provides; reuse it rather
+# than inventing a second that would drift (docs/reference/adopter-provided-paths.md, C7).
+ADOPTER_PREFIXES = ("src/", "tests/", "services/", "frontend/", "infrastructure/",
+                    "scripts/governance/", "alembic/", "reports/",
+                    ".github/workflows/", "services.yaml", "Makefile", "pyproject.toml")
+
+
 def unresolved_evidence(entry):
-    """implemented_by / verified_by paths that resolve to nothing here and are not marked as the
-    adopting repository's. Counting them as evidence renders confidence the registry cannot back."""
+    """implemented_by / verified_by paths that resolve to nothing here AND are not adopter-side.
+
+    A bare `src/...` is the corpus's documented convention for the product repository, so it is
+    not a defect. What is a defect is a path that resolves nowhere and belongs nowhere — which is
+    what SPEC-FEAT-001 had before it was marked."""
     out = []
     for field in ("implemented_by", "verified_by"):
         for p in entry.get(field, []):
-            if p.startswith(("adopter:", "ci:", "planned:")):
+            path = p.split("#")[0].strip()
+            if path.startswith(("adopter:", "ci:", "planned:")) or path.startswith(ADOPTER_PREFIXES):
                 continue
-            if not os.path.exists(os.path.join(ROOT, p.split("#")[0].strip())):
+            if not os.path.exists(os.path.join(ROOT, path)):
                 out.append(p)
     return out
 
