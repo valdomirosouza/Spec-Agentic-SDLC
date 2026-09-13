@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- ADR-0093 — EU AI Act role (provider of the system + deployer of a third-party GPAI model),
+  high-risk by default with a documented Art. 6(3) derogation path, the obligations each
+  classification triggers, the application dates and the re-classification triggers (#23).
 - `.claude/hooks/sdd-gate.py` — `UserPromptSubmit` hook that blocks `/sdd-plan`, `/sdd-tasks`,
   `/sdd-implement` and `/sdd-taskstoissues` on an unapproved spec and surfaces the checklist
   state; 11 tests in `tests/hooks/`, run by `check-corpus.sh` C11; ADR-0092 → Accepted (#22).

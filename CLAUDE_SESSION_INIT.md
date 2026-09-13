@@ -87,7 +87,6 @@ is resolved from `SDD_FEATURE_DIRECTORY`, `.sdd/feature.json` or the branch name
 
 | ADR      | Decision                                          |
 | -------- | ------------------------------------------------- |
-| ADR-0073 | SLO-driven canary thresholds (per-service config,… |
 | ADR-0074 | Automated dependency & digest update policy (Reno… |
 | ADR-0075 | Resilience fallback policy (degrade-open vs fail-… |
 | ADR-0076 | Structured API error model (problem+json flavour)… |
@@ -107,6 +106,7 @@ is resolved from `SDD_FEATURE_DIRECTORY`, `.sdd/feature.json` or the branch name
 | ADR-0090 | Adopt spec-kit workflow primitives (constitution,… |
 | ADR-0091 | Corpus adoption via adopt.sh and rendered per-age… |
 | ADR-0092 | spec-kit before/after hooks vs Claude Code hooks … |
+| ADR-0093 | EU AI Act role and risk classification (provider …|
 
 Full index: `docs/adr/README.md`
 
