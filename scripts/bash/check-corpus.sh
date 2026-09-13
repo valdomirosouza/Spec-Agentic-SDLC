@@ -28,6 +28,7 @@
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
+#  C6 also runs the mutation harness: each entry injects a defect and requires that check to fail
 #  C11 also runs the red-team exercise suite, so a demonstrated bypass cannot reopen (ADR-0050)
 #  C15 the 14 data-quality rules over the corpus's own datasets (spec registry, ADR index,
 #      control matrices, adopter-path inventory); critical blocks, major is reported every run
@@ -291,6 +292,9 @@ else
     result "spec registry matches disk" fail; printf '%s\n' "$out" | head -10 | sed 's/^/      /'
 fi
 if $SMOKE; then
+    # The verifier's own test: every entry injects a defect and requires THAT check to fail.
+    # Slow (it re-runs check-corpus once per mutation), so it is behind --no-smoke like the rest.
+    if out=$(python3 tests/scripts/test_check_corpus.py 2>&1); then result "tests/scripts/test_check_corpus.py (mutation)" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_corpus.py (mutation)" fail "a check stayed green under its own defect"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -8 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_build_spec_registry.py 2>&1); then result "tests/scripts/test_build_spec_registry.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_build_spec_registry.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
