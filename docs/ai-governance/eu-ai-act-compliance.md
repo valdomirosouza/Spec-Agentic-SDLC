@@ -1,79 +1,66 @@
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 
-# EU AI Act Compliance Checklist
+# EU AI Act — compliance reading
 
-**Scope:** This system incorporates AI agents with autonomous decision-making capabilities.
-**Risk classification:** High-Risk (automated decision-making with real-world effects)
-**Owner:** AI Governance Lead | **Last reviewed:** 2026-05-24
+> **Normative source:** [`specs/compliance/eu-ai-act-control-matrix.yaml`](../../specs/compliance/eu-ai-act-control-matrix.yaml).
+> That file is the machine-verified obligation set; this page is the human reading of it and
+> carries no obligation of its own. Where the two differ, the matrix wins.
+> **Classification:** [ADR-0093](../adr/ADR-0093-eu-ai-act-role-and-risk-classification.md).
+> **Owner:** AI Governance Lead · **Last reviewed:** 2026-09-13
 
----
+## Where this system stands
 
-## System Risk Classification
+| Question                        | Answer                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Which role does the organisation play? | **Provider** of the agentic AI system **and deployer** of a third-party general-purpose model |
+| Which tier?                     | **High-risk** by default under Art. 6(2) with Annex III; narrowing requires a documented Art. 6(3) assessment |
+| Does Art. 50 apply?             | **Assumed yes** — the system interacts directly with people                                     |
+| Do the GPAI obligations bind us? | Not as provider. As deployer we **retain and record** what the model's provider publishes        |
+| Is any Art. 5 practice implemented? | **No — and none may be.** Art. 5 is a refusal condition at the Phase 10 gate, not a risk to mitigate |
 
-| Criterion                                          | Assessment                                              |
-| -------------------------------------------------- | ------------------------------------------------------- |
-| Autonomous decision-making with real-world effects | Yes — agents propose and execute actions                |
-| Oversight by humans before consequential actions   | Yes — HITL gateway mandatory (ADR-0011)                 |
-| Potential impact on individuals                    | Medium — actions affect user data and external services |
-| **Classification**                                 | **High-Risk — Arts. 9, 12, 13, 14 apply**               |
+## Obligation status
 
----
+Seventeen control entries cover Art. 5, Arts. 9–17 and 20, Arts. 43/47/48/49, Art. 50,
+Arts. 51–55 and Arts. 72–73 with Annex IV. Current distribution:
 
-## Art. 9 — Risk Management System
+| Status        | Count | Meaning                                                                    |
+| ------------- | ----- | -------------------------------------------------------------------------- |
+| `implemented` | 3     | Art. 12 record-keeping, Art. 14 human oversight, Art. 17 quality management |
+| `partial`     | 11    | Artefact exists, a named gap remains                                       |
+| `prohibited`  | 1     | Art. 5 — a refusal condition, never satisfied by a control                  |
+| `n/a`         | 2     | Conformity assessment and CE marking, with a justification and a trigger    |
 
-| Item                                      | Status       | Evidence                                                            |
-| ----------------------------------------- | ------------ | ------------------------------------------------------------------- |
-| Risk management process documented        | ✅ Compliant | `docs/privacy/dpia/dpia-v1.md`, `docs/ai-governance/nist-ai-rmf.md` |
-| Residual risks identified and mitigated   | ✅ Compliant | DPIA Section 3 risk table                                           |
-| Testing performed throughout lifecycle    | ✅ Compliant | `tests/security/`, `tests/chaos/`, PRR checklist                    |
-| Risk management updated on system changes | In Progress  | Quarterly review cadence defined                                    |
-| Known failure modes documented            | ✅ Compliant | `docs/ai-governance/model-card.md`                                  |
+**Human oversight (Art. 14) is the system's strongest obligation** and the only one with an
+executable enforcement point: the HITL gateway, autonomy only through governed feature flags, the
+escalation protocol, and a `PreToolUse` guard that denies push, merge, release and deploy to
+subagents. **Article 15 accuracy** is the weakest of the implemented set: thresholds exist for the
+evaluator and for groundedness, but no accuracy metric has been declared per intended purpose.
 
----
+## What binds, and from when
 
-## Art. 12 — Record-Keeping (Logging)
+| Date           | What starts applying                                                     |
+| -------------- | ------------------------------------------------------------------------- |
+| 2 Feb 2025     | Art. 5 prohibited practices                                              |
+| 2 Aug 2025     | General-purpose AI model obligations (on the model's provider)           |
+| 2 Aug 2026     | Art. 50 transparency; governance and penalties regime                    |
+| 2 Dec 2027     | Annex III high-risk obligations — Arts. 9–17, 20, 43, 47–49, 72, 73      |
+| 2 Aug 2028     | Annex I high-risk obligations (not applicable to this system)            |
 
-| Item                                                | Status       | Evidence                                                  |
-| --------------------------------------------------- | ------------ | --------------------------------------------------------- |
-| Automatic logging of system events enabled          | ✅ Compliant | `src/observability/logger.py`, OTel setup                 |
-| Logs retained for minimum required period           | ✅ Compliant | 90 days warm per `docs/privacy/data-retention-policy.md`  |
-| Audit trail covers all autonomous decisions         | ✅ Compliant | `src/guardrails/audit_logger.py` — immutable, append-only |
-| Audit log integrity protected                       | ✅ Compliant | Append-only storage; write failure blocks action          |
-| Logs accessible to competent authorities on request | In Progress  | Access procedure to be documented                         |
+These dates were amended after the Regulation was first published. They are re-verified at every
+review of ADR-0093 and the matrix carries `last_verified`.
 
----
+## Reading the matrix
 
-## Art. 13 — Transparency and Provision of Information
+- `adopter:` before a path means the artefact lives in the product repository that adopts this
+  corpus, not here.
+- `planned:#<issue>:` before a path means the artefact is not written yet and names the open issue
+  that will write it. The validator fails once that issue closes and the prefix remains.
+- `gap:` on a `partial` control states in one sentence what is missing. A control with `partial`
+  status and no `gap` is a defect.
 
-| Item                                           | Status       | Evidence                                                       |
-| ---------------------------------------------- | ------------ | -------------------------------------------------------------- |
-| Users informed they interact with an AI system | In Progress  | UI/UX disclosure required before launch                        |
-| System capabilities documented                 | ✅ Compliant | `docs/ai-governance/model-card.md`, `specs/ai/agent-design.md` |
-| System limitations documented                  | ✅ Compliant | Model card "Known failure modes" section                       |
-| Instructions for use provided to deployers     | ✅ Compliant | `docs/runbooks/`, `CLAUDE.md`, PRR template                    |
-| Contact point identified for questions         | In Progress  | Add to README and UI                                           |
+## Related
 
----
-
-## Art. 14 — Human Oversight
-
-| Item                                                | Status       | Evidence                                                          |
-| --------------------------------------------------- | ------------ | ----------------------------------------------------------------- |
-| HITL controls implemented for consequential actions | ✅ Compliant | `src/agents/hitl_gateway.py`, ADR-0011                            |
-| HOTL monitoring active for autonomous flows         | ✅ Compliant | Grafana agent-performance dashboard, alert routing                |
-| Override mechanism available at all times           | ✅ Compliant | Ops dashboard override; HITL rejection always available           |
-| Persons responsible for oversight identified        | ✅ Compliant | `docs/ai-governance/autonomy-boundaries.md`, CODEOWNERS           |
-| Oversight persons trained                           | In Progress  | Tracked in `docs/compliance/remediation-register.md` (issue #194) |
-| Auto-approval on timeout is disabled                | ✅ Compliant | Expired HITL requests are rejected, never approved                |
-| Escalation from HOTL to HITL defined                | ✅ Compliant | `docs/ai-governance/autonomy-boundaries.md` escalation rules      |
-
----
-
-## Remediation Roadmap
-
-| Item                                     | Owner              | Target date |
-| ---------------------------------------- | ------------------ | ----------- |
-| UI/UX AI disclosure for end users        | Product Owner      | \<Date\>    |
-| Oversight persons training programme     | AI Governance Lead | \<Date\>    |
-| Competent authority log access procedure | DPO + SRE Lead     | \<Date\>    |
-| Contact point added to README and UI     | Engineering Lead   | \<Date\>    |
+- [ADR-0093](../adr/ADR-0093-eu-ai-act-role-and-risk-classification.md) — role, tier, triggers
+- [`nist-ai-rmf.md`](nist-ai-rmf.md) — the risk-management framework mapping
+- [`../compliance/iso42001-scope-and-soa.md`](../compliance/iso42001-scope-and-soa.md) — the management-system side
+- [`ai-safety-checklist.md`](ai-safety-checklist.md) — the Phase 10 gate checklist

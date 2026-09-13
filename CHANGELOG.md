@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/compliance/eu-ai-act-control-matrix.yaml` — 17 obligations (Art. 5, Arts. 9–17 and 20,
+  Arts. 43/47/48/49, Art. 50, Arts. 51–55, Arts. 72–73, Annex IV) with owner, status, gate,
+  application date and gap; `adopter:` and `planned:#issue:` path prefixes; the compliance page
+  rewritten as its human reading (#24).
 - ADR-0093 — EU AI Act role (provider of the system + deployer of a third-party GPAI model),
   high-risk by default with a documented Art. 6(3) derogation path, the obligations each
   classification triggers, the application dates and the re-classification triggers (#23).

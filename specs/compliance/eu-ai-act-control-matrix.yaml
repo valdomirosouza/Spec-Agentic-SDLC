@@ -1,0 +1,357 @@
+# adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md
+# EU AI Act Control Matrix — Regulation (EU) 2024/1689 (ADR-0093, pattern from ADR-0072)
+#
+# Maps each obligation this system carries to the artefact that implements it, the artefact or
+# test that verifies it, the gate that enforces it, its owner, and the date from which it binds.
+# Same anti-rot and anti-fabrication rules as the OWASP matrices:
+#   - every implemented_by / verified_by path MUST exist, in this corpus or in the adopting
+#     repository (marked with the `adopter:` prefix — the validator checks corpus paths only);
+#   - a path not written yet carries `planned:#<issue>:<path>` and MUST name an OPEN issue; the
+#     validator fails once that issue is closed and the prefix has not been removed (anti-rot);
+#   - every `n/a` entry MUST carry a justification (Constitution IX);
+#   - a `prohibited` control is never "mitigated": a spec that would implement it is refused.
+#
+# Obligation text is PARAPHRASED. The Regulation is not reproduced here.
+# Article numbering and application dates verified 2026-09-13 (ADR-0093 §Grounding); dates were
+# amended after original publication and are re-verified at every review.
+
+standard: EU AI Act
+version: "Regulation (EU) 2024/1689"
+source: https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng
+classification_adr: ADR-0093
+role: ["provider of the AI system", "deployer of a third-party GPAI model"]
+tier: high-risk (Art. 6(2) with Annex III, by default; Art. 6(3) derogation requires a documented assessment)
+last_verified: 2026-09-13
+
+controls:
+  # --- Chapter II — Prohibited practices ---------------------------------------------------------
+  - id: ART-5
+    article: "Art. 5"
+    obligation: >-
+      The system implements none of the prohibited practices: subliminal or manipulative techniques
+      that distort behaviour, exploitation of vulnerabilities, social scoring, criminal-risk
+      prediction from profiling or personality alone, untargeted facial-image scraping, emotion
+      inference in the workplace or in education, biometric categorisation inferring protected
+      attributes, and real-time remote biometric identification in public spaces.
+    applies_from: "2025-02-02"
+    implemented_by:
+      - specs/ethics/ethical-ai-principles.md
+      - skills/ethics/ethical-ai-review.md
+      - docs/ai-governance/dual-use-registry.md
+    verified_by:
+      - docs/process/gates/phase-gates.yaml
+      - skills/ethics/ethical-ai-review.md
+    gate: ["Phase 10 — AI Safety & Agent Governance"]
+    owner: AI Governance Lead
+    status: prohibited
+    notes: >-
+      Not a risk to mitigate. A spec that would implement any listed practice is refused at the
+      Phase 10 gate and escalated, never approved with compensating controls.
+
+  # --- Chapter III Section 2 — Requirements for high-risk systems ---------------------------------
+  - id: ART-9
+    article: "Art. 9"
+    obligation: >-
+      A risk management system runs across the whole lifecycle: identify and analyse known and
+      foreseeable risks, estimate risks from reasonably foreseeable misuse, evaluate risks from
+      post-market data, and adopt targeted risk-management measures.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - docs/privacy/dpia/dpia-v1.md
+      - docs/privacy/dpia/dpia-agent-memory.md
+      - docs/ai-governance/nist-ai-rmf.md
+      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+    verified_by:
+      - docs/ai-governance/ai-safety-checklist.md
+      - docs/process/gates/phase-gates.yaml
+    gate: ["Phase 5 — Architecture", "Phase 10 — AI Safety & Agent Governance"]
+    owner: AI Governance Lead
+    status: partial
+    gap: >-
+      Risk identification is spread across DPIAs and threat models; a single AI risk register with
+      residual-risk acceptance is still missing.
+
+  - id: ART-10
+    article: "Art. 10"
+    obligation: >-
+      Training, validation and testing data sets are governed: relevant design choices, collection
+      and origin, preparation, assumptions, assessment of availability and suitability, examination
+      for bias, and identification of gaps or shortcomings.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - planned:#34:specs/privacy/training-data-governance.md
+      - planned:#33:templates/datasheet-template.md
+      - planned:#28:docs/data/data-governance-charter.md
+    verified_by:
+      - planned:#29:specs/data/data-quality.md
+      - planned:#31:docs/data/data-catalog.md
+    gate: ["Phase 2 — Discovery", "Phase 10 — AI Safety & Agent Governance"]
+    owner: DPO
+    status: partial
+    gap: >-
+      Datasheets exist as a template and one instance; bias examination of the retrieval corpus is
+      defined as a procedure but no examination has been recorded.
+
+  - id: ART-11
+    article: "Art. 11 + Annex IV"
+    obligation: >-
+      Technical documentation is drawn up before the system is placed on the market and kept
+      up to date, containing at minimum the elements of Annex IV.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - planned:#38:docs/ai-governance/system-card.md
+      - docs/ai-governance/model-card.md
+      - planned:#42:docs/ai-governance/model-registry.md
+    verified_by:
+      - specs/compliance/eu-ai-act-control-matrix.yaml
+      - docs/audit/big-four-evidence-map.md
+    gate: ["Phase 12 — Release Candidate"]
+    owner: AI Governance Lead
+    status: partial
+    gap: >-
+      The system card and model card exist; an Annex IV index mapping each required element to the
+      artefact that carries it is still to be written.
+
+  - id: ART-12
+    article: "Art. 12"
+    obligation: >-
+      The system technically allows automatic recording of events (logs) over its lifetime,
+      appropriate to its intended purpose.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - adopter:src/guardrails/audit_logger.py
+      - specs/observability/logging.md
+      - docs/ai/ai-observability-naming.md
+    verified_by:
+      - adopter:tests/unit/guardrails/test_audit_logger.py
+      - harness/code-check.yml
+    gate: ["Unit Tests", "Phase 11 — Observability"]
+    owner: SRE Lead
+    status: implemented
+    notes: Immutable audit trail per ADR-0026; agent span conventions per ADR-0044 and ADR-0045.
+
+  - id: ART-13
+    article: "Art. 13"
+    obligation: >-
+      The system is sufficiently transparent for deployers to interpret its output and use it
+      appropriately, and is accompanied by instructions for use.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - planned:#38:docs/ai-governance/system-card.md
+      - docs/ai-governance/autonomy-boundaries.md
+    verified_by:
+      - docs/ai-governance/ai-safety-checklist.md
+    gate: ["Phase 10 — AI Safety & Agent Governance"]
+    owner: AI Governance Lead
+    status: partial
+    gap: Instructions for use exist as a system card section, not as a deployer-facing document.
+
+  - id: ART-14
+    article: "Art. 14"
+    obligation: >-
+      The system is designed so that natural persons can effectively oversee it, including the
+      ability to decide not to use it, to override or reverse its output, and to intervene or stop
+      it, with awareness of automation bias.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - specs/ai/hitl-hotl.md
+      - docs/ai-governance/autonomy-boundaries.md
+      - specs/ai/autonomous-mode-levels.md
+      - adopter:src/agents/hitl_gateway.py
+    verified_by:
+      - .claude/hooks/high-risk-action-guard.py
+      - .claude/hooks/verify-high-risk-guard.py
+      - docs/process/gates/phase-gates.yaml
+    gate: ["Phase 10 — AI Safety & Agent Governance", "PreToolUse high-risk guard"]
+    owner: AI Governance Lead
+    status: implemented
+    notes: >-
+      Strongest control in the corpus: mandatory HITL gateway (ADR-0011), autonomy only via
+      governed feature flags (ADR-0015), escalation protocol (ADR-0034), and an executable
+      PreToolUse guard that denies push/merge/release/deploy for subagents.
+
+  - id: ART-15
+    article: "Art. 15"
+    obligation: >-
+      The system achieves an appropriate level of accuracy, robustness and cybersecurity,
+      consistently across its lifecycle, and is resilient to attempts to alter its use or
+      performance by exploiting its vulnerabilities.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - specs/ai/guardrails.md
+      - specs/security/owasp-genai-control-matrix.yaml
+      - docs/ai/eval-scorecard.md
+      - docs/ai/model-lifecycle.md
+    verified_by:
+      - adopter:tests/abuse_cases/
+      - adopter:tests/model_contract/
+      - planned:#41:specs/ai/red-team-program.md
+    gate: ["Phase 8 — Testing", "Phase 9 — DevSecOps", "Phase 10 — AI Safety & Agent Governance"]
+    owner: Security Lead
+    status: partial
+    gap: >-
+      Accuracy and robustness have thresholds (evaluator 0.75, groundedness 0.9); a declared
+      accuracy metric per intended purpose, as Art. 15 requires, is not yet stated.
+
+  # --- Chapter III Section 3 — Provider obligations -----------------------------------------------
+  - id: ART-16
+    article: "Art. 16"
+    obligation: >-
+      Providers ensure compliance with Section 2, indicate their identity, operate a quality
+      management system, keep documentation and logs, ensure conformity assessment, draw up the
+      declaration of conformity, affix the CE marking, register, and take corrective action.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - docs/process/WORKFLOW.md
+      - docs/sdlc/agentic-spec-driven-delivery.md
+    verified_by:
+      - docs/process/gates/phase-gates.yaml
+    gate: ["Phase 12 — Release Candidate"]
+    owner: AI Governance Lead
+    status: partial
+    gap: Conformity assessment, declaration, CE marking and registration are not yet evidenced.
+
+  - id: ART-17
+    article: "Art. 17"
+    obligation: >-
+      A quality management system is in place, documented as written policies and procedures,
+      covering regulatory compliance strategy, design and verification, testing, technical
+      specifications, data management, risk management, post-market monitoring, incident reporting,
+      record-keeping and accountability.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - docs/process/WORKFLOW.md
+      - memory/constitution.md
+      - docs/process/DEFINITION_OF_DONE.md
+      - docs/process/DEFINITION_OF_RELEASE.md
+      - specs/compliance/iso27001-change-management.md
+    verified_by:
+      - scripts/bash/check-corpus.sh
+      - docs/audit/big-four-evidence-map.md
+    gate: ["Phase 7 — Code Review", "Phase 12 — Release Candidate"]
+    owner: Tech Lead
+    status: implemented
+    notes: >-
+      The 15-phase lifecycle with nine human gates (ADR-0058) is the quality management system;
+      docs/compliance/iso42001-scope-and-soa.md maps it to a certifiable management system.
+
+  - id: ART-20
+    article: "Art. 20"
+    obligation: >-
+      Providers that consider a system placed on the market not to be in conformity take the
+      corrective actions necessary, and inform distributors, deployers and authorities.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - planned:#40:docs/runbooks/RB-AI-001-ai-incident.md
+      - docs/ai/model-lifecycle.md
+    verified_by:
+      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+    gate: ["Phase 13 — Production"]
+    owner: SRE Lead
+    status: partial
+    gap: Notification list and channel for distributors and authorities are not yet named.
+
+  # --- Conformity, marking, registration ---------------------------------------------------------
+  - id: ART-43
+    article: "Art. 43"
+    obligation: The applicable conformity assessment procedure is carried out before placing on the market.
+    applies_from: "2027-12-02"
+    implemented_by: []
+    verified_by: []
+    gate: []
+    owner: AI Governance Lead
+    status: n/a
+    justification: >-
+      n/a while the system is not placed on the Union market or put into service in the Union.
+      Becomes applicable on the first Union deployment; the adopter records the chosen procedure
+      (internal control per Annex VI, or notified-body involvement) as an amendment to ADR-0093.
+
+  - id: ART-47-48-49
+    article: "Arts. 47, 48, 49"
+    obligation: EU declaration of conformity drawn up, CE marking affixed, system registered in the EU database.
+    applies_from: "2027-12-02"
+    implemented_by: []
+    verified_by: []
+    gate: []
+    owner: AI Governance Lead
+    status: n/a
+    justification: Same condition as ART-43; dependent on placing on the Union market.
+
+  # --- Chapter IV — Transparency ------------------------------------------------------------------
+  - id: ART-50
+    article: "Art. 50"
+    obligation: >-
+      People are informed they are interacting with an AI system unless obvious; synthetic content
+      is machine-readably marked as artificially generated; deepfakes and AI-generated public-interest
+      text are disclosed; emotion recognition and biometric categorisation are disclosed to those exposed.
+    applies_from: "2026-08-02"
+    implemented_by:
+      - planned:#38:docs/ai-governance/system-card.md
+    verified_by:
+      - docs/ai-governance/ai-safety-checklist.md
+    gate: ["Phase 10 — AI Safety & Agent Governance"]
+    owner: AI Governance Lead
+    status: partial
+    gap: >-
+      The obligation is assumed to apply (ADR-0093 §2.5) but no user-facing disclosure requirement
+      is written into the spec template, and no content-marking decision is recorded.
+
+  # --- Chapter V — General-purpose AI models ------------------------------------------------------
+  - id: ART-51-55
+    article: "Arts. 51, 53, 55"
+    obligation: >-
+      GPAI model providers draw up technical documentation, supply information to downstream
+      providers, comply with copyright, and publish a training-content summary; models with
+      systemic risk additionally perform model evaluation, adversarial testing, systemic-risk
+      mitigation and incident tracking.
+    applies_from: "2025-08-02"
+    implemented_by:
+      - docs/dependency-manifest.yaml
+      - planned:#42:docs/ai-governance/model-registry.md
+    verified_by:
+      - docs/ai-governance/model-card.md
+    gate: ["Phase 12 — Release Candidate"]
+    owner: AI Governance Lead
+    status: partial
+    role_note: >-
+      The organisation is the model's DEPLOYER, not its provider (ADR-0093 §1). The duty here is to
+      obtain, retain and record the provider's documentation and systemic-risk determination, not
+      to produce them.
+    gap: The provider's published determination and training-content summary are not yet retained as evidence.
+
+  # --- Chapter IX — Post-market monitoring and incidents ------------------------------------------
+  - id: ART-72
+    article: "Art. 72"
+    obligation: >-
+      A post-market monitoring system proportionate to the risks actively collects and analyses
+      data on performance across the lifetime of the system, against a documented plan.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+      - docs/ai/eval-scorecard.md
+    verified_by:
+      - docs/sre/slo/slo.yaml
+      - docs/ai/model-lifecycle.md
+    gate: ["Phase 11 — Observability", "Phase 14 — Post-Deploy Learning"]
+    owner: SRE Lead
+    status: partial
+    gap: The plan exists; no monitoring cycle has been executed and recorded.
+
+  - id: ART-73
+    article: "Art. 73"
+    obligation: >-
+      Serious incidents are reported to the market surveillance authority of the Member State
+      concerned, immediately after the causal link is established and no later than the deadlines
+      the Article sets, with an initial report where the deadline cannot otherwise be met.
+    applies_from: "2027-12-02"
+    implemented_by:
+      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+      - planned:#40:docs/runbooks/RB-AI-001-ai-incident.md
+    verified_by:
+      - docs/postmortems/POSTMORTEM-TEMPLATE.md
+    gate: ["Phase 13 — Production"]
+    owner: AI Governance Lead
+    status: partial
+    gap: >-
+      Procedure and deadlines are documented; the competent authority per Member State and the
+      reporting channel are adopter-specific and not yet filled in.
