@@ -21,8 +21,8 @@ Cutting release **2.11.0** created the GitHub Release + tag successfully, but th
 For a **template** repo (or any fork that doesn't publish images), this is the normal state —
 yet every release shows a **red job**, which is misleading: the release itself succeeded; only
 the optional image publish couldn't run. We want the absence of a registry to be a _graceful
-skip with an explanation_, not a failure. (Actually configuring the registry remains tracked in issue
-#96 — this RFC removes the false-failure symptom, it does not publish images.)
+skip with an explanation_, not a failure. (Actually configuring the registry remains tracked in issue #96 —
+this RFC removes the false-failure symptom, it does not publish images.)
 
 ## 2. Proposed Change
 
