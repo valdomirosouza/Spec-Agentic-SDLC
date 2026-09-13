@@ -1,6 +1,6 @@
 # Discovery — FEAT-001 HTTP Golden Signals for the API Gateway
 
-> **Phase:** 2 (Discovery) · **Issue:** #357 · **Spec:** `specs/features/FEAT-001/feature-spec.md` (SPEC-FEAT-001)
+> **Phase:** 2 (Discovery) · **Issue:** #357 · **Spec:** `specs/features/SPEC-FEAT-001-http-golden-signals/spec.md` (SPEC-FEAT-001)
 > **Owner:** Tech Lead · **Date:** 2026-09-12 · **Status:** approved (back-filled worked example, W13-T7)
 
 ## Problem

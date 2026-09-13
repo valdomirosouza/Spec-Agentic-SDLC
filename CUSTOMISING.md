@@ -278,7 +278,7 @@ The 13-phase Agentic SDLC (ADR-0052) is designed for progressive adoption. Start
 | Weekly Grooming Ceremony                   | 60 min; DoR checklist enforced                     |
 | `docs/process/DEFINITION_OF_READY.md`      | DoR enforced at Grooming                           |
 | Spec-as-PR for `discovery.md` and `nfr.md` | Phase 2 discovery workflow                         |
-| Feature spec template                      | `specs/features/FEAT-{id}/feature-spec.md`         |
+| Feature spec template                      | `specs/features/<SPEC-ID>-<slug>/spec.md`         |
 | `docs/process/HITL-GOVERNANCE.md`          | Tier 1 (Spec-as-PR) governance                     |
 | Release retrospective                      | Per-release; 60–90 min                             |
 | `docs/process/DEFINITION_OF_RELEASE.md`    | DoR-Release checklist before every release         |

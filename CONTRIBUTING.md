@@ -19,7 +19,7 @@ Phase 0:  Intake          → Problem statement, value hypothesis, risk class, o
 Phase 1:  Conception      → GitHub Issue (feature_request.md template)
 Phase 2:  Discovery       → Agent-generated discovery.md + nfr.md (Spec-as-PR)
 Phase 3:  Grooming        → DoR checklist; Issue → status: ready
-Phase 4:  Specification   → specs/features/FEAT-{id}/feature-spec.md (Spec-as-PR)
+Phase 4:  Specification   → specs/features/<SPEC-ID>-<slug>/spec.md (Spec-as-PR)
 Phase 5:  Architecture    → ADR filed if new architectural decision required
 Phase 6:  Development     → Branch + implementation against spec
 Phase 7:  Code Review     → PR opened; DoD checklist; CI gates

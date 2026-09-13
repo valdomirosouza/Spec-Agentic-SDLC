@@ -14,7 +14,7 @@ You propose ADR options + consequences; a human chooses and owns the decision.
 
 ## Inputs — validate first
 
-- Approved `feature-spec.md`. If missing/unapproved → `blocked`.
+- Approved `spec.md` (`specs/features/<SPEC-ID>-<slug>/`). If missing/unapproved → `blocked`.
 - Determine from the spec/risk class whether an ADR and/or threat model are required.
 
 ## Steps

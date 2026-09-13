@@ -14,7 +14,7 @@ You generate code/tests/migrations/docs; a human reviews, adapts, commits, and o
 
 ## Inputs — validate first
 
-- Approved `feature-spec.md` and (if required) accepted ADR. If missing → `blocked`.
+- Approved `spec.md` (`specs/features/<SPEC-ID>-<slug>/`) and (if required) accepted ADR. If missing → `blocked`.
 - No code without a referenced spec (SDD, CLAUDE.md §2 / §3.4).
 
 ## Steps

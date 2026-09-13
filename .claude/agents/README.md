@@ -20,7 +20,7 @@ and emits a structured **handoff** (see
 | `asdd-phase-1-conception`     | 1     | GitHub Issue (feature_request)                                                                                                          |
 | `asdd-phase-2-discovery`      | 2     | discovery.md + nfr.md (Spec-as-PR)                                                                                                      |
 | `asdd-phase-3-grooming`       | 3     | DoR checklist; Issue → ready                                                                                                            |
-| `asdd-phase-4-specification`  | 4     | feature-spec.md (Spec-as-PR)                                                                                                            |
+| `asdd-phase-4-specification`  | 4     | spec.md (Spec-as-PR)                                                                                                                    |
 | `asdd-phase-5-architecture`   | 5     | ADR (if needed) + threat model                                                                                                          |
 | `asdd-phase-6-development`    | 6     | Implementation branch, lint + unit tests                                                                                                |
 | `asdd-phase-7-code-review`    | 7     | PR, DoD, CI gates (human approval)                                                                                                      |
