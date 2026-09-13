@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/data/data-lineage.md` — the forward (impact) and backward (provenance) questions, dataset
+  granularity with field level for L1/L2 only, the `classification_effect` of each transform,
+  three capture points with trace reconciliation, the data-subject-request walk, and decay
+  controls (#32).
 - `docs/data/business-glossary.md` (business meaning, separate from the technical glossary, with a
   "not to be confused with" field on every term) and `docs/data/data-catalog.md` (governance index:
   owner, steward, custodian, classification, contract, quality, model use) (#31).

@@ -142,7 +142,7 @@ A quality violation at `critical`, or a `major` violation persisting beyond one 
 incident**. It follows the ordinary incident path with three additions:
 
 1. **Blast radius first.** Which consumers read the bad data, and did any decision or model
-   consume it? Lineage (`specs/data/data-lineage.md`, #32) answers this; until it exists, the
+   consume it? [`data-lineage.md`](data-lineage.md) answers this; until edges are recorded, the
    consumer list in the contract is the fallback.
 2. **Correct, then backfill, then notify** — in that order. Notifying before correcting invites
    consumers to build workarounds that outlive the incident.
@@ -169,7 +169,7 @@ check this repository cannot execute.
 | - | --------------------------------------------------------------------- | ----------- | ------------------- |
 | 1 | First rule set for the datasets in the catalog                       | Data owners | Next quarterly cycle |
 | 2 | Reference source for any dataset claiming an accuracy target         | Data owners | Before claiming it   |
-| 3 | Lineage available for blast-radius analysis (#32)                    | Tech Lead   | With #32             |
+| 3 | Lineage edges recorded for the datasets in the catalog               | Data stewards | Next quarterly cycle |
 
 ## Related
 
