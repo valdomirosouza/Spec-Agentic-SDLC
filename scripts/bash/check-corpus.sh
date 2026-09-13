@@ -322,6 +322,16 @@ fi
 nrep=$(ls docs/sre/corpus-metrics-*.md 2>/dev/null | wc -l | tr -d ' ')
 [ "${nrep:-0}" -ge 1 ] && result "the corpus carries at least one measurement of itself" ok "$nrep report(s)" || result "the corpus carries at least one measurement of itself" fail
 
+# Coverage of the mutation harness itself. It proved 14 of 47 named checks and nothing asked about
+# the other 33, so check 48 could arrive with no proof at all and the build would stay green — the
+# round-5 finding one level up (R6-T3). Outside the $SMOKE block on purpose: it is pure parsing,
+# and the harness runs the verifier with --no-smoke, so a slow-path check would be invisible to it.
+if out=$(python3 scripts/python/mutation_coverage.py --check --quiet 2>&1); then
+    result "mutation coverage has not fallen" ok "$(python3 scripts/python/mutation_coverage.py --check 2>&1 | head -1)"
+else
+    result "mutation coverage has not fallen" fail; printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
 say "C13 spec registry"
 if out=$(python3 scripts/python/build_spec_registry.py --check --quiet 2>&1); then
     result "spec registry matches disk" ok
@@ -375,6 +385,7 @@ if $SMOKE; then
     # Slow (it re-runs check-corpus once per mutation), so it is behind --no-smoke like the rest.
     if out=$(python3 tests/scripts/test_check_corpus.py 2>&1); then result "tests/scripts/test_check_corpus.py (mutation)" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_corpus.py (mutation)" fail "a check stayed green under its own defect"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -8 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+    if out=$(python3 tests/scripts/test_mutation_coverage.py 2>&1); then result "tests/scripts/test_mutation_coverage.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_mutation_coverage.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_corpus_measure_workflow.py 2>&1); then result "tests/scripts/test_corpus_measure_workflow.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_measure_workflow.py" fail "the scheduled job is mis-wired"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_build_spec_registry.py 2>&1); then result "tests/scripts/test_build_spec_registry.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_build_spec_registry.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi

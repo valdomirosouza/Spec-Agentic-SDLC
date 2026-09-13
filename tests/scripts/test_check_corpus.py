@@ -153,6 +153,17 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation(".github/workflows/corpus-measure.yml", "gh pr create", "gh pr view"),
             "measurement is scheduled")
 
+    def test_removing_a_proof_from_this_file_is_caught(self):
+        """R6-T3. The harness proves checks can fail; nothing proved the harness keeps doing so.
+        Pointing an entry at a check that does not exist must be as loud as deleting a test."""
+        self.assert_mutation_is_caught(
+            # Anchored on the call, not the bare name: the first `"adr-index"` in this file is the
+            # literal on this very line, so a looser target mutated the mutation into a no-op and
+            # the harness reported a pass. Self-reference, caught by the run failing to fail.
+            Mutation(__file__.replace(HERE + os.sep, ""),
+                     '\n            "adr-index")', '\n            "adr-index-gone")'),
+            "mutation coverage has not fallen")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",
