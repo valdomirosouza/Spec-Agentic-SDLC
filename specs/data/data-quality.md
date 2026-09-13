@@ -174,6 +174,6 @@ check this repository cannot execute.
 ## Related
 
 - `docs/data/data-governance-charter.md` — roles, council, exceptions
-- `specs/data/data-contracts.md` (#30) — where a dataset's expectations are promised
+- [`data-contracts.md`](data-contracts.md) — where a dataset's expectations are promised
 - `docs/data/data-catalog.md` (#31) — where rules and SLOs are registered per dataset
 - [`../privacy/pii-inventory.md`](../privacy/pii-inventory.md) — classification that constrains violation samples

@@ -5,7 +5,7 @@
 > **Status:** Active · **Version:** 1.0 · **Approved:** 2026-09-13
 > **Owner:** Tech Lead · **Co-owner:** DPO
 > **Related:** `docs/data/data-catalog.md` (#31) · `docs/data/business-glossary.md` (#31) ·
-> [`../../specs/data/data-quality.md`](../../specs/data/data-quality.md) · `specs/data/data-contracts.md` (#30) ·
+> [`../../specs/data/data-quality.md`](../../specs/data/data-quality.md) · [`../../specs/data/data-contracts.md`](../../specs/data/data-contracts.md) ·
 > [`../../memory/constitution.md`](../../memory/constitution.md) Art. III and VII
 
 ## 1. Why this charter exists
@@ -44,7 +44,7 @@ field with a quality rule — the privacy rule is the stricter one and wins.
    other people's data.
 3. **A consumer-visible dataset is a product with a contract.** Its schema, semantics, quality
    expectations and deprecation path are promised, versioned and breakable only by process
-   (`specs/data/data-contracts.md`, #30).
+   ([`../../specs/data/data-contracts.md`](../../specs/data/data-contracts.md)).
 4. **Quality is declared before it is measured, and measured before it is trusted.** An undeclared
    quality expectation is an assumption (Constitution IX).
 5. **Classification travels with the data.** A field's L1–L4 class, and the obligations that follow,

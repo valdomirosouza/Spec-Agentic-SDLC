@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/data/data-contracts.md` and `templates/data-contract-template.md` — the contract around
+  the schema (parties, semantics, classification, quality, service level, lifecycle, lineage), the
+  five-step breaking-change process with a minimum coexistence window, and the rule that an agent
+  reading a dataset is a consumer (#30).
 - `specs/data/data-quality.md` — the six dimensions with one operational definition each, the rule
   shape, severity and response, data SLOs in the same form as the service SLOs, observability with
   masked violation samples, the five points where quality is checked, and data incidents with a
