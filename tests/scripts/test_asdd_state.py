@@ -105,6 +105,56 @@ class AsddState(unittest.TestCase):
         rc, _, err = self.append(0, force_order=True)
         self.assertEqual(rc, 1); self.assertIn("blocked", err)
 
+    def _make_v1(self, feature="FEAT-42"):
+        """A v1 state with two phases each producing a `spec.md` — the collision v1 lost to."""
+        import json as _j
+        self.init(feature)
+        self.append(4, artifacts=["specs/x/spec.md"], feature=feature)
+        self.append(5, artifacts=["specs/y/spec.md"], feature=feature)
+        path = os.path.join(self.root, ".agent", "delivery", feature, "state.json")
+        st = _j.load(open(path, encoding="utf-8"))
+        st["schema_version"] = "asdd_state_v1"
+        st["artifacts"] = {"spec.md": "specs/y/spec.md"}   # what v1 actually stored
+        open(path, "w", encoding="utf-8").write(_j.dumps(st))
+        return path
+
+    def test_migrate_keeps_every_handoff_and_reindexes_by_path(self):
+        """R6-T4. The old advice was `init --force`, which writes over handoffs, artifacts and the
+        current phase. That list is the traceability Constitution VII reads."""
+        import json as _j
+        path = self._make_v1()
+        before = _j.load(open(path, encoding="utf-8"))
+        rc, out, err = self.run_cmd("migrate", "--feature", "FEAT-42")
+        self.assertEqual(rc, 0, out + err)
+        after = _j.load(open(path, encoding="utf-8"))
+        self.assertEqual(after["schema_version"], "asdd_state_v2")
+        self.assertEqual(len(after["handoffs"]), len(before["handoffs"]),
+                         "migration must not cost a single handoff")
+        self.assertEqual(after["current_phase"], before["current_phase"])
+        self.assertEqual(set(after["artifacts"]), {"specs/x/spec.md", "specs/y/spec.md"},
+                         "the artefact v1 lost to the basename collision comes back")
+        self.assertEqual(after["artifacts"]["specs/x/spec.md"], 4)
+        self.assertEqual(self.run_cmd("validate", "--feature", "FEAT-42")[0], 0)
+
+    def test_migrate_refuses_rather_than_guessing_a_phase(self):
+        """An artefact the handoffs never name has no phase to attribute. Refusing beats inventing
+        one, and beats dropping it quietly."""
+        import json as _j
+        path = self._make_v1()
+        st = _j.load(open(path, encoding="utf-8"))
+        st["artifacts"]["stray.md"] = "docs/stray.md"
+        open(path, "w", encoding="utf-8").write(_j.dumps(st))
+        rc, _, err = self.run_cmd("migrate", "--feature", "FEAT-42")
+        self.assertEqual(rc, 1)
+        self.assertIn("docs/stray.md", err)
+
+    def test_migrate_is_idempotent(self):
+        self._make_v1()
+        self.assertEqual(self.run_cmd("migrate", "--feature", "FEAT-42")[0], 0)
+        rc, out, _ = self.run_cmd("migrate", "--feature", "FEAT-42")
+        self.assertEqual(rc, 0)
+        self.assertIn("nothing to migrate", out)
+
     def test_a_v1_state_is_refused_not_rendered_inverted(self):
         """R5-T6. The artefact map flipped from {basename: path} to {path: phase} and the version
         stayed put, so a v1 file rendered backwards and validated clean."""
@@ -118,6 +168,8 @@ class AsddState(unittest.TestCase):
         rc, _, err = self.run_cmd("validate", "--feature", "FEAT-42")
         self.assertEqual(rc, 1)
         self.assertIn("asdd_state_v1", err)
+        self.assertIn("migrate", err, "the error must point at the conversion, not at --force")
+        self.assertNotIn("--force", err, "telling an adopter to reset destroys the handoff trail")
 
     def test_a_forward_jump_is_allowed_because_tiers_skip_phases(self):
         """Right-sizing (ADR-0064) legitimately skips phases, so 0 → 14 must stay possible.

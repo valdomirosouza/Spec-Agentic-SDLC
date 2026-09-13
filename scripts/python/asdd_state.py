@@ -93,8 +93,8 @@ def validate_state(s):
         raise SchemaError(
             f"this state was written by {got}, whose `artifacts` map was {{basename: path}}. "
             f"{SCHEMA_VERSION} keys it by {{path: phase}}, so the old file renders inverted and "
-            f"would validate anyway. Re-run: asdd_state.py init --feature "
-            f"{s.get('feature_id', '<ID>')} --title ... --force")
+            f"would validate anyway. Convert it: asdd_state.py migrate --feature "
+            f"{s.get('feature_id', '<ID>')}")
     if got != SCHEMA_VERSION:
         raise SchemaError(f"schema_version must be {SCHEMA_VERSION!r}, got {got!r}")
     check_feature(s.get("feature_id"))
@@ -202,6 +202,68 @@ def cmd_append(a):
     return 0
 
 
+def cmd_migrate(a):
+    """Convert a v1 state to v2 without losing anything.
+
+    The previous advice was `init --force`, which writes over `handoffs`, `artifacts` and
+    `current_phase` — and the handoff list is what Constitution VII reads as traceability and what
+    the final report consumes. Telling an adopter mid-delivery to destroy it was the more damaging
+    of the two available outcomes, and the conversion was mechanical all along: every v1 handoff
+    already carries its phase and the artefacts it produced, so {path: phase} is recoverable by
+    walking the list (R6-T4)."""
+    p = state_path(check_feature(a.feature))
+    if not os.path.isfile(p):
+        print(f"no delivery state for {a.feature}: {p}", file=sys.stderr)
+        return 1
+    with open(p, encoding="utf-8") as fh:
+        s = json.load(fh)
+    got = s.get("schema_version")
+    if got == SCHEMA_VERSION:
+        print(f"{a.feature}: already {SCHEMA_VERSION}; nothing to migrate")
+        return 0
+    if got not in LEGACY_VERSIONS:
+        print(f"cannot migrate schema_version {got!r}: not a known earlier version", file=sys.stderr)
+        return 1
+
+    handoffs = s.get("handoffs")
+    if not isinstance(handoffs, list):
+        print("cannot migrate: `handoffs` is missing or not a list, so no phase can be "
+              "attributed to any artefact", file=sys.stderr)
+        return 1
+
+    rebuilt = {}
+    for h in handoffs:
+        phase = h.get("phase")
+        if not isinstance(phase, int):
+            print(f"cannot migrate: a handoff carries no integer phase ({phase!r}); refusing to "
+                  f"guess which phase produced its artefacts", file=sys.stderr)
+            return 1
+        for art in h.get("artifacts") or []:
+            rebuilt[art] = phase
+
+    # Cross-check against what v1 recorded. v1 lost artefacts to basename collisions, so the old
+    # map can hold FEWER paths than the handoffs do; it must never hold one they do not.
+    old_paths = set()
+    if isinstance(s.get("artifacts"), dict):
+        old_paths = {v for v in s["artifacts"].values() if isinstance(v, str)}
+    orphans = sorted(old_paths - set(rebuilt))
+    if orphans:
+        print("cannot migrate: these artefacts are recorded in the v1 map but named by no handoff, "
+              "so no phase can be attributed to them without guessing:", file=sys.stderr)
+        for o in orphans:
+            print(f"  {o}", file=sys.stderr)
+        return 1
+
+    recovered = len(rebuilt) - len(old_paths)
+    s["artifacts"] = rebuilt
+    s["schema_version"] = SCHEMA_VERSION
+    save(s)
+    print(f"{a.feature}: migrated {got} → {SCHEMA_VERSION}; "
+          f"{len(handoffs)} handoff(s) kept, {len(rebuilt)} artefact(s) keyed by path"
+          + (f" ({recovered} recovered that the old basename map had lost)" if recovered > 0 else ""))
+    return 0
+
+
 def cmd_show(a):
     s = load(a.feature)
     if a.json:
@@ -260,6 +322,10 @@ def main(argv=None):
     h.add_argument("--force-unblock", action="store_true", dest="force_unblock",
                    help="append even though the pipeline is blocked")
     h.set_defaults(fn=cmd_append)
+
+    g = sub.add_parser("migrate", help="convert an earlier schema version in place, losing nothing")
+    g.add_argument("--feature", required=True)
+    g.set_defaults(fn=cmd_migrate)
 
     s = sub.add_parser("show", help="print the delivery state")
     s.add_argument("--feature", required=True)

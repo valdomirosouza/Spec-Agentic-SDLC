@@ -76,6 +76,11 @@ The orchestrator maintains one shared context per feature at
 was the other way round, keyed by basename: two phases each producing a `spec.md` left only the
 later one, and the final report reads this map. The version was bumped when the meaning changed,
 so a `v1` file is refused with an explanation instead of being rendered inverted and called valid.
+Convert it with `asdd_state.py migrate --feature <ID>`, which rebuilds the map by walking the
+handoffs and keeps every one of them. The first version of that message said to re-run `init
+--force`, which writes over `handoffs`, `artifacts` and `current_phase` — it told an adopter
+mid-delivery to destroy the traceability Article VII reads, when the conversion was mechanical
+all along. Migration refuses rather than guessing when an artefact is named by no handoff.
 
 Two guards protect the append, each with its own flag. `--force-order` records a phase that does
 not advance past the furthest already reached; `--force-unblock` appends while the pipeline is
