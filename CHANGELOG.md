@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/corpus_metrics.py` with 9 tests and the first measurement the corpus has taken
+  of itself, `docs/sre/corpus-metrics-2026-09-13.md`: 59 commits over 2 active days, 9.3% CI
+  failure rate, 23.2:1 prose-to-code. Every number names its method and §4 lists the five metrics
+  this repository cannot produce, with the reason (#52).
 - First red-team exercise executed (RT-2026-09-13, #51): 12 attempts against the two live hooks
   and `vcs.sh`. Found and fixed **RT-04 (High)** — `$(which git) push` evaded the high-risk guard
   because command substitution hid the binary name from the pattern; the guard now normalises that

@@ -29,6 +29,8 @@
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
 #  C11 also runs the red-team exercise suite, so a demonstrated bypass cannot reopen (ADR-0050)
+#  C14 the corpus has measured itself at least once (docs/sre/corpus-metrics-*.md) and the
+#      measurement script states a method for every number and lists what it cannot measure
 #  C13 docs/governance/spec-registry.{json,md} regenerate byte-identically from the specs on disk
 #      (scripts/python/build_spec_registry.py --check) — the drift that left it at 50 of 58
 # Exit code = number of failing checks (0 = green).
@@ -216,6 +218,13 @@ assert d['tracked_paths'], 'tracked_paths'
 print(f"{d['repository']} {d['commit']} ({d['release']}), review due {d['next_review_due']}")
 PY3
 ); then result "spec-kit-upstream.json" ok "$out"; else result "spec-kit-upstream.json" fail "$out"; fi
+
+say "C14 corpus measurement"
+if $SMOKE; then
+    if out=$(python3 tests/scripts/test_corpus_metrics.py 2>&1); then result "tests/scripts/test_corpus_metrics.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_metrics.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+fi
+nrep=$(ls docs/sre/corpus-metrics-*.md 2>/dev/null | wc -l | tr -d ' ')
+[ "${nrep:-0}" -ge 1 ] && result "the corpus carries at least one measurement of itself" ok "$nrep report(s)" || result "the corpus carries at least one measurement of itself" fail
 
 say "C13 spec registry"
 if out=$(python3 scripts/python/build_spec_registry.py --check --quiet 2>&1); then
