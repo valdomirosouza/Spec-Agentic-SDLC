@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- First monitoring cycle executed, `docs/sre/monitoring/2026-09-13-first-cycle.md`; the plan gains
+  a fifth signal family (corpus integrity) because in a repository with no runtime the other four
+  are unobservable and four empty rows are not a monitoring plan (#54).
 - `scripts/python/check_data_quality.py` — 14 executable rules across all six dimensions over the
   corpus's own datasets (spec registry, ADR index, control matrices, adopter-path inventory), with
   11 tests, wired as C15: critical blocks, major is reported on every run (#53).

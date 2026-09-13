@@ -42,7 +42,10 @@ serious incidents to be reported once a causal link is established.
 
 ## 2. What is monitored
 
-Four families, each with a source that already exists in the corpus.
+Five families, each with a source that already exists in the corpus. The fifth was added after the
+first cycle (#54): in a repository with no runtime, the first four are unobservable, and a plan
+that records four empty rows is not a monitoring plan. Corpus integrity is what such a repository
+can actually watch.
 
 | Family                        | Signals                                                                                                    | Source                                                    | Review |
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------ |
@@ -50,6 +53,7 @@ Four families, each with a source that already exists in the corpus.
 | **Guardrail effectiveness**   | Prompt-injection blocks, output-sanitiser interventions, PII filter hits, tool calls denied by the registry | `specs/ai/guardrails.md`, `adopter:src/guardrails/`         | Weekly |
 | **Human-oversight health**    | Approval latency, expiry rate, override rate, share of approvals with no comment, reopened decisions        | HITL gateway records, ADR-0086                              | Monthly |
 | **Model conformity**          | Model contract pass rate, drift indicators, provider-announced model changes, deprecation notices           | `docs/ai/model-lifecycle.md`, `docs/dependency-manifest.yaml` | On change, and monthly |
+| **Corpus integrity** _(added 2026-09-13, #54)_ | Check results, drift in generated artefacts, CI failure rate, data-quality violations | `scripts/bash/check-corpus.sh`, `scripts/python/corpus_metrics.py` | Weekly |
 
 **Two of these are leading indicators and must not be dropped when metrics are pruned:** the
 override rate (humans disagreeing with the agent more often is the earliest sign of behavioural
@@ -153,7 +157,7 @@ The last one is the most common and the easiest to miss.
 | # | Item                                                                     | Owner              | Resolve by            |
 | - | ------------------------------------------------------------------------ | ------------------ | --------------------- |
 | 1 | Market surveillance authority and reporting channel per Member State     | Adopting organisation | First Union deployment |
-| 2 | First monthly monitoring note (the plan has never been executed)         | SRE Lead           | Next monthly cycle    |
+| 2 | ~~First monthly monitoring note~~ — done 2026-09-13, [`../../docs/sre/monitoring/2026-09-13-first-cycle.md`](../../docs/sre/monitoring/2026-09-13-first-cycle.md) (#54) | SRE Lead | ✅ |
 | 3 | Drift thresholds for the behavioural anomaly metric (ADR-0049)           | AI Governance Lead | Next quarterly review |
 
 ## Related
