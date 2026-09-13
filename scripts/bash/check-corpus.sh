@@ -26,6 +26,8 @@
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
+#  C13 docs/governance/spec-registry.{json,md} regenerate byte-identically from the specs on disk
+#      (scripts/python/build_spec_registry.py --check) — the drift that left it at 50 of 58
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -197,6 +199,16 @@ assert d['tracked_paths'], 'tracked_paths'
 print(f"{d['repository']} {d['commit']} ({d['release']}), review due {d['next_review_due']}")
 PY3
 ); then result "spec-kit-upstream.json" ok "$out"; else result "spec-kit-upstream.json" fail "$out"; fi
+
+say "C13 spec registry"
+if out=$(python3 scripts/python/build_spec_registry.py --check --quiet 2>&1); then
+    result "spec registry matches disk" ok
+else
+    result "spec registry matches disk" fail; printf '%s\n' "$out" | head -10 | sed 's/^/      /'
+fi
+if $SMOKE; then
+    if out=$(python3 tests/scripts/test_build_spec_registry.py 2>&1); then result "tests/scripts/test_build_spec_registry.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_build_spec_registry.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+fi
 
 say "C12 control matrices"
 if out=$(python3 scripts/python/check_control_matrix.py --quiet 2>&1); then

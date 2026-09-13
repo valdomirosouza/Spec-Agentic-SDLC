@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/build_spec_registry.py` with 10 tests, wired as `check-corpus.sh` C13 — the spec
+  registry had drifted to 50 of 58 entries because its generator lived in the product repository
+  and no check compared it to disk; it is now regenerated here and byte-compared on every push (#47).
 - `scripts/python/asdd_state.py` and `scripts/bash/vcs.sh` — the two scripts the 16 delivery agents
   call and that did not exist; 12 + 13 tests, two new C8 invariants (#44, #45).
 - ADR-0095 — one delivery entrypoint, and the single named version-control exception agents may

@@ -51,7 +51,7 @@ on every spec and validated in CI:
    (`check_open_questions.py`, the spec-reference PR gate, the registry builder) treat only
    `approved` and `implemented` as binding.
 4. **Frontmatter schema** (`specs/spec-frontmatter.schema.json`, validated by
-   `scripts/governance/build_spec_registry.py`):
+   `scripts/python/build_spec_registry.py`):
    `id`, `kind`, `status`, `owner`, `issue`, `governing_adrs[]`, `implemented_by[]`,
    `verified_by[]`, `related_specs[]`, `last_updated`, plus the template's existing
    `source`, `new_adrs_required`, `slo_ref`. `implemented_by` / `verified_by` are the code and

@@ -66,7 +66,7 @@ Examples:
 ## Registry (generated)
 
 `docs/governance/spec-registry.md` is **generated** by `make spec-registry`
-(`scripts/governance/build_spec_registry.py`) from the frontmatter, the `Spec:` docstring
+(`scripts/python/build_spec_registry.py`) from the frontmatter, the `Spec:` docstring
 references in `src/` and `tests/`, the `@pytest.mark.requirement(...)` markers and
 `services.yaml` `spec:` fields. It replaces the hand-maintained ownership table that used to live
 here (11 rows, all "Approved", none verified). CI fails when the registry is stale or a rule
