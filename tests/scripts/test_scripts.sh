@@ -187,6 +187,17 @@ out=$(bash "$V" --dry-run issue delete 1 2>&1 || true)
 assert_contains "issue delete is refused (traceability)" "$out" "REFUSED"
 out=$(bash "$V" --dry-run issue reopen 1 2>&1 || true)
 assert_contains "an unlisted verb is rejected, not forwarded" "$out" "unsupported"
+# R4-T2: these exited 1 with no output at all — guard_pr_verb ended on a failing test under set -e,
+# so an unsupported pr verb aborted before the die() that names it.
+for v in close ready; do
+    out=$(bash "$V" --dry-run pr "$v" 5 2>&1 || true)
+    assert_contains "pr $v explains itself instead of failing silently" "$out" "unsupported: pr $v"
+done
+out=$(bash "$V" --dry-run pr merge 5 2>&1 || true)
+assert_contains "pr merge is still refused, not merely unsupported" "$out" "REFUSED"
+# The Phase 7 command is only reachable from a feature branch, which Phase 6 must create through
+# this script rather than with raw git.
+assert_contains "Phase 6 creates its branch through vcs.sh" "$(cat "$HERE/.claude/agents/asdd-phase-6-development.md")" "vcs.sh branch create"
 out=$(bash "$V" --dry-run wat something 2>&1 || true)
 assert_contains "an unlisted noun is rejected" "$out" "unsupported noun"
 n_ref=$(grep -c "^    refuse \|refuse \"" "$V" || true)

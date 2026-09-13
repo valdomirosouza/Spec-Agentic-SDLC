@@ -47,9 +47,13 @@ default_branch() {
 
 # ---- refusal checks -----------------------------------------------------------------------------
 guard_pr_verb() {
+    # `merge` is refused. Everything else falls through to the allow-list below, which names what
+    # is supported. The earlier form ended on a failing test, so under `set -e` an unsupported verb
+    # aborted with exit 1 and no message instead of reaching the die() that explains it.
     case "$1" in
-        merge|close|ready) [ "$1" = merge ] && refuse "gh pr merge — merging a pull request" ;;
+        merge) refuse "gh pr merge — merging a pull request" ;;
     esac
+    return 0
 }
 guard_branch_name() {
     local b="$1" d; d=$(default_branch)
