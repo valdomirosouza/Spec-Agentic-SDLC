@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/compliance/ai-post-market-monitoring.md` — EU AI Act Art. 72 monitoring plan (four signal
+  families, thresholds, cadence, ownership) and the Art. 73 serious-incident procedure, including
+  the near-miss rule and the refusal to invent a reporting authority (#27).
 - `docs/ai-governance/nist-ai-rmf.md` rewritten by category identifier (GOVERN 1–6, MAP 1–5,
   MEASURE 1–4, MANAGE 1–4; 19 categories, 72 subcategories), with a declared use-case profile,
   coverage and gap per category, and only verified subcategory ids cited; REM-019 opened (#26).

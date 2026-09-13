@@ -60,7 +60,7 @@ controls:
       - docs/privacy/dpia/dpia-v1.md
       - docs/privacy/dpia/dpia-agent-memory.md
       - docs/ai-governance/nist-ai-rmf.md
-      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+      - specs/compliance/ai-post-market-monitoring.md
     verified_by:
       - docs/ai-governance/ai-safety-checklist.md
       - docs/process/gates/phase-gates.yaml
@@ -245,7 +245,7 @@ controls:
       - planned:#40:docs/runbooks/RB-AI-001-ai-incident.md
       - docs/ai/model-lifecycle.md
     verified_by:
-      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+      - specs/compliance/ai-post-market-monitoring.md
     gate: ["Phase 13 — Production"]
     owner: SRE Lead
     status: partial
@@ -327,7 +327,7 @@ controls:
       data on performance across the lifetime of the system, against a documented plan.
     applies_from: "2027-12-02"
     implemented_by:
-      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+      - specs/compliance/ai-post-market-monitoring.md
       - docs/ai/eval-scorecard.md
     verified_by:
       - docs/sre/slo/slo.yaml
@@ -345,7 +345,7 @@ controls:
       the Article sets, with an initial report where the deadline cannot otherwise be met.
     applies_from: "2027-12-02"
     implemented_by:
-      - planned:#27:specs/compliance/ai-post-market-monitoring.md
+      - specs/compliance/ai-post-market-monitoring.md
       - planned:#40:docs/runbooks/RB-AI-001-ai-incident.md
     verified_by:
       - docs/postmortems/POSTMORTEM-TEMPLATE.md
