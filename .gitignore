@@ -1,0 +1,10 @@
+# machine-local SDD state (active feature pointer)
+.sdd/
+# local tool state
+.serena/
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+# scratch
+*.tmp

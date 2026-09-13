@@ -1,0 +1,295 @@
+# Governance Gate Enforcement Lifecycle — Burn-in Log
+
+> **Status:** Active · **Governing ADR:** [ADR-0070](../adr/ADR-0070-governance-gate-enforcement-lifecycle.md) · **Owner:** Tech Lead + Security Lead
+
+This is the **authoritative record** of every governance gate's transition from **report mode**
+(`continue-on-error: true`) to **blocking**. ADR-0070 forbids a gate staying advisory
+indefinitely: report-only is a _phase_, not a terminal state.
+
+## Burn-in exit criterion (ADR-0070)
+
+A report-mode gate may flip to blocking once it has accumulated:
+
+- **≥ 15 consecutive PR runs** _OR_ **14 calendar days**, whichever comes first, **with**
+- **zero false-positive failures** — a false positive **resets** the window.
+
+The flip is an ISO 27001 **`normal-change`** ([ADR-0027](../adr/ADR-0027-iso27001-change-management.md))
+and requires explicit **HITL approval**. The **day-zero property is preserved**: every gate must
+still no-op gracefully on a fresh clone _before_ `make template-init` — blocking applies to
+initialized repositories only.
+
+Check progress at any time:
+
+```bash
+make burn-in-status                       # human-readable progress for the control-binding gate
+python3 scripts/governance/burn_in_status.py --require-met   # exit 2 if NOT yet met (flip precondition)
+```
+
+## How a run gets recorded
+
+The control-binding step in `ci.yml` runs report-mode on every PR and writes an **objective
+verdict row** (PASS / FAIL, from its exit code) to the GitHub Actions **step summary**. A
+maintainer copies that row into the table below and — **only for a FAIL** — classifies it as a
+**false positive?** (`yes` = the gate flagged a PR that did _not_ actually need the declaration;
+`no` = the gate correctly caught a real omission). PASS rows and correct-FAIL rows preserve the
+streak; a `yes` row resets it.
+
+---
+
+## Gate registry
+
+| Gate                                                  | Workflow / step                                         | Mode         | Burn-in                                                               | Notes                                                                    |
+| ----------------------------------------------------- | ------------------------------------------------------- | ------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Control-binding (ADR-0061)                            | `ci.yml` → _Control-binding governance gate_            | **report**   | in progress (below)                                                   | First gate through the ADR-0070 lifecycle                                |
+| Staging DAST attestation (W2-T3)                      | `cd-production.yml` → _Verify staging DAST attestation_ | **report**   | in progress (below)                                                   | Promotion gate; report-mode so it cannot brick prod deploys              |
+| Change-type label / CAB (W1-2)                        | `pr-governance.yml` → _Change-type label (CAB)_         | **report**   | in progress (below)                                                   | PR-time CAB; report-mode while the labeling convention is adopted        |
+| High-risk Action Guard (F7)                           | `pr-governance.yml` → _High-risk Action Guard (F7)_     | **blocking** | n/a (introduced blocking, deterministic 38/38 suite)                  | W1-T3                                                                    |
+| Chaos Smoke (W2-10)                                   | `chaos-smoke.yml` → _Chaos Smoke (resilience)_          | **blocking** | n/a (deterministic; path-filtered to resilience paths)                | Single-fault resilience smoke on PRs touching workers/hitl/retry         |
+| ADR status/index consistency (audit 2026-06-16)       | `ci.yml` → _ADR status/index consistency_               | **blocking** | n/a (deterministic carve-out; flipped 2026-06-17, main clean 83/83)   | Catches ADR file `**Status:**` ≠ index row (the #1 audit finding)        |
+| ADR/RFC cross-reference links (audit 2026-06-16)      | `ci.yml` → _ADR/RFC cross-reference link check_         | **blocking** | n/a (deterministic carve-out; flipped 2026-06-17, main clean 172/172) | Catches dangling ADR/RFC link slugs (8 found in audit)                   |
+| Checkov IaC scan (ADR-0029 §1, issue #337)            | `iac-secret-scan.yml` → _Checkov IaC scan_              | **report**   | in progress (introduced 2026-06-18) — flip after burn-in              | Scans `infrastructure/` Terraform/Helm/K8s; was unimplemented until #337 |
+| Gitleaks history scan (ADR-0029 §4, issue #337)       | `iac-secret-scan.yml` → _Gitleaks history scan_         | **report**   | in progress (introduced 2026-06-18) — flip after burn-in + tag verify | Full git-history secret scan (complements staged detect-secrets)         |
+| Test-integrity (ADR-0065, issue #346, W11-T1)         | `ci.yml` → _Test-integrity gate (ADR-0065)_             | **blocking** | n/a (deterministic carve-out; baseline refreshed 2026-09-12 to 1,347)   | Was declared only in `harness/code-check.yml` (never executed). Waiver = `test-waiver` label |
+| Topic contract (W11-T3, issue #348)                   | `ci.yml` → _Topic-contract gate_                        | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | services.yaml topics ↔ AsyncAPI channels ↔ code literals (1/17 overlapped before W11-T2) |
+| Contract + E2E suites (W11-T4, issue #349)            | `ci.yml` → _Contract + E2E Tests (in-process)_          | **blocking** | n/a (deterministic carve-out; 129/129 green at introduction)          | 130 offline tests ran in no workflow; 16 had rotted (HITL auth, REM-001) and were repaired |
+| Open questions in approved specs (W11-T5, issue #350) | `ci.yml` → _Open-questions gate (approved specs)_       | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | SPEC-API-001 was approved with 3 unresolved §15 items; DoR + Phase 4 exit now require zero |
+| Doc consistency (W11-T7, issue #352)                  | `ci.yml` → _Doc-consistency gate_                       | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | README said 51 ADRs, CLAUDE.md 0075, primer 0058 while 84 existed; widens link check to root + docs/ |
+| Dead definitions (W12-T5, issue #358)                 | `ci.yml` → _Dead-definition gate_                       | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | 13 metrics + 18 settings were defined and never read; annotated with the tracking issue |
+| Dependency manifest (W12-T9, issue #362)              | `ci.yml` → _Dependency-manifest gate_                   | **report**   | in progress (introduced 2026-09-12) — expected FAIL until W14-T3      | Manifest is 107 days past its quarterly cadence; freshness rule M3 fires by design until the model promotion |
+| Harness spec runner (W12-T8, issue #361)              | `ci.yml` → _Harness spec — code-check_                  | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | Executes harness/code-check.yml gates that no workflow ran before (ADR-0037 amendment) |
+| OpenAPI live-vs-doc drift (W12-T7, issue #360)        | `ci.yml` → _Contract Drift Check_ / _OpenAPI drift_     | **blocking** | n/a (deterministic; inside an already-blocking job)                   | The job named 'Contract Drift Check' now diffs a contract |
+| Spec registry (W13-T3, issue #368, ADR-0085)          | `ci.yml` → _Spec registry gate_                         | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | 57 specs carry frontmatter; registry generated; S1–S7 rules |
+| Toolchain versions (W14-T2, issue #377)               | `ci.yml` → _Toolchain-version consistency_              | **report**   | in progress (introduced 2026-09-12) — flip after burn-in              | versions.yaml is the single source; Go was 1.24 vs 1.26 in five places |
+| Image supply chain Java/Go/Node (W14-T5, issue #380)   | `ci-java/go/frontend.yml` → _supply-chain-*_ (reusable) | **report**   | in progress (introduced 2026-09-12) — flip per language via scan_blocking | Trivy on PRs; cosign + provenance on pushes (ADR-0029 amendment) |
+| Assertion-presence lint (W15-T2, issue #389)           | `ci.yml` → _Assertion-presence lint for tests_          | **blocking** | n/a (deterministic lint; 28 findings fixed or visibly waived at introduction) | `# noassert: <reason>` is printed by the gate on every run |
+| Per-package coverage floors (W15-T1, issue #388)       | `ci.yml` → _Per-package coverage floors_                | **blocking** | n/a (RFC-0020 ratchet; floors set below current values)                | src/api/rest, src/guardrails, hitl_gateway ≥ 90; workers ≥ 85; integration tier floor 40 |
+| Conventional PR title / Spec / Issue / Version        | `pr-governance.yml`                                     | **blocking** | past lifecycle                                                        | Pre-existing                                                             |
+| detect-secrets · Bandit · CodeQL · Trivy · ZAP (DAST) | `ci.yml` / `codeql.yml` / `secret-scanning.yml`         | **blocking** | past lifecycle (ADR-0070 §Neutral)                                    | Pre-existing                                                             |
+
+---
+
+## Control-binding gate (ADR-0061) — burn-in log
+
+<!-- BURN-IN-START: 2026-06-12 -->
+<!-- BURN-IN-TARGET: control-binding-gate -->
+
+Window restarts the day after any `yes` (false-positive) row. Placeholder rows (PR = `—`) are
+ignored by `burn_in_status.py`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                                                             |
+| ---------- | --- | ------- | --------------- | --------------------------------------------------------------------------------- |
+| 2026-06-12 | —   | —       | —               | Burn-in started (ADR-0070, W1-T2). Awaiting first report-mode run on the next PR. |
+
+### Exit evidence (fill on completion)
+
+When `make burn-in-status` reports **MET**, record here before opening the flip PR:
+
+- Window: `<start>` → `<end>` · Clean runs: `<n>` · Days: `<d>` · FP resets: `<k>`
+- Criterion satisfied via: `runs>=15` | `days>=14`
+- `burn_in_status.py --require-met` exit code: `0`
+- Flip PR: `#<NNN>` · HITL approver: `<name>` · Change class: `normal-change`
+
+### The flip (prepared, NOT yet applied)
+
+Flipping to blocking is a **one-line** change to `.github/workflows/ci.yml` — **remove** the
+`continue-on-error: true` line from the _Control-binding governance gate (ADR-0061)_ step. Do
+**not** apply it until the burn-in above is MET and HITL-approved. The day-zero no-op
+(placeholders before `make template-init`) is already handled inside
+`scripts/governance/check_control_bindings.py` and must remain intact after the flip.
+
+---
+
+## Topic-contract gate (W11-T3) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: topic-contract-gate -->
+
+`scripts/governance/check_topic_contract.py` runs in **report mode** in the `ci.yml` governance
+job. A `yes` in _False positive?_ (the three sources agreed but the gate reported FAIL) resets the
+window. Check progress with `make burn-in-status GATE=topic-contract-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                                              |
+| ---------- | --- | ------- | --------------- | ------------------------------------------------------------------ |
+| 2026-09-12 | —   | —       | —               | Burn-in started (W11-T3). Awaiting first report-mode run on a PR.  |
+
+### The flip (prepared, NOT yet applied)
+
+Remove the `continue-on-error: true` line from the _Topic-contract gate_ step in `ci.yml`.
+
+---
+
+## Open-questions gate (W11-T5) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: open-questions-gate -->
+
+`scripts/governance/check_open_questions.py` runs in **report mode** in the `ci.yml` governance
+job. A `yes` in _False positive?_ (an item was genuinely resolved but the marker heuristic missed
+it) resets the window and should widen the marker list. Progress: `make burn-in-status GATE=open-questions-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                                             |
+| ---------- | --- | ------- | --------------- | ----------------------------------------------------------------- |
+| 2026-09-12 | —   | —       | —               | Burn-in started (W11-T5). Awaiting first report-mode run on a PR. |
+
+### The flip (prepared, NOT yet applied)
+
+Remove the `continue-on-error: true` line from the _Open-questions gate_ step in `ci.yml`.
+
+---
+
+## Doc-consistency gate (W11-T7) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: doc-consistency-gate -->
+
+`scripts/governance/check_doc_consistency.py` runs in **report mode** in the `ci.yml` governance
+job. A `yes` in _False positive?_ (a link that resolves but the checker flagged, or a count sentence
+worded differently) resets the window. Progress: `make burn-in-status GATE=doc-consistency-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                                             |
+| ---------- | --- | ------- | --------------- | ----------------------------------------------------------------- |
+| 2026-09-12 | —   | —       | —               | Burn-in started (W11-T7). Awaiting first report-mode run on a PR. |
+
+### The flip (prepared, NOT yet applied)
+
+Remove the `continue-on-error: true` line from the _Doc-consistency gate_ step in `ci.yml`.
+
+---
+
+## Dead-definition gate (W12-T5) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: dead-definitions-gate -->
+
+`scripts/governance/check_dead_definitions.py` runs in **report mode** in `ci.yml`. Progress: `make burn-in-status GATE=dead-definitions-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                       |
+| ---------- | --- | ------- | --------------- | ------------------------------------------- |
+| 2026-09-12 | —   | —       | —               | Burn-in started (Wave 12). Awaiting first PR run. |
+
+---
+
+## Dependency-manifest gate (W12-T9) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: dependency-manifest-gate -->
+
+`scripts/governance/check_dependency_manifest.py` runs in **report mode** in `ci.yml`. Progress: `make burn-in-status GATE=dependency-manifest-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                       |
+| ---------- | --- | ------- | --------------- | ------------------------------------------- |
+| 2026-09-12 | —   | —       | —               | Burn-in started (Wave 12). Awaiting first PR run. |
+
+---
+
+## Harness spec runner (W12-T8) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: harness-code-check -->
+
+`scripts/governance/run_harness_spec.py harness/code-check.yml` runs in **report mode** in `ci.yml`. Progress: `make burn-in-status GATE=harness-code-check`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                       |
+| ---------- | --- | ------- | --------------- | ------------------------------------------- |
+| 2026-09-12 | —   | —       | —               | Burn-in started (Wave 12). Awaiting first PR run. |
+
+---
+
+## Spec registry gate (W13-T3) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: spec-registry-gate -->
+
+`scripts/governance/build_spec_registry.py` runs in **report mode** in `ci.yml`. Progress:
+`make burn-in-status GATE=spec-registry-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                             |
+| ---------- | --- | ------- | --------------- | ------------------------------------------------- |
+| 2026-09-12 | —   | —       | —               | Burn-in started (W13-T3). Awaiting first PR run.  |
+
+---
+
+## Toolchain-version gate (W14-T2) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: toolchain-versions-gate -->
+
+`scripts/governance/check_toolchain_versions.py` runs in **report mode**. Progress: `make burn-in-status GATE=toolchain-versions-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                            |
+| ---------- | --- | ------- | --------------- | ------------------------------------------------ |
+| 2026-09-12 | —   | —       | —               | Burn-in started (Wave 14). Awaiting first PR run. |
+
+---
+
+## Image supply chain — Java/Go/Node (W14-T5) — burn-in log
+
+<!-- BURN-IN-START: 2026-09-12 -->
+<!-- BURN-IN-TARGET: image-supply-chain-gate -->
+
+`reusable-image-supply-chain.yml (Trivy)` runs in **report mode**. Progress: `make burn-in-status GATE=image-supply-chain-gate`.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                            |
+| ---------- | --- | ------- | --------------- | ------------------------------------------------ |
+| 2026-09-12 | —   | —       | —               | Burn-in started (Wave 14). Awaiting first PR run. |
+
+---
+
+## Staging DAST attestation gate (W2-T3) — burn-in log
+
+<!-- BURN-IN-START: 2026-06-12 -->
+<!-- BURN-IN-TARGET: staging-dast-attestation -->
+
+The `cd-production.yml` _Verify staging DAST attestation_ step runs in **report mode**: a missing
+or invalid staging-DAST cosign attestation on the image digest warns but does not block promotion.
+Record one row per production-promotion run (whether the attestation verified). A `yes` in
+_False positive?_ (the attestation was present and valid but the step reported failure) resets the
+window.
+
+| Date (UTC) | PR/Run | Verdict | False positive? | Notes                                                                       |
+| ---------- | ------ | ------- | --------------- | --------------------------------------------------------------------------- |
+| 2026-06-12 | —      | —       | —               | Burn-in started (ADR-0070, W2-T3). Awaiting first production-promotion run. |
+
+Check progress: `make burn-in-status GATE=staging-dast-attestation`.
+
+### The flip (prepared, NOT yet applied)
+
+Flip to blocking by **removing** `continue-on-error: true` from the _Verify staging DAST
+attestation_ step in `.github/workflows/cd-production.yml`, after this burn-in is MET and
+HITL-approved (`normal-change`). Until then a missing attestation cannot block a production deploy.
+
+---
+
+## Change-type label / CAB gate (W1-2) — burn-in log
+
+<!-- BURN-IN-START: 2026-06-12 -->
+<!-- BURN-IN-TARGET: change-type-label -->
+
+The `pr-governance.yml` _Change-type label (CAB)_ step runs in **report mode**: a PR missing a
+single `standard/normal/emergency-change` label (or `Refs: RFC-NNNN` for normal/emergency) warns
+but does not block, while contributors adopt the labeling convention. Docs-only PRs and bots are
+exempt. A `yes` in _False positive?_ (the PR legitimately needed no change-type, e.g. a release PR)
+resets the window.
+
+| Date (UTC) | PR  | Verdict | False positive? | Notes                                                                      |
+| ---------- | --- | ------- | --------------- | -------------------------------------------------------------------------- |
+| 2026-06-12 | —   | —       | —               | Burn-in started (ADR-0070, W1-2). Awaiting first PRs under the convention. |
+
+Check progress: `make burn-in-status GATE=change-type-label`.
+
+### The flip (prepared, NOT yet applied)
+
+Flip to blocking by **removing** `continue-on-error: true` from the _Require exactly one change-type
+label_ step in `.github/workflows/pr-governance.yml`, after this burn-in is MET and HITL-approved
+(`normal-change`), then add **Change-type label (CAB)** to the required checks in
+`.github/rulesets/main.json`.
+
+---
+
+## Waivers (ADR-0070 §4)
+
+A gate may only remain report-only **past** its burn-in with a documented, time-boxed waiver.
+
+| Gate     | Reason | Owner | Granted | Review by |
+| -------- | ------ | ----- | ------- | --------- |
+| _(none)_ |        |       |         |           |
