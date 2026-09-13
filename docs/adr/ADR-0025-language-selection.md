@@ -30,6 +30,7 @@ New services must be implemented in the language that best matches the primary w
 ### Overrides
 
 A team may deviate from the matrix if:
+
 1. The deviation is justified in the PR referencing this ADR
 2. The Tech Lead approves in the PR review
 3. The service still satisfies the guardrail, observability, and HITL requirements in its chosen language (see `docs/quickstart/<language>-backend.md`)

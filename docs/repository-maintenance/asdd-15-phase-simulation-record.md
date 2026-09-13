@@ -44,35 +44,35 @@ Product Team requested `GET /v1/requests/stats` (per-state request counts; read-
 ## Exit-criteria evidence (notes captured at each handoff)
 
 - **P0 Intake & Prioritization** → `asdd-phase-1-conception`: Triaged & prioritized into backlog.
-  - _Gate exit criteria:_ Problem statement, value hypothesis, risk class, and owner recorded; prioritized into the backlog
+  - *Gate exit criteria:* Problem statement, value hypothesis, risk class, and owner recorded; prioritized into the backlog
 - **P1 Conception** → `asdd-phase-2-discovery`: Issue opened; owner+labels set (simulated).
-  - _Gate exit criteria:_ Discovery doc linked; size label applied; Tech Lead comment present
+  - *Gate exit criteria:* Discovery doc linked; size label applied; Tech Lead comment present
 - **P2 Discovery** → `asdd-phase-3-grooming`: HUMAN GATE: security_lead+tech_lead approved discovery/nfr Spec-as-PR.
-  - _Gate exit criteria:_ NFR doc with PII classification; Security Lead approved
+  - *Gate exit criteria:* NFR doc with PII classification; Security Lead approved
 - **P3 Grooming** → `asdd-phase-4-specification`: HUMAN GATE: tech_lead confirmed DoR.
-  - _Gate exit criteria:_ Definition of Ready checklist (8 criteria) passed; issue status: ready
+  - *Gate exit criteria:* Definition of Ready checklist (8 criteria) passed; issue status: ready
 - **P4 Specification** → `asdd-phase-5-architecture`: HUMAN GATE: tech_lead+security_lead approved spec.
-  - _Gate exit criteria:_ Spec PR merged; governance spec-lint gate green; Tech + Security Lead approved
+  - *Gate exit criteria:* Spec PR merged; governance spec-lint gate green; Tech + Security Lead approved
 - **P5 Architecture** → `asdd-phase-6-development`: HUMAN GATE: tech_lead chose ADR option.
-  - _Gate exit criteria:_ ADR(s) accepted and merged for any architectural decision
+  - *Gate exit criteria:* ADR(s) accepted and merged for any architectural decision
 - **P6 Development** → `asdd-phase-7-code-review`: Branch ready; lint+unit pass.
-  - _Gate exit criteria:_ Unit tests green; lint green; pre-commit green; spec implemented (no scope creep)
+  - *Gate exit criteria:* Unit tests green; lint green; pre-commit green; spec implemented (no scope creep)
 - **P7 Code Review** → `asdd-phase-8-testing`: HUMAN GATE: tech_lead approved PR.
-  - _Gate exit criteria:_ >=1 human approval; AI review posted; governance labels applied if autonomy-affecting
+  - *Gate exit criteria:* >=1 human approval; AI review posted; governance labels applied if autonomy-affecting
 - **P8 Testing** → `asdd-phase-9-devsecops`: All suites green; coverage >=80%.
-  - _Gate exit criteria:_ >=80% unit coverage; security + abuse-case tests green
+  - *Gate exit criteria:* >=80% unit coverage; security + abuse-case tests green
 - **P9 Security & DevSecOps** → `asdd-phase-10-ai-safety`: HUMAN GATE: security_lead accepted findings.
-  - _Gate exit criteria:_ Zero HIGH/CRITICAL SAST/SCA; zero secrets; SBOM generated + cosign-attested
+  - *Gate exit criteria:* Zero HIGH/CRITICAL SAST/SCA; zero secrets; SBOM generated + cosign-attested
 - **P10 AI Safety & Agent Governance** → `asdd-phase-11-observability`: Conditional: N/A; no AI-safety gate required.
-  - _Gate exit criteria:_ Prompt-injection + data-leakage tests pass; tool-permission review done; evals + audit trail present; AI Safety checklist complete
+  - *Gate exit criteria:* Prompt-injection + data-leakage tests pass; tool-permission review done; evals + audit trail present; AI Safety checklist complete
 - **P11 Observability & Operational Readiness** → `asdd-phase-12-release-rc`: HUMAN GATE: sre_lead PRR sign-off.
-  - _Gate exit criteria:_ PRR >= 90%; probe lint green; OTel spans + metrics verified for new paths
+  - *Gate exit criteria:* PRR >= 90%; probe lint green; OTel spans + metrics verified for new paths
 - **P12 Release Candidate** → `asdd-phase-13-production`: HUMAN GATE: release_manager+security_lead apply rc-approved.
-  - _Gate exit criteria:_ Chaos + model-contract tests green; SBOM; rc-approved label applied
+  - *Gate exit criteria:* Chaos + model-contract tests green; SBOM; rc-approved label applied
 - **P13 Production Deployment** → `asdd-phase-14-post-deploy`: HUMAN-EXECUTED: release_manager runs canary + GitHub Release.
-  - _Gate exit criteria:_ Canary readiness gate passed at each step; error-budget check green; CAB approved
+  - *Gate exit criteria:* Canary readiness gate passed at each step; error-budget check green; CAB approved
 - **P14 Post-Deployment & Learn** → `DONE`: HUMAN GATE: sre_lead retrospective review. Cycle complete.
-  - _Gate exit criteria:_ No P0 at T+48h; DORA within SLO; retrospective created
+  - *Gate exit criteria:* No P0 at T+48h; DORA within SLO; retrospective created
 
 ## Cleanup
 

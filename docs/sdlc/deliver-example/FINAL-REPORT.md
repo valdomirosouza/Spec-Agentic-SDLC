@@ -104,7 +104,7 @@ the single executor's span (sub-items share it).
   - Real orchestration wall-clock was ≈30 min because doc phases ran in **parallel waves**.
 - **Human-equiv (ESTIMATE, sum of t-shirt sizes):** ≈ **73 h** (≈9 working days).
 - **Speedup ratio (human-equiv ÷ agent wall-clock):** **≈ 160×** (73 h ÷ 0.457 h).
-  - _Caveat:_ this is a **dry-run** — agents drafted artefacts and ran validation, they did not
+  - *Caveat:* this is a **dry-run** — agents drafted artefacts and ran validation, they did not
     write the ~36h (L×3 + M) of production code in LGS-6a–d. The ratio measures planning/analysis
     throughput, not end-to-end implementation. A CODE-mode run is the apples-to-apples comparison.
 
@@ -113,6 +113,7 @@ the single executor's span (sub-items share it).
 ## 4. Evidence appendix (≤20 lines each)
 
 **Phase 6 — `make lint-python` (`logs/6-development-lint.log`)**
+
 ```
 uv run ruff check src/ tests/ → All checks passed!
 uv run mypy src/ → Success: no issues found in 69 source files
@@ -121,6 +122,7 @@ LINT_EXIT=0
 ```
 
 **Phase 8 — coverage (`logs/8-testing-unit.log`)**
+
 ```
 945 passed, 12 warnings in 22.41s
 TOTAL  4017  485  722  76  87%
@@ -128,6 +130,7 @@ Required test coverage of 85.0% reached. Total coverage: 86.56%
 ```
 
 **Phase 8 — security (`logs/8-testing-security.log`)**
+
 ```
 tests/security/test_owasp_llm_top10.py ............. [ 43%]
 tests/security/test_pii_leakage.py ................  [ 84%]
@@ -135,18 +138,21 @@ tests/security/test_pii_leakage.py ................  [ 84%]
 ```
 
 **Phase 9 — control bindings (`logs/9-devsecops-controls.log`)**
+
 ```
 Control-binding gate — fired triggers: (none) → RESULT: PASS
 make sbom → syft: No such file or directory (env gap; report-only, no artifact)
 ```
 
 **Phase 11 — readiness (`logs/11-observability-smoke.log`)**
+
 ```
 Unit tests PASS · Lint PASS · API /health FAIL (no server/infra up — recorded gap)
 PRR simulated 86.7% (< 90 target; gated on spec §15 Q1/Q3)
 ```
 
 **Phase 12 — version consistency (`logs/12-release-candidate.log`)**
+
 ```
 version.txt 2.12.2 == pyproject.toml 2.12.2  → CONSISTENT
 proposed RC bump (feat→minor): 2.12.2 → 2.13.0
@@ -178,7 +184,7 @@ In a **CODE-mode** run, items 1–8 are the points where execution would physica
    `.secrets.baseline`'s `generated_at`; `uv run` auto-corrected `uv.lock` drift (2.10.2→2.12.2).
    Both were restored. **Recommendation:** the dry-run evidence step should snapshot & restore
    tracked files after running make targets (or run detect-secrets without `--baseline` write),
-   so DRY-RUN is provably side-effect-free. _(Candidate SKILL.md hardening.)_
+   so DRY-RUN is provably side-effect-free. *(Candidate SKILL.md hardening.)*
 2. **DoR checklist drift.** Gate `exit_criteria` says "8 criteria" but `DEFINITION_OF_READY.md`
    v1.0.0 lists 13 bullets (Phase 3). Sync the gate text.
 3. **`smoke-test.yml` named by Phase-14 gate doesn't exist** as a standalone workflow (smoke is

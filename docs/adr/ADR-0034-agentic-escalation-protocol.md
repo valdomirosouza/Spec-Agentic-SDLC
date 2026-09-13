@@ -89,4 +89,3 @@ phase-executor return envelope gains `open_questions`, `assumptions` and `confid
 `/deliver` FINAL-REPORT carries an Ambiguity ledger, so unresolved ambiguity is surfaced
 mechanically at every phase boundary instead of living only in prose. `uncertain — verify`
 (CLAUDE.md §3.6) is the artefact-level marker; `confidence: low` is its envelope-level twin.
-

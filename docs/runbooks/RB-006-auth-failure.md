@@ -30,20 +30,27 @@
 ## Immediate Mitigation
 
 1. **Check if the auth middleware is misconfigured** (most common cause after a deploy):
+
    ```bash
    kubectl logs -n production -l app=api-gateway --tail=200 \
      | grep -E "JWT|auth|401|403|JWKS|signature"
    ```
+
 2. **Check JWKS endpoint reachability** — if the IDP is unreachable, token validation fails:
+
    ```bash
    kubectl exec -n production deploy/api-gateway -- \
      curl -sf "$JWT_JWKS_URL" | jq '.keys | length'
    ```
+
 3. **Roll back the last deploy** if auth breakage correlates with a recent deployment:
+
    ```bash
    bash infrastructure/scripts/deploy/rollback.sh --env production
    ```
+
 4. **If brute-force attack suspected** — enable rate limiting at ingress level:
+
    ```bash
    kubectl annotate ingress api-gateway -n production \
      nginx.ingress.kubernetes.io/limit-rps="10" --overwrite

@@ -143,4 +143,3 @@ LLM client when `settings.harness_mode` is `simplified` or `full` and injects th
 into the `RequestConsumer`, which routes each request through `HarnessCoordinator.run(TaskBrief)`.
 No new flag: the existing setting is the only switch. Asserted by
 `tests/integration/test_lifespan_wiring.py::test_harness_coordinator_is_constructed_when_mode_is_not_solo`.
-

@@ -133,7 +133,7 @@ This is the **return envelope** of the sub-agent context contract
 orchestrator can parse it mechanically into the FINAL-REPORT, never free-text:
 
 - `open_questions`: list of `{question, owner, blocking: true|false}` this phase could not resolve
-  (W13-T9). Empty is a valid, *asserted* value — never omit the key.
+  (W13-T9). Empty is a valid, _asserted_ value — never omit the key.
 - `assumptions`: list of `{assumption, owner, resolve_by_phase, status: open|confirmed|rejected}`
   the phase made or carried forward; an `open` assumption at its resolve-by phase is `gate: FAIL`.
 - `confidence`: `high | medium | low` — how well the produced artefact is grounded in the spec,

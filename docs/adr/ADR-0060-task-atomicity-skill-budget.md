@@ -85,8 +85,8 @@ split signal. The trigger table and matrix live in `docs/governance/` (see follo
 
 ## Rollout
 
-Tracked as five atomic tasks (this ADR is task 1): #70 ADR (this), #71 CLAUDE.md §4,
-#72 AGENTS.md, #73 control-applicability matrix + trigger table, #74 session kickoff +
+Tracked as five atomic tasks (this ADR is task 1): #70 ADR (this), #71 CLAUDE.md §4, #72 AGENTS.md,
+#73 control-applicability matrix + trigger table, #74 session kickoff +
 phase-coverage wiring. The source directive (`task-atomicity-skill-budget-directive.md`,
 provided as a working-tree note, never committed) has been **fully absorbed** into the
 contract; its content now lives canonically in `CLAUDE.md` §4 and

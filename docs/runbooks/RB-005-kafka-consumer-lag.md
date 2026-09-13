@@ -30,20 +30,26 @@
 ## Immediate Mitigation
 
 1. **Check consumer pod health:**
+
    ```bash
    kubectl get pods -n production -l app=event-consumer
    kubectl logs -n production -l app=event-consumer --tail=100
    ```
+
 2. **If consumer is crash-looping — restart it:**
+
    ```bash
    kubectl rollout restart deployment/event-consumer -n production
    ```
+
 3. **If lag is growing but consumer is alive — check partition assignment:**
+
    ```bash
    kubectl exec -n production deploy/kafka -- \
      kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
      --describe --group request-consumer-group
    ```
+
 4. **Temporarily reduce upstream rate** by scaling down API gateway replicas if lag is unbounded and consumer cannot catch up.
 
 ---
@@ -149,11 +155,13 @@ curl http://schema-registry:8081/subjects/domain.request.created-value/versions
 - [ ] Confirm lag is decreasing and reaches 0 within SLO window
 - [ ] Check `processing_success_rate` is recovering to ≥ 99.9%
 - [ ] Verify no messages were permanently lost (DLQ check):
+
   ```bash
   kubectl exec -n production deploy/kafka -- \
     kafka-console-consumer.sh --bootstrap-server localhost:9092 \
     --topic domain.request.dead-letter --from-beginning --max-messages 20
   ```
+
 - [ ] If P2: open post-mortem in `docs/postmortems/` within 5 business days
 - [ ] Update this runbook with any new findings
 

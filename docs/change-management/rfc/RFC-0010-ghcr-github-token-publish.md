@@ -24,12 +24,14 @@ zero-secret option for a GitHub-hosted repo is **GHCR (ghcr.io) authenticated wi
 1. **Set the repo variable `CONTAINER_REGISTRY = ghcr.io`** (done out-of-band; not a secret) so
    the RFC-0009 guard enables `build-release-image`.
 2. **Authenticate with `GITHUB_TOKEN`** instead of stored secrets:
+
    ```yaml
    with:
      registry: ${{ vars.CONTAINER_REGISTRY }}
      username: ${{ github.actor }}
      password: ${{ secrets.GITHUB_TOKEN }}
    ```
+
 3. **Lowercase the image name.** GHCR/OCI require lowercase repository names, but
    `github.repository` is `valdomirosouza/Repository-Template-v2` (mixed case). A new step
    computes `name=<registry>/<repo>` via `tr '[:upper:]' '[:lower:]'` (POSIX-portable; not the

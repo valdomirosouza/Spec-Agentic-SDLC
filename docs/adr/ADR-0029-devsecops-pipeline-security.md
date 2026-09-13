@@ -79,4 +79,3 @@ Java, Go and Node images the same treatment, called from `ci-java.yml`, `ci-go.y
 `ci-frontend.yml` (scan on PRs in report-mode during the ADR-0070 burn-in; sign + attest on
 pushes with a digest). CodeQL runs a `[python, java, go, javascript]` matrix.
 `IMAGE_REPOSITORY_BASE` is a repository variable in every workflow (was hard-coded `ghcr.io`).
-

@@ -35,6 +35,7 @@ not a one-off transient error (those are handled by the retry loop before reachi
    - `timeout after 30s` → orchestrator taking too long (HPA may be under-scaled)
 
 3. **Check downstream health:**
+
    ```bash
    kubectl get pods -l app=api-gateway
    curl -s http://localhost:8000/ready  # should return {"status":"ok"}
@@ -58,10 +59,12 @@ Symptom: `error` field contains `circuit open` or connection-refused to Anthropi
 Symptom: `error` field contains `Audit write failed` or `pool exhausted`.
 
 1. Check DB health:
+
    ```bash
    kubectl exec deploy/api-gateway -- curl -s localhost:8000/ready
    psql $DATABASE_URL -c "SELECT count(*) FROM pg_stat_activity;"
    ```
+
 2. If pool exhausted: check `database_pool_size` setting vs. replica count. Consider increasing
    `max_size` or adding replicas.
 3. If DB is unreachable: follow the DB recovery runbook (`docs/sre/runbooks/db-failure.md`).

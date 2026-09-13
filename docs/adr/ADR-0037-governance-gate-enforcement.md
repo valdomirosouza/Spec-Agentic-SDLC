@@ -93,4 +93,3 @@ target executed them, so their `blocking: true` claims were not enforced. Since 
 burn-in, skipping the gates that dedicated jobs already cover). `make run-harness-spec
 SPEC=harness/<name>.yml` runs any spec locally. A gate declared in a harness spec is now a gate
 that runs; a spec that must stay descriptive-only must say so in its header.
-

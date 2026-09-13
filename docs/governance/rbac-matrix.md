@@ -45,7 +45,7 @@ approver of their own PR (§10). Enforced by requiring ≥ 2 CODEOWNERS on the p
 The agent's authority is bounded by the **autonomy level** (feature-flag driven) and routed through
 the **HITL gateway** for any real-world action. Evaluated `FULL > MEDIUM_RISK > LOW_RISK > TESTS_ONLY
 
-> READ_ONLY > NONE`; default `NONE` (every action requires HITL).
+> READ_ONLY > NONE`; default`NONE` (every action requires HITL).
 
 | Autonomy level   | May act autonomously on                            | Still requires HITL                            | Flag / governance                                         |
 | ---------------- | -------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------- |

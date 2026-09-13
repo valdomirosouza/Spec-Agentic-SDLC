@@ -34,7 +34,7 @@ $ARGUMENTS
    - deduplicates against open **and** closed issues whose title contains the task id;
    - titles issues `<SPEC-ID> T010: <description>`; the body carries phase, story, `Refs:` ids,
      parallel flag, links to `spec.md`/`tasks.md`, and a "Done when" checklist;
-   - appends ` (#N)` to the task line in `tasks.md`.
+   - appends `(#N)` to the task line in `tasks.md`.
 6. **Order and dependencies**: issues are created in tasks.md order (Setup → Foundational →
    stories → Polish). Dependencies are stated in the body text ("depends on T012"); GitHub
    sub-issues or a project board are the adopting repository's choice — say so in the report.

@@ -81,7 +81,6 @@ This Code of Conduct is adapted from the [Contributor Covenant][homepage],
 version 2.1.
 
 [homepage]: https://www.contributor-covenant.org
-[v2.1]: https://www.contributor-covenant.org/version/2/1/code_of_conduct/
 
 For answers to common questions about this code of conduct, see the
-[FAQ][faq]: https://www.contributor-covenant.org/faq
+[FAQ](https://www.contributor-covenant.org/faq).

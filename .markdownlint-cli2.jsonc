@@ -1,0 +1,26 @@
+{
+  // markdownlint-cli2 configuration for the Spec-Agentic-SDLC corpus (issue #12).
+  // The corpus is prose-heavy with wide tables, HTML comments used as template guidance and
+  // long reference lines; rules that fight that style are off. Structural rules stay on.
+  "config": {
+    "default": true,
+    "MD013": false, // line length — tables and reference links run long on purpose
+    "MD024": { "siblings_only": true }, // duplicate headings allowed across sections (e.g. "Decision" per ADR)
+    "MD025": false, // multiple H1 — templates embed example H1s
+    "MD026": false, // trailing punctuation in headings (questions)
+    "MD028": false, // blank line inside blockquote — used in banners
+    "MD029": false, // ordered-list numbering style
+    "MD033": false, // inline HTML — comments carry template instructions
+    "MD034": false, // bare URLs in reference sections
+    "MD036": false, // emphasis used as heading in tables/templates
+    "MD040": false, // fenced code without language — many text diagrams
+    "MD041": false, // first line heading — files start with frontmatter or banners
+    "MD045": false, // images without alt (none expected)
+    "MD051": false, // link fragments — anchors to generated headings
+    "MD055": false, // table pipe style
+    "MD056": false, // table column count — wide governance tables
+    "MD059": false  // descriptive link text — "here"/"README" links in reference docs
+  },
+  "globs": ["**/*.md"],
+  "ignores": ["node_modules/**", ".git/**", ".serena/**", ".sdd/**", "docs/reference/repository-template-v2-*.md"]
+}

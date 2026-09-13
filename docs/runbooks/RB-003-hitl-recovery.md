@@ -25,9 +25,11 @@ failure scenarios that affect HITL request durability, queue health, and capacit
    cleans up any requests that expired during the downtime (they are moved to the
    `hitl:expired:{id}` archive, never auto-approved).
 2. Verify the HITL queue depth metric is consistent with pre-restart state:
+
    ```bash
    redis-cli ZCARD hitl:pending
    ```
+
 3. Cross-check with the Grafana CUJ-001 dashboard → "HITL Queue Depth" panel.
 
 ---
@@ -43,22 +45,29 @@ restart. This is a **P2 degraded** state — human review still works, but durab
 **Recovery steps:**
 
 1. Confirm Redis is unreachable:
+
    ```bash
    redis-cli -u $REDIS_URL ping
    ```
+
 2. If it is a transient network issue, wait for Redis to recover. The app will not
    automatically switch back — a pod restart is needed to re-initialize `HITLRedisStore`.
 3. After Redis is healthy, perform a rolling restart:
+
    ```bash
    kubectl rollout restart deployment/template-service
    ```
+
 4. Re-submit any HITL requests that were accepted during degraded mode (ops team must
    retrieve them from the in-memory audit log before the pod restarts):
+
    ```bash
    # Retrieve pending HITL events from audit log (InMemoryAuditStorage)
    curl http://<pod-ip>:8000/v1/hitl/pending
    ```
+
 5. Verify the HITL gateway is now using Redis:
+
    ```bash
    redis-cli ZCARD hitl:pending
    ```
@@ -84,12 +93,15 @@ redis-cli GET hitl:req:<request_id>
 
 - If requests are genuinely waiting for human review, page the AI Governance Lead.
 - If requests are stale (human reviewers unavailable), trigger manual expiry:
+
   ```bash
   # Force-expire a specific request via the admin endpoint
   curl -X POST http://<service>/v1/hitl/<request_id>/expire \
     -H "Authorization: Bearer $ADMIN_TOKEN"
   ```
+
 - If no admin endpoint is available, use `expire_stale_requests()` via a one-off pod exec:
+
   ```bash
   kubectl exec -it <pod> -- python -c "
   import asyncio
@@ -112,9 +124,11 @@ redis-cli GET hitl:req:<request_id>
 1. Run `expire_stale_requests()` to evict any timed-out pending requests (see Scenario 3).
 2. If the queue is legitimately full (500 concurrent human reviews), increase the cap via
    environment variable — **no deploy required**:
+
    ```bash
    kubectl set env deployment/template-service HITL_MAX_PENDING_REQUESTS=1000
    ```
+
 3. Monitor the `hitl_active_requests` gauge and HITL approval latency p99.
 
 **Root cause follow-up:** A persistently full queue indicates either:

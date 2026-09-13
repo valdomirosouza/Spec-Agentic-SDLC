@@ -1,0 +1,41 @@
+# Corpus validation (issue #12). Owner: DevOps Lead (CLAUDE.md §8).
+# Runs the deterministic corpus checks on every push and pull request. No application code is
+# built here — this is the documentation corpus's own gate.
+name: corpus-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  corpus:
+    name: check-corpus.sh · markdownlint · high-risk guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: check-corpus.sh (links · frontmatter · ADR index · scripts · guard)
+        run: bash scripts/bash/check-corpus.sh
+
+      - name: markdownlint
+        run: npx --yes markdownlint-cli2@0.17.2
+
+      - name: high-risk-action guard self-test
+        run: python3 .claude/hooks/verify-high-risk-guard.py

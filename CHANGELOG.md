@@ -11,6 +11,8 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `.github/workflows/corpus-check.yml` (check-corpus.sh, markdownlint-cli2, guard self-test on
+  every push and PR), `.markdownlint-cli2.jsonc`, `.github/CODEOWNERS` (#12).
 - `scripts/bash/check-corpus.sh`: internal links, spec frontmatter against the schema, ADR index
   and numbering, script syntax and smoke runs on the example bundle, high-risk-guard self-test (#11).
 - `/sdd-taskstoissues` skill and `scripts/bash/tasks-to-issues.sh` (gh CLI; approved spec only;
@@ -21,6 +23,8 @@ authorises them.
 
 ### Changed
 
+- markdownlint pass over the corpus: blank lines around fences/lists/headings, consistent
+  emphasis style, one malformed reference link, heading levels in `docs/troubleshooting.md` (#12).
 - `specs/spec-frontmatter.schema.json` id pattern now admits digits in the domain code
   (`SPEC-K8S-001`, listed in ADR-0085); the `feature-spec-lint` gate uses the same pattern (#11).
 - `SETUP.md` is now the corpus adoption guide (layers minimal/governed/full, adopter-provided

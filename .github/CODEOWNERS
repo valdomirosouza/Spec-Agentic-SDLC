@@ -1,0 +1,10 @@
+# Ownership for the Spec-Agentic-SDLC corpus (issue #12). Roles per CLAUDE.md §8; one maintainer
+# today — replace with team handles when the roles are staffed.
+*                               @valdomirosouza
+memory/constitution.md          @valdomirosouza   # Tech Lead + Security Lead (protected articles)
+.claude/hooks/                  @valdomirosouza   # Security + AI Governance
+.claude/settings.json           @valdomirosouza   # Security + AI Governance
+.github/workflows/              @valdomirosouza   # DevOps Lead
+docs/adr/                       @valdomirosouza   # Tech Lead
+specs/security/                 @valdomirosouza   # Security Lead
+docs/privacy/                   @valdomirosouza   # DPO

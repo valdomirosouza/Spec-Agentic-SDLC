@@ -275,13 +275,13 @@ SERVICE=`; NODE|TS `lint-frontend`/`test-unit-frontend APP=`; IAC terraform vali
 - **No real side-effects:** all artefacts stay under `reports/<SLUG>/`; never write `src/`,
   `tests/`, `docs/`, `infrastructure/`, `.github/`. Simulate every irreversible/HITL action.
 - **Side-effect-safe validation (snapshot & restore).** The repo's validation targets can
-  _incidentally_ mutate **tracked** files — e.g. `make lint-python` → `detect-secrets` rewrites
+  *incidentally* mutate **tracked** files — e.g. `make lint-python` → `detect-secrets` rewrites
   `.secrets.baseline`'s `generated_at`; `make test-*`/`uv run` may rewrite `uv.lock` drift. These
   are real tracked-tree writes and violate the DRY-RUN invariant. Therefore:
   1. **Before** launching any phase, the orchestrator records a baseline `git status --porcelain`
      (the set of files already dirty — typically empty, but may contain unrelated WIP).
   2. **After** the run (and ideally after each make-running phase), compute the **delta**: tracked
-     files that were _clean at baseline_ but became dirty during the run, and restore exactly
+     files that were *clean at baseline* but became dirty during the run, and restore exactly
      those with `git checkout -- <path>`. Also remove any **new untracked** files a target wrote
      outside the sandbox (e.g. `sbom.cyclonedx.json`, `.coverage`) — `git checkout` does not touch
      untracked files, so a tracked-only restore leaves these behind. The gitignored
@@ -289,7 +289,7 @@ SERVICE=`; NODE|TS `lint-frontend`/`test-unit-frontend APP=`; IAC terraform vali
   3. **Never** revert a file that was already dirty at baseline (pre-existing WIP) — restore the
      delta only. End the run by asserting the tracked tree equals the baseline.
   4. **This snapshot/restore is DRY-RUN-only.** It is the orchestrator's job; the per-phase
-     executor restores what _it_ dirtied, and this close-out is the authoritative backstop against
+     executor restores what *it* dirtied, and this close-out is the authoritative backstop against
      the Phase-0 baseline. In **CODE** the working-tree changes are the deliverable — see below.
 
 **CODE only:**
@@ -301,7 +301,7 @@ SERVICE=`; NODE|TS `lint-frontend`/`test-unit-frontend APP=`; IAC terraform vali
   `src/agents/hitl_gateway.py` trips a §14 dual-approval STOP.
 - **Never `git checkout`/revert/`git clean` the working tree in CODE** — the changes ARE the
   deliverable; the snapshot/restore rule above is **DRY-RUN-only**. The one thing to reconcile is
-  _incidental_ tooling churn (e.g. `.secrets.baseline` timestamp): leave it if it belongs with the
+  *incidental* tooling churn (e.g. `.secrets.baseline` timestamp): leave it if it belongs with the
   change, revert just that file if it doesn't — never touch the implemented `src/`/`tests/` edits.
 - Leave changes in the working tree **uncommitted and unstaged** for human review (no `git add`/
   commit/push). The human reviews the tree and drives Phases 7/12/13 (review-merge, release,
@@ -322,9 +322,8 @@ Write the FINAL-REPORT containing, in order (W13-T6, issue #371):
   registry, every ADR cited must exist, every evidence path must resolve, and the Ambiguity
   ledger must have no blocking open question or overdue assumption.
 
-
 0. **Run header** — `MODE` (DRY-RUN | CODE), `TIER` (TRIVIAL | STANDARD | GOVERNED | REGULATED, the
-   ADR-0064 scope axis — and the _effective_ tier if the safety valve escalated), `LANGUAGE` (+ the
+   ADR-0064 scope axis — and the *effective* tier if the safety valve escalated), `LANGUAGE` (+ the
    code location & validation targets it mapped to), spec path, SLUG, (DRY-RUN) the tracked files
    restored at close-out, and (CODE) the list of human gates the run STOPPED at and their resolution.
 1. **Summary + gate results** — one line per phase: phase, gate (**PASS/FAIL/N-A/BLOCKED**, plus
@@ -336,8 +335,8 @@ Write the FINAL-REPORT containing, in order (W13-T6, issue #371):
    (one row per acceptance criterion from the backlog/spec).
 3. **Task/sub-task table** —
    `| ID | Task | Phase | ADRs | Agent wall-clock | Human-equiv estimate | Status |`
-   - _Agent wall-clock_ = end − start from the recorded timestamps.
-   - _Human-equiv estimate_ = from `estimate_tshirt`: **XS≈0.5h · S≈2h · M≈4h · L≈8h · XL≈24h**,
+   - *Agent wall-clock* = end − start from the recorded timestamps.
+   - *Human-equiv estimate* = from `estimate_tshirt`: **XS≈0.5h · S≈2h · M≈4h · L≈8h · XL≈24h**,
      and **clearly label the column an ESTIMATE**.
    - End with **totals** for both columns and a **speedup ratio** (human-equiv ÷ agent wall-clock).
 4. **Evidence appendix** — log excerpts, **≤ 20 lines each**, referencing files in `logs/`.
@@ -357,7 +356,7 @@ sandbox. Leave baseline-dirty files and the gitignored `reports/<SLUG>/` sandbox
 the restored paths in the run header, then confirm the tracked tree matches the baseline.
 
 **CODE** — do **not** restore: the working-tree changes ARE the deliverable, so reverting them
-would destroy the work. Only verify the change set is the intended one and that any _incidental_
+would destroy the work. Only verify the change set is the intended one and that any *incidental*
 tooling churn (e.g. `.secrets.baseline` timestamp) is reconciled. Never run `git checkout`/`git
 clean` over the implementation.
 

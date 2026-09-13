@@ -111,4 +111,3 @@ evidence rather than prose that disappears. `scripts/governance/check_delivery_r
 validates the report against the generated spec registry (ADR-0085). The DoR risk class and
 the ADR-0064 tier are reconciled by one mapping table in `.claude/skills/deliver/SKILL.md`; a
 declared tier below its risk-class floor triggers `TIER_ESCALATION` at Phase 0.
-

@@ -29,18 +29,24 @@
 ## Immediate Mitigation
 
 1. **Check if infra is up:**
+
    ```bash
    kubectl get pods -n production -l app=postgresql
    docker compose ps postgresql   # local / staging
    ```
+
 2. **Restart connection pool** (restores connections without restarting app pods):
+
    ```bash
    kubectl rollout restart deployment/api-gateway -n production
    ```
+
 3. **Enable read-only mode** via feature flag if writes are the issue but reads are healthy:
+
    ```bash
    kubectl apply -f infrastructure/feature-flags/flags/read-only-mode.yaml
    ```
+
 4. **If pool exhausted — scale down traffic** by reducing HPA `maxReplicas` temporarily to reduce concurrent connection demand.
 
 ---

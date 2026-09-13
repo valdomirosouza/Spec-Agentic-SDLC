@@ -22,6 +22,7 @@ an Agentic AI Copilot will consume to reduce MTTD/MTTR — the agent itself is o
 ## Risk class
 
 **MEDIUM-HIGH.** Drivers:
+
 - **Untrusted ingestion boundary** (`POST /ingestion` accepts external log batches) → STRIDE pass required (§11).
 - **PII processing** (client IP, L-classified telemetry) → DPIA/RIPD review required (CLAUDE.md §3.1).
 - **AuthN/abuse surface** (API-key auth, rate limiting) → OWASP A01/A07.
