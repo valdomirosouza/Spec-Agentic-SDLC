@@ -68,7 +68,9 @@ the main session's. Bindings respect the ≤ 2-skills-per-task budget (CLAUDE.md
 ## Governance
 
 Agents **recommend and prepare; humans approve, own, operate.** They validate inputs
-first (`blocked` + `reason` + halt on failure), stop at the nine mandatory human gates,
+first (`blocked` + `reason` + halt on failure), stop at the nine mandatory human gates
+(phases 2, 4, 5, 7, 10, 11, 12, 13, 14 — the nine agents that declare `--human-gate`; distinct from
+the thirteen phases marked `blocking: true`, four of which block on machine criteria alone),
 and never autonomously merge, deploy, cut releases, or change autonomy flags
 (CLAUDE.md §3.3, ADR-0011/0053/0058). The Release and Production agents produce the
 plan and readiness verdict; a human executes the irreversible step.

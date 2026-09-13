@@ -16,7 +16,8 @@ the model card alone is the wrong unit of description.
 
 An agentic software-delivery system that reads specifications, proposes work, drafts artefacts and
 executes actions in a software repository **under mandatory human supervision**. It sits inside a
-15-phase lifecycle with nine human gates.
+15-phase lifecycle in which thirteen phases block and nine of them require a named human
+(phases 2, 4, 5, 7, 10, 11, 12, 13, 14); the other four block on machine criteria.
 
 | Property                | Value                                                                      |
 | ----------------------- | ---------------------------------------------------------------------------- |
@@ -66,7 +67,7 @@ outside the model's reach.
 
 | Question                                   | Answer                                                                  |
 | ------------------------------------------ | ------------------------------------------------------------------------- |
-| Who oversees?                              | The named reviewer at each of the nine gates; the approver at the HITL gateway |
+| Who oversees?                              | The named reviewer at each of the nine human gates; the approver at the HITL gateway |
 | Can a human decide not to use the output?  | Yes — rejection is a first-class outcome, and expiry rejects by default   |
 | Can a human reverse an executed action?    | Through the ordinary change path; irreversible actions require approval before execution, not after |
 | Can a human stop the system?               | Yes — autonomy to `NONE`, or disable the action type                     |

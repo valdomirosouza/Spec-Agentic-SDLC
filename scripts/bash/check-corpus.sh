@@ -19,7 +19,8 @@
 #   C8 governance invariants that must never regress: tests-first and mandatory tests in the
 #      tasks template; scripts never create/switch branches, push, merge or commit; constitution
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept;
-#      vcs.sh keeps its refusal list; asdd_state.py touches no version control
+#      vcs.sh keeps its refusal list; asdd_state.py touches no version control; the gate counts
+#      (13 blocking, 9 human) still match the agents and phase-gates.yaml
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
@@ -177,6 +178,13 @@ sys.exit(0 if ok else 1)
 PY2
 grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
     && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved" fail
+n_human=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | wc -l | tr -d " ")
+n_block=$(grep -c "blocking: true" docs/process/gates/phase-gates.yaml | tr -d " ")
+if [ "$n_human" = 9 ] && [ "$n_block" = 13 ]; then
+    result "gates: 13 blocking, 9 requiring a human" ok
+else
+    result "gates: 13 blocking, 9 requiring a human" fail "found $n_block blocking and $n_human human — update the docs that state these numbers, then this assertion"
+fi
 nref=$(grep -c 'refuse "' scripts/bash/vcs.sh 2>/dev/null || echo 0)
 [ "${nref:-0}" -ge 5 ] && grep -q 'gh pr merge' scripts/bash/vcs.sh \
     && result "vcs.sh keeps its refusal list (merge, release, deploy, push, protected branch)" ok "$nref refusals" \
