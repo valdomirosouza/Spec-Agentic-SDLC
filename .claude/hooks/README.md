@@ -45,6 +45,28 @@ echo '{"tool_name":"Bash","tool_input":{"command":"git push"},"agent_type":"phas
 # → {"hookSpecificOutput": {... "permissionDecision": "deny" ...}}
 ```
 
+## `sdd-gate.py` — UserPromptSubmit gate for the code-producing `/sdd-*` commands (ADR-0092, #22)
+
+A `UserPromptSubmit` hook that runs only when the prompt **starts** with `/sdd-plan`, `/sdd-tasks`,
+`/sdd-implement` or `/sdd-taskstoissues` (mentioning a command mid-sentence does nothing). It calls
+`scripts/bash/check-prerequisites.sh --json --require-spec` for the active feature and:
+
+| Situation                                          | Result                                                                 |
+| -------------------------------------------------- | ---------------------------------------------------------------------- |
+| spec `draft` / `in-review` / `superseded`          | **exit 2** — prompt blocked; stderr names the spec, status and Constitution I |
+| spec `approved` / `implemented`                    | exit 0 — prints a checked/unchecked table per `checklists/*.md` as context; unchecked items remain a human "proceed anyway?" |
+| no active feature, missing script, malformed input | exit 0 — fails open (a one-line context note when the feature cannot be resolved) |
+
+It never edits files and never runs git. It is the spec-kit `before_<command>` hook shape adopted
+by ADR-0092; the `after_` shape (a `Stop` hook that forces the agent to continue) was refused.
+
+**Test it**
+
+```bash
+echo '{"user_prompt":"/sdd-implement"}' | CLAUDE_PROJECT_DIR=$PWD python3 .claude/hooks/sdd-gate.py ; echo "exit=$?"
+python3 tests/hooks/test_sdd_gate.py
+```
+
 **Bypass** (rare, deliberate): comment out the hook in `.claude/settings.json`, or run the command
 outside Claude Code. Changes to `settings.json` hooks are re-reviewed by Claude Code on next start
 for safety, so a teammate pulling this will be prompted to approve the hook before it activates.

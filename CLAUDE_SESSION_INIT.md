@@ -34,7 +34,7 @@ Do not create those files here; do not treat their absence as a defect.
 | Path                                 | Why sensitive                                                    |
 | ------------------------------------ | ---------------------------------------------------------------- |
 | `memory/constitution.md`             | Root of authority; protected articles I, II, V, VII, IX          |
-| `.claude/hooks/`, `.claude/settings.json` | High-risk-action guard (never push/merge/release/deploy)    |
+| `.claude/hooks/`, `.claude/settings.json` | High-risk-action guard (never push/merge/release/deploy) and the sdd-gate (no code-producing `/sdd-*` command on an unapproved spec) |
 | `.claude/skills/sdd-*/`              | The `/sdd-*` workflow; changes must stay consistent with ADR-0090 |
 | `templates/`, `scripts/bash/`        | Executable templates and helpers every feature bundle depends on |
 | `docs/adr/`                          | Binding decisions; numbering must stay contiguous                |

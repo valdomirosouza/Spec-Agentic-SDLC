@@ -22,6 +22,7 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -181,6 +182,11 @@ assert d['tracked_paths'], 'tracked_paths'
 print(f"{d['repository']} {d['commit']} ({d['release']}), review due {d['next_review_due']}")
 PY3
 ); then result "spec-kit-upstream.json" ok "$out"; else result "spec-kit-upstream.json" fail "$out"; fi
+
+if $HOOK; then
+    say "C11 sdd-gate UserPromptSubmit hook"
+    if out=$(python3 tests/hooks/test_sdd_gate.py 2>&1); then result "tests/hooks/test_sdd_gate.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/hooks/test_sdd_gate.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+fi
 
 if $HOOK; then
     say "C5 high-risk-action guard"

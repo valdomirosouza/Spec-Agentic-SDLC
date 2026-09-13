@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `.claude/hooks/sdd-gate.py` — `UserPromptSubmit` hook that blocks `/sdd-plan`, `/sdd-tasks`,
+  `/sdd-implement` and `/sdd-taskstoissues` on an unapproved spec and surfaces the checklist
+  state; 11 tests in `tests/hooks/`, run by `check-corpus.sh` C11; ADR-0092 → Accepted (#22).
 - ADR-0092 (Proposed): spec-kit `before_/after_<command>` hooks mapped to Claude Code hooks —
   `UserPromptSubmit` gate for the code-producing `/sdd-*` commands adopted (to implement),
   `Stop`-based continuation refused (Constitution V) (#20).

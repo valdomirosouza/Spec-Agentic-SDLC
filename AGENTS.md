@@ -15,8 +15,8 @@ behavioural contract and `CLAUDE_SESSION_INIT.md` the session primer — read bo
 
 | Agent           | Commands                                                            | Location                          | Also gets                                                       | Does **not** get                                                                 |
 | --------------- | ------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Claude Code     | `/sdd-*` (10) + `/deliver` + one skill per `skills/**/*.md`         | `.claude/skills/` (canonical)     | `CLAUDE.md`, delivery subagents (`.claude/agents/`), personas, **PreToolUse high-risk-action guard** (`.claude/settings.json`) | —                                                                                |
-| GitHub Copilot  | `sdd-*` (10), rendered                                              | `.github/skills/<name>/SKILL.md`  | this file                                                       | `/deliver`, delivery subagents, personas, the PreToolUse guard                   |
+| Claude Code     | `/sdd-*` (10) + `/deliver` + one skill per `skills/**/*.md`         | `.claude/skills/` (canonical)     | `CLAUDE.md`, delivery subagents (`.claude/agents/`), personas, **PreToolUse high-risk-action guard** and **UserPromptSubmit sdd-gate** (`.claude/settings.json`, ADR-0092) | —                                                                                |
+| GitHub Copilot  | `sdd-*` (10), rendered                                              | `.github/skills/<name>/SKILL.md`  | this file                                                       | `/deliver`, delivery subagents, personas, the PreToolUse guard and the sdd-gate |
 | Cursor          | `sdd-*` (10), rendered                                              | `.cursor/skills/<name>/SKILL.md`  | this file                                                       | same as Copilot                                                                  |
 | Codex CLI       | `sdd-*` (10), rendered (`$sdd-<name>`)                              | `.agents/skills/<name>/SKILL.md`  | this file                                                       | same as Copilot                                                                  |
 | Gemini CLI      | `sdd-*` (10), rendered as TOML (`{{args}}`)                         | `.gemini/commands/<name>.toml`    | this file                                                       | same as Copilot                                                                  |
@@ -24,9 +24,10 @@ behavioural contract and `CLAUDE_SESSION_INIT.md` the session primer — read bo
 
 The rendered copies are generated from `.claude/skills/sdd-*/SKILL.md` by
 `scripts/bash/render-commands.sh`; never edit a copy (`check-corpus.sh` C9 rejects drift).
-Agents without the PreToolUse guard must apply §5 themselves: the guard is a Claude Code hook
-that denies push/merge/release/deploy for subagents and asks in the main session — other tools
-have no equivalent enforcement here.
+Agents without the two hooks must apply §5 themselves: the PreToolUse guard denies
+push/merge/release/deploy for subagents and asks in the main session, and the sdd-gate blocks
+`/sdd-plan`, `/sdd-tasks`, `/sdd-implement` and `/sdd-taskstoissues` on an unapproved spec — other
+tools have no equivalent enforcement here.
 
 ## 2. Repository orientation
 
