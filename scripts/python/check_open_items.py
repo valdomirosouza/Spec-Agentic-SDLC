@@ -25,13 +25,33 @@ import re
 import sys
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-HEADING = re.compile(r"^#+\s+.*Open items", re.I)
+# Every heading the corpus actually uses to record deferred governance work. The first version
+# matched the literal `Open items`, and `docs/data/data-catalog.md` writes `### Open finding`,
+# singular — so the one live open finding in the whole corpus, DQ-REG-006, fell outside the check
+# written to stop undated deferrals (R7-T2).
+#
+# Deliberately NOT covered, each for a stated reason rather than to keep the count tidy:
+#   `Open questions` — spec §15, with its own gate (check_open_questions.py); covering it here
+#                      would double-report and the two vocabularies differ.
+#   `Open Work`      — a shell snippet in the session primer, not a table.
+#   `Open P2/P3 …`   — an on-call shift handover: operational, not deferred governance work.
+# Numbered and prefixed headings count: the corpus writes `## 10. Open items` as well as
+# `## Open items`. Anchoring "open" straight after the hashes dropped most of the tables,
+# which the floors below caught immediately.
+HEADING = re.compile(r"^#+\s+.*\bopen\s+(items?|findings?)\b", re.I)
 ISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
 ON_EVENT = re.compile(r"^on-event:\s*\S")
 # Rows that are the table's own furniture, not items.
 FURNITURE = {"", "-", "—", "resolve by", "prazo", "when", "due", "suggested target",
              "target", "resolve when"}
 DONE = ("✅", "~~")
+_TABLES = set()
+
+
+# Floors, raised deliberately. Renaming a covered heading makes its rows vanish from the count and
+# every remaining item still passes, so a silent scope collapse would look exactly like success.
+MIN_TABLES = 11
+MIN_ITEMS = 30
 
 
 def rows():
@@ -50,6 +70,7 @@ def rows():
         for n, line in enumerate(lines, 1):
             if HEADING.match(line):
                 inside = True
+                _TABLES.add(rel)
                 continue
             if inside and line.startswith("#"):
                 inside = False
@@ -97,6 +118,19 @@ def main(argv=None):
     dated, evented, unmarked = buckets["dated"], buckets["on-event"], buckets["unmarked"]
 
     if a.check:
+        scope = []
+        if len(_TABLES) < MIN_TABLES:
+            scope.append(f"only {len(_TABLES)} open-item table(s) found, floor is {MIN_TABLES} — "
+                         f"a heading was renamed and its rows left the check silently")
+        items = len(dated) + len(evented) + len(unmarked)
+        if items < MIN_ITEMS:
+            scope.append(f"only {items} open item(s) found, floor is {MIN_ITEMS}")
+        if scope:
+            for line in scope:
+                print(line, file=sys.stderr)
+            print("  raise the floors in check_open_items.py deliberately if the shrink is real",
+                  file=sys.stderr)
+            return 1
         if overdue:
             print(f"{len(overdue)} open item(s) past their date:", file=sys.stderr)
             for rel, n, cell, days in overdue:
@@ -111,13 +145,15 @@ def main(argv=None):
                 print(f"  {rel}:{n}  {cell[:60]}")
             return 0
         if not a.quiet:
-            print(f"open items: {len(dated)} dated, {len(evented)} on-event, none overdue")
+            print(f"open items: {len(dated)} dated, {len(evented)} on-event, none overdue, "
+                  f"across {len(_TABLES)} table(s)")
         return 0
 
     print(f"dated:     {len(dated)}")
     print(f"on-event:  {len(evented)}")
     print(f"unmarked:  {len(unmarked)}")
     print(f"overdue:   {len(overdue)}")
+    print(f"tables:    {len(_TABLES)}  ({', '.join(sorted(_TABLES))})")
     for rel, n, cell in unmarked:
         print(f"  UNMARKED  {rel}:{n}  {cell[:70]}")
     for rel, n, cell, days in overdue:

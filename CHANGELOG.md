@@ -29,6 +29,9 @@ authorises them.
 - The coverage ratchet records the check **names**, not only the counts. Guarding the ratio alone
   inverted the incentive: a ratio rises when its denominator shrinks, so deleting twenty unproved
   checks moved coverage from 32% to 52% and the gate approved it (#79).
+- The open-item checker covers `Open finding(s)` headings and numbered headings, not only the
+  literal `Open items`, and carries floors on the number of tables and items it sees. DQ-REG-006,
+  the corpus's only live open finding, sat outside the old scope (#80).
 - `scripts/python/check_open_items.py` — every open item now carries an ISO date, which fails once
   it passes, or a declared `on-event: <trigger>`. All 31 were prose deferrals to a review nothing
   convenes, so none could ever come due; 11 became the next quarterly date and 19 a named trigger

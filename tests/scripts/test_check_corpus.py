@@ -196,6 +196,16 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("scripts/bash/check-corpus.sh", 'result "bash -n"', 'result "bash -n gone"'),
             "mutation coverage has not fallen")
 
+    def test_renaming_an_open_items_heading_is_caught(self):
+        """R7-T2. Scope was keyed to the literal `Open items`, so `### Open finding` in the data
+        catalogue fell outside it — taking DQ-REG-006, the corpus's only live open finding, with it.
+        A silent scope collapse looks exactly like success: every remaining item still passes."""
+        self.assert_mutation_is_caught(
+            # `## 10. Open items` — the corpus numbers its headings, which is also what broke the
+            # first attempt at widening the pattern.
+            Mutation("specs/data/data-quality.md", "## 10. Open items", "## 10. Pending"),
+            "open items carry a date")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

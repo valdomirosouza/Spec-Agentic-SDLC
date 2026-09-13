@@ -70,7 +70,7 @@ threat-model as a duplicate. A rule that fires on correct data is a defect in th
 
 | Rule | Severity | Finding | Owner | Resolve by |
 | --- | --- | --- | --- | --- |
-| DQ-REG-006 | major | `specs/api/SPEC-API-003-pagination.md` is marked `implemented` with an empty `verified_by`, so the status is a claim with nothing named behind it. Its companion SPEC-API-002 was corrected from its own body, which named the test; this one names none, and inventing a path would violate Constitution IX. | Tech Lead | Next quarterly cycle |
+| DQ-REG-006 | major | `specs/api/SPEC-API-003-pagination.md` is marked `implemented` with an empty `verified_by`, so the status is a claim with nothing named behind it. Its companion SPEC-API-002 was corrected from its own body, which named the test; this one names none, and inventing a path would violate Constitution IX. | Tech Lead | 2026-12-13 |
 
 A `major` alerts and does not block (`specs/data/data-quality.md` §4), so C15 reports it on every
 run until it is closed. That is the intended behaviour: a finding with an owner, visible every
