@@ -190,6 +190,8 @@ Full 15-phase (0–14) lifecycle: `docs/process/WORKFLOW.md` (ADR-0052, ADR-0058
 8.  RUN guardrails: pii_filter, prompt_injection_guard, output_sanitizer, audit_logger.
 9.  UPDATE docs/adr/ if a new architectural decision was made.
 10. UPDATE CHANGELOG.md under the correct category.
+11. SCOPE the diff: every changed line traces to step 4's issue. Adjacent code you noticed but were
+    not asked to change gets mentioned, not edited (`skills/engineering/change-discipline.md`).
 ```
 
 ---
@@ -326,6 +328,7 @@ Cross-cutting compliance/privacy/security obligations bind by _what a task touch
 | Spec writing, SDD lifecycle                            | `skills/sdlc/spec-lifecycle.md`                   | Writing/reviewing a spec                                                     |
 | Agentic session bootstrap                              | `skills/sdlc/agent-onboarding.md`                 | Start of every agentic session                                               |
 | Aggregates, entities, repositories, DDD                | `skills/domain/domain-modeling.md`                | Any domain model / new entity / service layer                                |
+| Editing existing code, scoping a change                | `skills/engineering/change-discipline.md`         | Any edit to code or docs you did not write                  |
 | Test pyramid, coverage, markers, contracts             | `skills/engineering/testing-strategy.md`          | Writing/reviewing/debugging tests                                            |
 | Ethical AI review, bias, EU AI Act                     | `skills/ethics/ethical-ai-review.md`              | Any AI feature, new action_type, autonomy change                             |
 | SOX audit, financial data                              | `skills/compliance/sox.md`                        | **SEC-listed only.** Financial-data path change                              |
@@ -376,6 +379,7 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `security`, `privacy`
 
 ## 7. PR Checklist (enforce before suggesting merge)
 
+- [ ] **Every changed line traces to the issue.** No adjacent improvement, no unrequested refactor, no formatting drift; orphans removed only where this change created them (`skills/engineering/change-discipline.md`)
 - [ ] References a GitHub Issue with linked spec
 - [ ] ADRs updated if architectural decisions changed
 - [ ] CHANGELOG.md updated

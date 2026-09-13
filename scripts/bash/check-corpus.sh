@@ -212,6 +212,15 @@ ratio_bad=$(grep -rniE '(≈|~|about )?[0-9]+(\.[0-9]+)?\s*(×|x)\s*(faster|quic
 [ -z "$ratio_bad" ] && result "no unqualified speedup ratio is published" ok || { result "no unqualified speedup ratio is published" fail "$(printf '%s' "$ratio_bad" | head -3)"; }
 # `python` is not on PATH on macOS or a stock Debian/Ubuntu. The agents shipped 20 invocations of
 # it, so the delivery layer could not start (R4-T1). Only `python3` is portable here.
+# The change-discipline skill is the corpus's only rule about the SCOPE of a change. It is a
+# review item, not a gate — scope is not a property a test can assert — so the invariant checks
+# that the rule is still reachable, not that a diff obeyed it.
+for f in skills/engineering/change-discipline.md .claude/skills/change-discipline/SKILL.md; do
+    [ -f "$f" ] || { result "change-discipline skill present" fail "$f missing"; break; }
+done
+grep -q 'change-discipline' CLAUDE.md \
+    && result "change-discipline is in the activation table and the PR checklist" ok \
+    || result "change-discipline is in the activation table and the PR checklist" fail
 bare_py=$(grep -rn '\bpython [a-z_/]*\.py' .claude/agents/*.md docs/sdlc/*.md 2>/dev/null | grep -v 'python3' || true)
 [ -z "$bare_py" ] && result "documented agent commands use python3, not bare python" ok || { result "documented agent commands use python3, not bare python" fail "$(printf '%s' "$bare_py" | head -3)"; }
 n_human=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | wc -l | tr -d " ")

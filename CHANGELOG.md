@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `skills/engineering/change-discipline.md` — the Karpathy guidelines wired into the skill system
+  as a corpus skill, with the two principles the constitution already binds kept as pointers and
+  **Surgical Changes** adopted as the rule the corpus lacked; PR checklist and the 10-step workflow
+  gain the scope item (#64, #65).
 - The "160x faster" claim (withdrawn — see below) and the `/deliver` instruction that generated it removed;
   the metrics report gains a Productivity section with the measured side only and the four things
   a legitimate ratio would require; a C8 invariant blocks an unqualified delivery-throughput ratio
