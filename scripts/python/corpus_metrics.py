@@ -296,7 +296,7 @@ def render(m):
             "`/deliver` skill, because correcting the output while leaving the generator would have",
             "produced the same claim on the next run.",
             "",
-            f"_{t['not_a_ratio']}_",
+            f"*{t['not_a_ratio']}*",  # asterisk: MD049 in this corpus expects asterisk emphasis
             "",
             "**What a legitimate ratio would require**, none of which exists yet:",
             "",
@@ -348,28 +348,54 @@ def main():
         return 0
     if a.check:
         import glob as _g
+        import re as _re
         reports = sorted(_g.glob(os.path.join(ROOT, "docs", "sre", "corpus-metrics-*.md")))
         if not reports:
             print("no corpus-metrics report on disk")
             return 1
         latest = reports[-1]
         on_disk = open(latest, encoding="utf-8").read()
-        # Compare the structure and the stated method, not the live numbers: commits and CI runs
-        # change between the report and any later run, and failing on that would be noise.
-        fresh = render(m)
-        drift = [h for h in ("## 1. Delivery", "## 2. Change quality", "## 3. Corpus shape",
-                             "## 4. Productivity", "## 5. Not measurable here")
-                 if (h in fresh) != (h in on_disk)]
-        stale = [u["metric"] for u in m["unavailable"] if u["metric"] not in on_disk]
-        if drift or stale:
+        problems = []
+
+        # Structure. Comparing headings alone was the whole of the previous check, which is why a
+        # report publishing 531 files against 532 live passed as "structure current" (R5-T5).
+        for h in ("## 1. Delivery", "## 2. Change quality", "## 3. Corpus shape",
+                  "## 4. Productivity", "## 5. Not measurable here"):
+            if h not in on_disk:
+                problems.append(f"section missing: {h}")
+        for u in m["unavailable"]:
+            if u["metric"] not in on_disk:
+                problems.append(f"unmeasurable metric not listed: {u['metric']}")
+
+        # Structural numbers: these move only when the corpus changes, so a difference is staleness.
+        k = m["corpus"]
+        for label, live in (("Markdown files", k["markdown_files"]),
+                            ("Executable lines (scripts + hooks)", k["executable_lines"]),
+                            ("Test lines", k["test_lines"]),
+                            ("Verification lines (scripts + hooks + tests)", k["verification_lines"]),
+                            ("Check families in `check-corpus.sh`", k["check_families"]),
+                            ("ADRs", k["adrs"])):
+            mm = _re.search(rf"\| {_re.escape(label)} \| ([0-9]+) \|", on_disk)
+            if not mm:
+                problems.append(f"row missing: {label}")
+            elif int(mm.group(1)) != live:
+                problems.append(f"{label}: report says {mm.group(1)}, live is {live}")
+        mm = _re.search(r"\| Prose to verification ratio \| ([0-9.]+) : 1 \|", on_disk)
+        if not mm:
+            problems.append("row missing: Prose to verification ratio")
+        elif abs(float(mm.group(1)) - k["prose_to_verification_ratio"]) > 0.05:
+            problems.append(f"ratio: report says {mm.group(1)}, live is {k['prose_to_verification_ratio']}")
+
+        # Commits and CI runs move on their own between a report and any later run, so they are
+        # deliberately NOT compared: failing on them would be noise, not staleness.
+
+        if problems:
             print(f"{os.path.relpath(latest, ROOT)} is out of date — run: corpus_metrics.py --report")
-            for d in drift:
-                print(f"  section changed: {d}")
-            for u in stale:
-                print(f"  unmeasurable metric not listed: {u}")
+            for p_ in problems:
+                print(f"  {p_}")
             return 1
         if not a.quiet:
-            print(f"{os.path.relpath(latest, ROOT)}: structure current")
+            print(f"{os.path.relpath(latest, ROOT)}: current")
         return 0
     if a.report:
         rel = os.path.join("docs", "sre", f"corpus-metrics-{m['generated_at'][:10]}.md")
