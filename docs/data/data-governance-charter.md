@@ -94,7 +94,7 @@ custodian by role. A dataset with an unnamed owner is a finding, not a gap to to
 3. **Contract** it if anyone outside the producing domain reads it.
 4. **Measure** it: at least one quality rule per declared expectation ([`../../specs/data/data-quality.md`](../../specs/data/data-quality.md)).
 5. **Trace** it: lineage from source to consumption ([`../../specs/data/data-lineage.md`](../../specs/data/data-lineage.md)), so impact analysis and data-subject requests can be answered.
-6. **Datasheet** it if it will ever feed or evaluate a model.
+6. **Datasheet** it ([`../../templates/datasheet-template.md`](../../templates/datasheet-template.md)) if it will ever feed or evaluate a model.
 
 Steps 1 and 2 are required before the dataset is used by anything. Steps 3 to 6 are required
 before it crosses a domain boundary, feeds a decision, or feeds a model.

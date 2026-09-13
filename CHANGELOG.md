@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `templates/datasheet-template.md` (Datasheets for Datasets extended with licence, lawful basis
+  and mandatory exclusion criteria) and the first instance,
+  `docs/data/datasheets/agent-memory-documents.md`, published as `draft` with six unresolved rows
+  so the dataset is explicitly not cleared for model use (#33).
 - `specs/data/data-lineage.md` — the forward (impact) and backward (provenance) questions, dataset
   granularity with field level for L1/L2 only, the `classification_effect` of each transform,
   three capture points with trace reconciliation, the data-subject-request walk, and decay
