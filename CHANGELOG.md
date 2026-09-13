@@ -13,6 +13,8 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `check-corpus.sh` C8: governance invariants asserted (tests-first template, no git side effects
+  in scripts, constitution articles and version line, PreToolUse guard, `--require-approved`) (#15).
 - `scripts/python/adopter_paths.py` (check / inventory / mark) and the generated
   `docs/reference/adopter-provided-paths.md`; every file naming an adopter-provided path now
   carries the `adopter-paths` marker, enforced as `check-corpus.sh` C7 (#14).

@@ -16,6 +16,9 @@
 #   C6 tests/scripts/test_scripts.sh (behavioural tests of the scripts in a scratch repository)
 #   C7 every file naming an adopter-provided path (src/, make targets, services.yaml, …) carries
 #      the corpus banner or the adopter-paths marker (scripts/python/adopter_paths.py --check)
+#   C8 governance invariants that must never regress: tests-first and mandatory tests in the
+#      tasks template; scripts never create/switch branches, push, merge or commit; constitution
+#      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -133,6 +136,29 @@ fi
 
 say "C7 adopter-path markers"
 if out=$(python3 scripts/python/adopter_paths.py --check 2>&1); then result "adopter-paths" ok "$(printf '%s' "$out" | head -1)"; else result "adopter-paths" fail "$(printf '%s' "$out" | head -1)"; printf '%s\n' "$out" | sed -n '2,15p' | sed 's/^/      /'; fi
+
+say "C8 governance invariants (finding 8 of the spec-kit comparison)"
+inv_bad=0
+grep -q '^### Tests first' templates/tasks-template.md && grep -q 'tests are NOT optional (Constitution II)' templates/tasks-template.md \
+    && result "tasks-template keeps tests-first and mandatory tests" ok || { result "tasks-template keeps tests-first and mandatory tests" fail; inv_bad=1; }
+gitcmd=$(grep -nE 'git (checkout|switch|push|merge|commit|rebase|reset)' scripts/bash/*.sh | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | grep -vE 'echo|printf|"[^"]*git (checkout|switch)' || true)
+[ -z "$gitcmd" ] && result "scripts never checkout/switch/push/merge/commit" ok || { result "scripts never checkout/switch/push/merge/commit" fail "$gitcmd"; }
+art_missing=""
+for a in "I. Specification First" "II. Test-Backed Change" "III. Privacy by Design" "IV. Security Gates Are Not Optional" "V. Human Oversight of Agents" "VI. Observability Is Part of Done" "VII. Traceability and Auditability" "VIII. Simplicity and No Gold-Plating" "IX. Grounding and Non-Fabrication"; do
+    grep -q "^### $a" memory/constitution.md || art_missing="$art_missing [$a]"
+done
+grep -qE '^\*\*Version\*\*: [0-9]+\.[0-9]+\.[0-9]+ \| \*\*Ratified\*\*: [0-9]{4}-[0-9]{2}-[0-9]{2} \| \*\*Last Amended\*\*: [0-9]{4}-[0-9]{2}-[0-9]{2}' memory/constitution.md || art_missing="$art_missing [version line]"
+[ -z "$art_missing" ] && result "constitution has articles I–IX and a version line" ok || result "constitution has articles I–IX and a version line" fail "missing:$art_missing"
+python3 - <<'PY2' && result "settings.json keeps the PreToolUse high-risk guard" ok || result "settings.json keeps the PreToolUse high-risk guard" fail
+import json,sys
+s=json.load(open('.claude/settings.json'))
+hooks=s.get('hooks',{}).get('PreToolUse',[])
+ok=any('high-risk-action-guard.py' in h.get('command','') and h.get('type')=='command'
+       for m in hooks for h in m.get('hooks',[]) if any(t in m.get('matcher','') for t in ('Bash','Edit','Write')))
+sys.exit(0 if ok else 1)
+PY2
+grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
+    && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved" fail
 
 if $HOOK; then
     say "C5 high-risk-action guard"
