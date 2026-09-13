@@ -62,7 +62,7 @@ component, key grammar, threshold, edge case, and test is pinned. This is the co
 depends on.
 
 - System spec: [`../specs/system/SPEC-LGS-001-log-based-golden-signals.md`](../specs/system/SPEC-LGS-001-log-based-golden-signals.md)
-- Feature spec: [`../specs/features/SPEC-LGS-001-golden-signals-feature-spec.md`](../specs/features/SPEC-LGS-001-golden-signals-feature-spec.md)
+- Feature spec: [`../specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md`](../specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md)
 
 ## Phase 5 — Architecture (ADRs + threat model)
 

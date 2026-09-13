@@ -35,11 +35,11 @@
 | SPEC-COMP-001 | spec | approved | Tech Lead, DevOps Lead |  | `specs/compliance/iso27001-change-management.md` | ADR-0027 | 2 | 0 | 0 |
 | SPEC-COMP-002 | spec | approved | Tech Lead, Security Lead |  | `specs/compliance/sox-controls.md` | ADR-0026 | 1 | 0 | 0 |
 | SPEC-ETH-001 | policy | approved | AI Governance Lead |  | `specs/ethics/ethical-ai-principles.md` | ADR-0011, ADR-0015, ADR-0016 | 0 | 0 | 0 |
-| SPEC-FEAT-001 | feature-spec | implemented | Tech Lead | #357 | `specs/features/FEAT-001/feature-spec.md` | ADR-0006, ADR-0043, ADR-0089 | 2 | 2 | 0 |
+| SPEC-FEAT-001 | feature-spec | implemented | Tech Lead | #357 | `specs/features/SPEC-FEAT-001-http-golden-signals/spec.md` | ADR-0006, ADR-0043, ADR-0089 | 2 | 2 | 0 |
 | SPEC-GOV-001 | policy | approved | unassigned |  | `specs/governance/team-topology.md` |  | 0 | 0 | 0 |
 | SPEC-INFRA-001 | spec | approved | valdomirosouza |  | `specs/infrastructure/SPEC-INFRA-001-aws-platform-terraform.md` | ADR-0003, ADR-0004, ADR-0012, ADR-0018, ADR-0019, ADR-0020, ADR-0026, ADR-0027, ADR-0029 | 1 | 0 | 0 |
 | SPEC-K8S-001 | spec | approved | unassigned |  | `specs/k8s/probe-strategy.md` | ADR-0042 | 2 | 0 | 0 |
-| SPEC-LGS-001 | feature-spec | draft | valdomirosouza |  | `specs/features/SPEC-LGS-001-golden-signals-feature-spec.md` | ADR-0003, ADR-0011, ADR-0012, ADR-0020, ADR-0026, ADR-0066, ADR-0067 | 0 | 0 | 0 |
+| SPEC-LGS-001 | feature-spec | draft | valdomirosouza |  | `specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md` | ADR-0003, ADR-0011, ADR-0012, ADR-0020, ADR-0026, ADR-0066, ADR-0067 | 0 | 0 | 0 |
 | SPEC-LGS-001 | spec | draft | valdomirosouza |  | `specs/system/SPEC-LGS-001-log-based-golden-signals.md` | ADR-0003, ADR-0011, ADR-0012, ADR-0020, ADR-0025, ADR-0026, ADR-0029, ADR-0066 | 0 | 0 | 0 |
 | SPEC-LGS-001 | threat-model | draft | Security Lead |  | `specs/security/threat-model-SPEC-LGS-001-golden-signals.md` | ADR-0011, ADR-0012, ADR-0019, ADR-0020, ADR-0026, ADR-0066, ADR-0067, ADR-0068, ADR-0069 | 0 | 0 | 0 |
 | SPEC-OBS-001 | spec | approved | SRE Lead |  | `specs/observability/agent-performance.md` | ADR-0004 | 1 | 1 | 0 |

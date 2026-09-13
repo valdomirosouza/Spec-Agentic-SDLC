@@ -72,7 +72,7 @@ This satisfies EU AI Act transparency requirements (Article 13) and provides the
    | ----------------- | ------------------------------------------------------- | ----------------------------------- |
    | `discovery.md`    | Product Owner + Tech Lead                               | Viability confirmed                 |
    | `nfr.md`          | Security Lead (required) + Tech Lead                    | Security Lead approval is mandatory |
-   | `feature-spec.md` | Tech Lead + Security Lead (if security surface changed) | CI governance + spec lint           |
+   | `spec.md`         | Tech Lead + Security Lead (if security surface changed) | CI governance + spec lint           |
 
 ---
 

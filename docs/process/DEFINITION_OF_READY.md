@@ -18,7 +18,7 @@ A GitHub Issue may **not** enter a sprint until **ALL** of the following criteri
 - [ ] **NFR doc approved** — `docs/product/FEAT-{id}/nfr.md` exists and has been approved by the Security Lead, OR "N/A: no new PII surface or security threat" is explicitly stated and confirmed by Tech Lead
 - [ ] **Acceptance criteria written** — an AC table (AC → FR → one-line Given/When/Then → verified-by) in the Issue body or spec §2, reviewed by Product Owner; EARS-phrased FRs; Gherkin scenarios are an optional companion (docs/product/acceptance-criteria-standard.md, W13-T8)
 - [ ] **Open questions resolved** — the spec's *Open Questions* section is empty or every item is marked resolved/decided/deferred with an ADR, RFC or issue reference; assumptions carried from discovery are listed. Enforced for `approved`/`implemented` specs by `make check-open-questions` (W11-T5).
-- [ ] **Feature spec template created** — `specs/features/FEAT-{id}/feature-spec.md` exists with sections 1–5 complete (Goal, User Stories, API Delta, Event Delta, Data Model)
+- [ ] **Feature spec template created** — `specs/features/<SPEC-ID>-<slug>/spec.md` exists with sections 1–5 complete (Goal, User Stories, API Delta, Event Delta, Data Model)
 - [ ] **Size label applied** — one of `size: S`, `size: M`, `size: L`, `size: XL`
 - [ ] **Component labels applied** — one or more of `component: api`, `component: frontend`, `component: infra`, `component: agent`
 - [ ] **Risk class assigned** (ADR-0058 Phase 0) — one of: small fix · normal feature · high-risk feature · AI/LLM/agentic feature · security-sensitive · infrastructure/platform. Determines which downstream gates apply (risk-based flow).

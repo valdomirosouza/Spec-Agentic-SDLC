@@ -547,7 +547,7 @@
       "kind": "feature-spec",
       "last_updated": "2026-09-12",
       "owner": "Tech Lead",
-      "path": "specs/features/FEAT-001/feature-spec.md",
+      "path": "specs/features/SPEC-FEAT-001-http-golden-signals/spec.md",
       "requirement_tests": [],
       "status": "implemented",
       "verified_by": [
@@ -571,7 +571,7 @@
       "kind": "feature-spec",
       "last_updated": "2026-09-12",
       "owner": "valdomirosouza",
-      "path": "specs/features/SPEC-LGS-001-golden-signals-feature-spec.md",
+      "path": "specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md",
       "requirement_tests": [],
       "status": "draft",
       "verified_by": []

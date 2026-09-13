@@ -92,7 +92,7 @@ many downstream gates apply. No code, no deploy.
 | ---- | -------- | --------------------------------------------------------------------- | ---------------------- |
 | 1    | ◈ Human  | Story Mapping — break feature into GitHub Issues with labels          | Issues with labels     |
 | 2    | ⚡ Agent | Draft acceptance criteria in Gherkin for Issues labeled `needs-ac`    | AC in Issue body       |
-| 3    | ⚡ Agent | Pre-populate `specs/features/FEAT-{id}/feature-spec.md` from template | Spec shell             |
+| 3    | ⚡ Agent | Pre-populate `specs/features/<SPEC-ID>-<slug>/spec.md` from template | Spec shell             |
 | 4    | ◈ Human  | Grooming Ceremony — review AC and spec; Definition of Ready checked   | Sprint board populated |
 
 **Gate:** Definition of Ready (see `docs/process/DEFINITION_OF_READY.md`) — all checklist criteria met.
@@ -103,7 +103,7 @@ many downstream gates apply. No code, no deploy.
 
 | Step | Actor    | Action                                                                                  | Output               |
 | ---- | -------- | --------------------------------------------------------------------------------------- | -------------------- |
-| 1    | ⚡ Agent | Write full `specs/features/FEAT-{id}/feature-spec.md` (SDD cycle, CLAUDE.md §2)         | Spec PR              |
+| 1    | ⚡ Agent | Write full `specs/features/<SPEC-ID>-<slug>/spec.md` (SDD cycle, CLAUDE.md §2)         | Spec PR              |
 | 2    | ◈ Human  | Spec Review PR — Tech Lead + Security Lead                                              | Approved spec merged |
 | 3    | ⚡ CI    | `harness/governance.yml` spec lint gate — spec exists, ADRs valid, agent config present | Gate green           |
 
@@ -274,7 +274,7 @@ Rollback: `make rollback` — must complete within MTTR target (`dora_mttr_targe
 | HITL Governance (pre-code) | `docs/process/HITL-GOVERNANCE.md`             |
 | Sprint Tracking            | `docs/process/SPRINT-TRACKING.md`             |
 | Retrospective Guide        | `docs/process/RETROSPECTIVE-GUIDE.md`         |
-| Feature Spec Template      | `.github/FEATURE_SPEC_TEMPLATE.md`            |
+| Feature Spec Template      | `templates/spec-template.md` (legacy: `.github/FEATURE_SPEC_TEMPLATE.md`) |
 | RFC Discussion Template    | `.github/DISCUSSION_TEMPLATE/rfc.md`          |
 | AI Behavioral Contract     | `CLAUDE.md`                                   |
 | SDD Cycle                  | `CLAUDE.md §2`                                |

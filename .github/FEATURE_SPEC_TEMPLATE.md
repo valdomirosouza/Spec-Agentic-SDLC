@@ -1,3 +1,9 @@
+<!-- LEGACY TEMPLATE (2026-09-12, ADR-0090, #6).
+     New feature specs use templates/spec-template.md inside the bundle
+     specs/features/<SPEC-ID>-<slug>/spec.md, created by scripts/bash/create-new-feature.sh
+     or /sdd-specify. This file is kept because SPEC-FEAT-001 and the adopting repository's
+     older specs follow its section numbering. Do not start new specs from it. -->
+
 # Feature Spec: {Feature Name}
 
 > **⚡ Agent-Generated:** This document was drafted by Claude Code on {date}.

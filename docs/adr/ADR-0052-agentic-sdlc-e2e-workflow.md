@@ -44,7 +44,7 @@ Adopt the **Agentic SDLC E2E Workflow** as a 13-phase lifecycle governing all fe
 | 1     | Conception          | Product Owner                   | GitHub Issue (feature_request template)             |
 | 2     | Discovery           | Agent (draft) → Human (review)  | `docs/product/FEAT-{id}/discovery.md`, `nfr.md`     |
 | 3     | Grooming            | Tech Lead                       | Issue reaches `status: ready`; DoR checklist passed |
-| 4     | Specification       | Agent (draft) → Human (approve) | `specs/features/FEAT-{id}/feature-spec.md`          |
+| 4     | Specification       | Agent (draft) → Human (approve) | `specs/features/<SPEC-ID>-<slug>/spec.md`          |
 | 5     | Architecture        | Tech Lead                       | ADR filed if needed                                 |
 | 6     | Development         | Developer / Agent               | Branch + implementation                             |
 | 7     | Code Review         | Human + AI-assisted             | PR merged; DoD checklist satisfied                  |
@@ -67,7 +67,7 @@ Adopt the **Agentic SDLC E2E Workflow** as a 13-phase lifecycle governing all fe
 | Definition of Ready                    | `docs/process/DEFINITION_OF_READY.md`                  |
 | Definition of Done                     | `docs/process/DEFINITION_OF_DONE.md`                   |
 | Definition of Release                  | `docs/process/DEFINITION_OF_RELEASE.md`                |
-| Feature spec template                  | `.github/FEATURE_SPEC_TEMPLATE.md`                     |
+| Feature spec template                  | `templates/spec-template.md` (amended by ADR-0090)      |
 | Spike issue template                   | `.github/ISSUE_TEMPLATE/spike.md`                      |
 | RFC discussion template                | `.github/DISCUSSION_TEMPLATE/rfc.md`                   |
 | Discovery artefact governance          | `docs/product/README.md`                               |
@@ -80,7 +80,7 @@ Adopt the **Agentic SDLC E2E Workflow** as a 13-phase lifecycle governing all fe
 
 **Q2 — Two-tier HITL governance:**
 
-- Tier 1 (Spec-as-PR): discovery.md, nfr.md, feature-spec.md reviewed via GitHub PR — the PR review IS the HITL equivalent for pre-code phases. These documents do NOT pass through `src/agents/hitl_gateway.py`.
+- Tier 1 (Spec-as-PR): discovery.md, nfr.md, spec.md reviewed via GitHub PR — the PR review IS the HITL equivalent for pre-code phases. These documents do NOT pass through `src/agents/hitl_gateway.py`.
 - Tier 2 (Runtime gateway): agent actions with real-world effects (API calls, DB writes, deployments) always route through `hitl_gateway.py`. This separation avoids blocking the spec workflow while preserving runtime safety.
 
 **Q5 — Non-blocking budget circuit breaker:**

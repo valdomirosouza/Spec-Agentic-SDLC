@@ -29,7 +29,7 @@ All documents in the following paths are governed via Spec-as-PR:
 | ------------------------------------------ | ----------------------------- | ----------------------------------------------- |
 | `docs/product/FEAT-{id}/discovery.md`      | Discovery Primer              | Product Owner + Tech Lead                       |
 | `docs/product/FEAT-{id}/nfr.md`            | NFR document                  | Security Lead (blocking) + Tech Lead            |
-| `specs/features/FEAT-{id}/feature-spec.md` | Feature specification         | Tech Lead + Security Lead (if security surface) |
+| `specs/features/<SPEC-ID>-<slug>/spec.md` | Feature specification         | Tech Lead + Security Lead (if security surface) |
 | `docs/adr/ADR-{nnnn}-*.md`                 | Architectural Decision Record | Tech Lead (1 required)                          |
 | `docs/process/`                            | Process documents             | Tech Lead + Governance Council                  |
 
@@ -130,7 +130,7 @@ When `MEDIUM_RISK` or `FULL` autonomy is enabled (HOTL mode), human monitors are
 | ----------------------------- | ------------------ | ----------------------------- | ---------------------------------- |
 | `discovery.md`                | Product Owner      | Tech Lead                     | Governance Council                 |
 | `nfr.md`                      | Security Lead      | Tech Lead                     | CISO                               |
-| `feature-spec.md`             | Tech Lead          | Security Lead                 | Governance Council                 |
+| `spec.md`                     | Tech Lead          | Security Lead                 | Governance Council                 |
 | HITL runtime approval         | Operator (Tier 1)  | Tech Lead (Tier 2 escalation) | Security Lead                      |
 | Autonomy level change         | AI Governance Lead | Security Lead                 | CTO                                |
 | `hitl_gateway.py` code change | Security Lead      | AI Governance Lead            | Governance Council (dual approval) |

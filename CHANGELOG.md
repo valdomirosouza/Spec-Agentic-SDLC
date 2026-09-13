@@ -17,6 +17,9 @@ authorises them.
 
 ### Changed
 
+- `specs/features/` uses one convention: `<SPEC-ID>-<slug>/spec.md` bundles. SPEC-FEAT-001 moved
+  from `FEAT-001/feature-spec.md`; README, process docs, gates, agents, issue templates and the
+  `feature-spec-lint` harness gate updated; `.github/FEATURE_SPEC_TEMPLATE.md` marked legacy (#6).
 - `CLAUDE.md` 2.9.0 (2026-09-12): §3 now maps each subsection to the constitution article it
   condenses and states the constitution's precedence; `CLAUDE_SESSION_INIT.md` rewritten for
   the corpus (identity, corpus-vs-adopter paths, critical paths, `/sdd-*` quick reference) (#4).

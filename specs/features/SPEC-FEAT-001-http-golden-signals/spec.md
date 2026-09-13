@@ -28,14 +28,16 @@ last_updated: 2026-09-12
 
 ---
 
-**FEAT-ID:** FEAT-001 | **Spec id:** SPEC-FEAT-001 | **Owner:** Tech Lead
+**Directory:** `specs/features/SPEC-FEAT-001-http-golden-signals/` (issue alias FEAT-001) | **Spec id:** SPEC-FEAT-001 | **Owner:** Tech Lead
 **ADR References:** ADR-0006 (observability), ADR-0043 (no PII in telemetry), ADR-0089 (reachability invariant)
 **NFR Reference:** `docs/product/FEAT-001/nfr.md`
 **GitHub Issue:** #357
 **Sprint:** Wave 12 (2026-09-12)
 
-> This spec is the first living instance of the `specs/features/FEAT-{issue}/` convention that
-> the 15-phase workflow, DoR/DoD and HITL-GOVERNANCE are written around. It is deliberately
+> This spec was the first living instance of the former `specs/features/FEAT-{issue}/feature-spec.md`
+> layout; moved to the `specs/features/<SPEC-ID>-<slug>/spec.md` bundle layout on 2026-09-12
+> (ADR-0090, #6). Section numbering follows the legacy `.github/FEATURE_SPEC_TEMPLATE.md`; new
+> specs use `templates/spec-template.md`. It is deliberately
 > small so every section is real.
 
 ---

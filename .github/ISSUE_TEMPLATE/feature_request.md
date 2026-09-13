@@ -120,7 +120,7 @@ _This Issue may not enter a sprint until ALL items are checked (see `docs/proces
 - [ ] Problem statement written and linked to discovery doc (`docs/product/FEAT-{id}/discovery.md`)
 - [ ] NFR doc created and approved by Security Lead — or "N/A: no new PII surface" stated explicitly
 - [ ] Acceptance criteria written in Gherkin format and reviewed by Product Owner
-- [ ] Feature spec template created (`specs/features/FEAT-{id}/feature-spec.md`) — sections 1–5 complete
+- [ ] Feature spec template created (`specs/features/<SPEC-ID>-<slug>/spec.md`) — sections 1–5 complete
 - [ ] Size label applied (S / M / L / XL)
 - [ ] Component labels applied (`component: api` / `frontend` / `infra` / `agent`)
 - [ ] Tech Lead has commented on this Issue

@@ -45,7 +45,7 @@ gates_passed: []
 artifacts:
   discovery: null # docs/product/FEAT-000/discovery.md
   nfr: null # docs/product/FEAT-000/nfr.md
-  feature_spec: null # specs/features/FEAT-000/feature-spec.md
+  feature_spec: null # specs/features/SPEC-FEAT-000-<slug>/spec.md
   adrs: [] # docs/adr/ADR-NNNN-*.md
   runbooks: [] # docs/sre/runbooks/RB-NNN-*.md
 

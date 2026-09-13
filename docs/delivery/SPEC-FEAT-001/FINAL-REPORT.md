@@ -3,7 +3,7 @@
 ## 0. Run header
 
 - **MODE:** CODE · **TIER:** STANDARD (risk class: normal feature → floor STANDARD) · **LANGUAGE:** PYTHON
-- **Spec:** `specs/features/FEAT-001/feature-spec.md` (SPEC-FEAT-001) · **Issue:** #357 · **PR:** #365 (Wave 12)
+- **Spec:** `specs/features/SPEC-FEAT-001-http-golden-signals/spec.md` (SPEC-FEAT-001; moved from `FEAT-001/feature-spec.md` on 2026-09-12) · **Issue:** #357 · **PR:** #365 (Wave 12)
 - **Executed:** 2026-09-12, phases 0–11 by Claude Code with the repo's real gates; phases 12–14
   (release candidate, production, post-deploy) are owned by the human release flow and are
   recorded as **N-A (pending release)** — this report is the worked example for the

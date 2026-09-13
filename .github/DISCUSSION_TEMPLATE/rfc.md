@@ -22,7 +22,7 @@ labels: rfc
 ## Proposed Solution
 
 <!-- High-level description of the approach. Not a spec — a proposal.
-     A spec (specs/features/FEAT-{id}/feature-spec.md) is written after this RFC is approved. -->
+     A spec (specs/features/<SPEC-ID>-<slug>/spec.md) is written after this RFC is approved. -->
 
 ## Alternatives Considered
 
@@ -64,7 +64,7 @@ labels: rfc
 - [ ] NFR doc created: `docs/product/FEAT-{id}/nfr.md`
 - [ ] Security Lead has assessed the security surface
 - [ ] ADR created (if required above)
-- [ ] Feature spec template created: `specs/features/FEAT-{id}/feature-spec.md`
+- [ ] Feature spec template created: `specs/features/<SPEC-ID>-<slug>/spec.md`
 
 ## References
 

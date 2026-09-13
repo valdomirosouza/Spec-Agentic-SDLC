@@ -90,18 +90,18 @@ gates:
     command: >
       bash -c "
         if [ -n \"${PR_BODY_FILE:-}\" ] && [ -f \"${PR_BODY_FILE}\" ]; then
-          # Extract FEAT-ID from PR body (e.g. FEAT-42 or specs/features/FEAT-42/)
-          FEAT_ID=\$(grep -oE 'FEAT-[0-9]+' \"${PR_BODY_FILE}\" | head -1);
-          if [ -z \"\$FEAT_ID\" ]; then
-            echo 'No FEAT-ID found in PR body — spec lint skipped (not a feature PR).';
+          # Extract the SPEC-ID from the PR body (e.g. SPEC-FEAT-042 or specs/features/SPEC-FEAT-042-slug/)
+          SPEC_ID=\$(grep -oE 'SPEC-[A-Z]{2,6}-[0-9]{3}' \"${PR_BODY_FILE}\" | head -1);
+          if [ -z \"\$SPEC_ID\" ]; then
+            echo 'No SPEC-ID found in PR body — spec lint skipped (not a feature PR).';
             exit 0;
           fi;
-          SPEC_DIR=\"specs/features/\${FEAT_ID}\";
-          SPEC_FILE=\"\${SPEC_DIR}/feature-spec.md\";
+          SPEC_DIR=\$(ls -d specs/features/\${SPEC_ID}-*/ 2>/dev/null | head -1);
+          SPEC_FILE=\"\${SPEC_DIR}spec.md\";
           # Gate 1: spec file must exist
           if [ ! -f \"\$SPEC_FILE\" ]; then
             echo \"Feature spec not found: \$SPEC_FILE\" >&2;
-            echo \"Create specs/features/\${FEAT_ID}/feature-spec.md before implementing.\" >&2;
+            echo \"Create specs/features/\${SPEC_ID}-<slug>/spec.md (/sdd-specify) before implementing.\" >&2;
             exit 1;
           fi;
           echo \"Spec file exists: \$SPEC_FILE\";
@@ -119,7 +119,7 @@ gates:
           AGENTS_CHANGED=\$(git diff --name-only origin/main...HEAD | grep -c '^src/agents/' || true);
           if [ \"\$AGENTS_CHANGED\" -gt 0 ]; then
             if ! grep -q 'allowed_action_types' \"\$SPEC_FILE\"; then
-              echo \"src/agents/ changed but spec is missing 'allowed_action_types' section (Section 6 of FEATURE_SPEC_TEMPLATE.md)\" >&2;
+              echo \"src/agents/ changed but spec is missing 'allowed_action_types' section (spec.md §7 Governance / Agent configuration)\" >&2;
               exit 1;
             fi;
             echo 'allowed_action_types present in spec — agent PR gate passed.';
@@ -131,7 +131,7 @@ gates:
         fi
       "
     blocking: true
-    failure_message: "Feature spec lint failed. Ensure: (1) specs/features/FEAT-{id}/feature-spec.md exists, (2) all ADR references resolve to files in docs/adr/, (3) spec contains 'allowed_action_types' if src/agents/ is touched."
+    failure_message: "Feature spec lint failed. Ensure: (1) specs/features/<SPEC-ID>-<slug>/spec.md exists, (2) all ADR references resolve to files in docs/adr/, (3) spec contains 'allowed_action_types' if src/agents/ is touched."
 
   - name: runbook-linked
     command: >

@@ -179,7 +179,7 @@ phases:
     name: Grooming
     primary_actor: tech_lead
     required_artifacts:
-      - specs/features/FEAT-{id}/feature-spec.md # spec shell
+      - specs/features/<SPEC-ID>-<slug>/spec.md # spec shell
     required_approvals: [tech_lead]
     ci_checks: []
     blocking: true # blocking for sprint entry
@@ -199,7 +199,7 @@ phases:
     name: Specification
     primary_actor: tech_lead
     required_artifacts:
-      - specs/features/FEAT-{id}/feature-spec.md
+      - specs/features/<SPEC-ID>-<slug>/spec.md
     required_approvals: [tech_lead, security_lead]
     ci_checks: [governance.yml]
     blocking: true
@@ -209,7 +209,7 @@ phases:
     exit_criteria: "Spec PR merged; governance spec-lint gate green; open-questions gate green (§15 empty or every item resolved with an ADR/RFC/issue reference — W11-T5); Tech + Security Lead approved"
     applicability: # ADR-0064 — CONTROL: "no code without a spec" (§3.4). Required in every tier;
       # only the ARTIFACT WEIGHT scales — TRIVIAL may use a lightweight spec (issue + inline AC)
-      # instead of a full feature-spec.md, but never zero spec.
+      # instead of a full spec.md, but never zero spec.
       control_phase: true
       trivial: required
       standard: required

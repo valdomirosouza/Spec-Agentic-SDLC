@@ -15,7 +15,7 @@ A story / PR is **Done** only when **ALL** applicable criteria below are checked
 - [ ] All acceptance criteria from the Issue are implemented and verified by tests
 - [ ] Unit test coverage ≥ 80% for all changed files (enforced by `pytest-cov` in CI)
 - [ ] Integration tests added or updated for any new service boundary
-- [ ] Feature spec (`specs/features/FEAT-{id}/feature-spec.md`) updated if implementation deviated from spec
+- [ ] Feature spec (`specs/features/<SPEC-ID>-<slug>/spec.md`) updated if implementation deviated from spec
 
 ### Security & Privacy
 

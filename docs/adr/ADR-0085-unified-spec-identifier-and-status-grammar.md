@@ -37,7 +37,9 @@ on every spec and validated in CI:
    `ETH`, `GOV`, `K8S`, `SDLC`, `INFRA`, `LGS`, `AUTO`); `<NNN>` is zero-padded and unique
    within the domain. Existing path-named files keep their filenames — the id lives in the
    frontmatter — and **new** specs are named `SPEC-<DOMAIN>-<NNN>-<slug>.md`.
-2. **Feature specs are not a namespace.** `FEAT-{issue}` becomes the directory name under
+2. **Feature specs are not a namespace.** _(Amended 2026-09-12 by ADR-0090: the feature directory
+   is now `specs/features/<SPEC-ID>-<slug>/` holding `spec.md`; the issue number lives in the
+   frontmatter `issue:` field.)_ Originally, `FEAT-{issue}` became the directory name under
    `specs/features/` and the frontmatter carries `issue: <n>`; the spec's `id` is still a
    `SPEC-<DOMAIN>-<NNN>` (domain `FEAT` for cross-cutting features, else the feature's domain).
    Companion documents (threat model, feature-spec profile) share the parent id and declare

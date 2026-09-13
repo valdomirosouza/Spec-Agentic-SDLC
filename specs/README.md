@@ -49,13 +49,15 @@ last_updated: 2026-09-12
 New specs are named `specs/<domain>/SPEC-<DOMAIN>-<NNN>-<slug>.md`. Existing path-named specs
 keep their filenames; their id lives in the frontmatter (backfilled by
 `scripts/governance/migrate_spec_frontmatter.py`, W13-T2). Feature work lives under
-`specs/features/FEAT-{issue}/` — the directory is the issue alias, the id is still `SPEC-…`.
+`specs/features/<SPEC-ID>-<slug>/` as a bundle (`spec.md`, `plan.md`, `tasks.md`, …; ADR-0090) —
+the directory carries the spec id, the issue number lives in the frontmatter.
 
 Examples:
 
 - `specs/ai/agent-design.md` (`id: SPEC-AI-001`)
 - `specs/api/SPEC-API-002-idempotency-keys.md`
-- `specs/features/FEAT-001/feature-spec.md` (`id: SPEC-FEAT-001`, `issue: 357`)
+- `specs/features/SPEC-FEAT-001-http-golden-signals/spec.md` (`id: SPEC-FEAT-001`, `issue: 357`)
+- `specs/features/SPEC-LGS-001-log-based-golden-signals/` (full bundle: spec, plan, tasks, research, data-model, contracts, quickstart, checklists)
 
 ---
 

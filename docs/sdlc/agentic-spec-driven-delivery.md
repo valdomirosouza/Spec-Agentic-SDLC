@@ -44,7 +44,7 @@ contracts live in [`docs/process/gates/phase-gates.yaml`](../process/gates/phase
 | 1     | Conception                   | GitHub Issue (`feature_request` template)                                                                            |
 | 2     | Discovery                    | Agent-drafted `discovery.md` + `nfr.md`; human review via Spec-as-PR                                                 |
 | 3     | Grooming                     | DoR checklist, acceptance criteria, dependencies, risk level; `status: ready`                                        |
-| 4     | Specification                | Agent-drafted `feature-spec.md`, test strategy, edge cases; Spec-as-PR                                               |
+| 4     | Specification                | Agent-drafted `spec.md`, test strategy, edge cases; Spec-as-PR                                               |
 | 5     | Architecture                 | ADR (if a decision is required); threat model (if security/privacy/AI risk)                                          |
 | 6     | Development                  | Short-lived branch; agent-assisted implementation against the approved spec                                          |
 | 7     | Code Review                  | PR review, DoD checklist, CI gates; **required human approval**                                                      |
@@ -63,7 +63,7 @@ flowchart TD
     C --> D{Human review: Discovery approved?}
     D -- No --> C
     D -- Yes --> E[Phase 3: Grooming / DoR ready]
-    E --> F[Phase 4: Specification / Agent drafts feature-spec.md]
+    E --> F[Phase 4: Specification / Agent drafts spec.md]
     F --> G{Human review: Spec approved?}
     G -- No --> F
     G -- Yes --> H[Phase 5: Architecture / ADR + Threat Model]
