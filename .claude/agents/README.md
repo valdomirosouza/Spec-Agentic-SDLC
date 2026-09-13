@@ -39,17 +39,19 @@ and emits a structured **handoff** (see
 
 Two entrypoints share these phase contracts:
 
-- **`asdd-orchestrator`** — the full production-grade workflow (real Issues/PRs, stops at the
-  nine human gates). Use for actual delivery.
-- **`/deliver <spec>`** skill (`.claude/skills/deliver/`) — a **dry-run** orchestrator that
-  drives one spec through all 15 phases via the `phase-executor` subagent and emits a
-  `reports/<slug>/FINAL-REPORT.md` (traceability + timing + speedup). No real side-effects.
+- **`asdd-orchestrator`** — **the delivery entrypoint** (ADR-0095). Real issues, branches and PRs;
+  stops at the nine human gates (phases 2, 4, 5, 7, 10, 11, 12, 13, 14). Phase scope comes from the
+  Phase-0 risk class, which maps to a tier (ADR-0064); `phase-gates.yaml` arbitrates what a tier skips.
+- **`/deliver <spec>`** skill (`.claude/skills/deliver/`) — **the assessment entrypoint**. `dry-run`
+  rehearses a spec through the 15 phases with no side effects and emits
+  `reports/<slug>/FINAL-REPORT.md`; `code` is for a single spec in a repository that is not driving
+  the full lifecycle. Where the lifecycle is in use, the orchestrator owns delivery (ADR-0095).
 
 ```text
 1. Invoke `asdd-orchestrator` with the feature request.
-2. It runs `scripts/asdd_state.py init` to create shared state.
+2. It runs `scripts/python/asdd_state.py init` to create shared state.
 3. It invokes each phase agent in order via the Agent tool, passing the feature id.
-4. Each phase agent appends a handoff (scripts/asdd_state.py append-handoff).
+4. Each phase agent appends a handoff (scripts/python/asdd_state.py append-handoff).
 5. On `blocked` → the orchestrator retries (bounded) or surfaces the reason and halts.
 6. On `human_gate: true` → the orchestrator stops for explicit human approval.
 7. After Phase 14 → the orchestrator emits the final delivery report.

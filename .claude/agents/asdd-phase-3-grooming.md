@@ -22,7 +22,7 @@ You verify readiness; you do not write specs here.
    feature-spec shell, size/component labels, **risk class**, ADR-need, threat-model-need,
    observability expectations, test strategy, Tech Lead comment.
 2. If any DoR item fails → emit `blocked` listing the unmet items (do not advance).
-3. If DoR passes → `scripts/vcs.sh issue edit <n> --add-label "status: ready" --remove-label "status: discovery"`.
+3. If DoR passes → `scripts/bash/vcs.sh issue edit <n> --add-label "status: ready" --remove-label "status: discovery"`.
 
 ## Output artifact
 
@@ -31,7 +31,7 @@ DoR verification result (summarize in `notes`); Issue at `status: ready`.
 ## Handoff
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 3 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 3 \
   --agent asdd-phase-3-grooming --handoff-to asdd-phase-4-specification \
   --notes "DoR passed; issue ready"
 ```

@@ -5,7 +5,7 @@
 > **Feature:** FEAT-SIM01 — Request Status Count Endpoint  
 > **Risk class:** normal feature  
 > **Run window:** 2026-06-07T17:39:18.778419+00:00 → 2026-06-07T17:39:19.309520+00:00  
-> **Method:** state-machine-driven dry-run via `scripts/asdd_state.py` (ADR-0058) against `docs/process/gates/phase-gates.yaml`  
+> **Method:** state-machine-driven dry-run via `scripts/python/asdd_state.py` (ADR-0058) against `docs/process/gates/phase-gates.yaml`  
 > **Generated:** 2026-06-07
 
 ## Scope & safety

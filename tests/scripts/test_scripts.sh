@@ -162,5 +162,35 @@ assert_eq "copilot/cursor/codex copies keep frontmatter and \$ARGUMENTS" "$(head
 assert_exit "--check passes on the committed copies" "$(cd "$HERE" && python3 scripts/python/render_commands.py --check >/dev/null 2>&1; echo $?)" 0
 rm -rf "$T"
 
+echo "vcs.sh"
+V="$HERE/scripts/bash/vcs.sh"
+out=$(bash "$V" --dry-run issue create --title T --body-file /dev/null 2>&1)
+assert_contains "issue create is allowed" "$out" "DRY-RUN: gh issue create"
+out=$(bash "$V" --dry-run pr checks 21 2>&1)
+assert_contains "pr checks is allowed" "$out" "DRY-RUN: gh pr checks 21"
+out=$(bash "$V" --dry-run pr view 21 2>&1)
+assert_contains "pr view is allowed" "$out" "DRY-RUN: gh pr view 21"
+out=$(bash "$V" --dry-run branch create feature/SPEC-XX-001-demo 2>&1)
+assert_contains "branch create is allowed (local only)" "$out" "DRY-RUN: git checkout -b feature/SPEC-XX-001-demo"
+for pair in "pr:merge" "release:create" "deploy:staging" "push:origin"; do
+    n=${pair%%:*}; v=${pair#*:}
+    out=$(bash "$V" --dry-run "$n" "$v" x 2>&1 || true)
+    rc=$(bash "$V" --dry-run "$n" "$v" x >/dev/null 2>&1; echo $?)
+    assert_contains "$n $v is refused" "$out" "REFUSED"
+    assert_eq "$n $v exits 3" "$rc" "3"
+done
+out=$(bash "$V" --dry-run branch create main 2>&1 || true)
+assert_contains "branch create on the default branch is refused" "$out" "REFUSED"
+out=$(bash "$V" --dry-run branch create develop 2>&1 || true)
+assert_contains "protected branch names are refused" "$out" "REFUSED"
+out=$(bash "$V" --dry-run issue delete 1 2>&1 || true)
+assert_contains "issue delete is refused (traceability)" "$out" "REFUSED"
+out=$(bash "$V" --dry-run issue reopen 1 2>&1 || true)
+assert_contains "an unlisted verb is rejected, not forwarded" "$out" "unsupported"
+out=$(bash "$V" --dry-run wat something 2>&1 || true)
+assert_contains "an unlisted noun is rejected" "$out" "unsupported noun"
+n_ref=$(grep -c "^    refuse \|refuse \"" "$V" || true)
+[ "${n_ref:-0}" -ge 5 ] && ok "refusal list is present in the script (C8 invariant)" || bad "refusal list is present in the script (C8 invariant)" "only $n_ref refusals"
+
 echo "---"; echo "scripts tests: $pass passed, $fail failed"
 exit "$fail"

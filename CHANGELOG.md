@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/asdd_state.py` and `scripts/bash/vcs.sh` — the two scripts the 16 delivery agents
+  call and that did not exist; 12 + 13 tests, two new C8 invariants (#44, #45).
+- ADR-0095 — one delivery entrypoint, and the single named version-control exception agents may
+  take (a local feature branch, behind a guard) (#46).
 - `scripts/python/check_control_matrix.py` with 14 tests, wired as `check-corpus.sh` C12 — the
   validator several documents cited and that did not exist here. Its first run found 83 defects,
   all fixed: 75 adopter-provided paths in the two OWASP matrices now carry the `adopter:` prefix

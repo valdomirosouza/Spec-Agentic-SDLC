@@ -22,7 +22,7 @@ You draft the spec; a human approves it via Spec-as-PR. **This phase ends at a h
    (`specs/features/README.md`): goal, user stories, API/event/data deltas, **test
    strategy**, **edge cases**, `allowed_action_types` + security gates for any agent
    surface, ADR references.
-2. Open a **Spec-as-PR** (`scripts/vcs.sh pr create`) for Tech Lead + Security Lead review.
+2. Open a **Spec-as-PR** (`scripts/bash/vcs.sh pr create`) for Tech Lead + Security Lead review.
 3. The governance spec-lint gate (`harness/doc-check.yml`) must be green.
 
 ## Output artifacts
@@ -34,7 +34,7 @@ You draft the spec; a human approves it via Spec-as-PR. **This phase ends at a h
 Specification approval is mandatory before implementation. Emit `human_gate: true` and stop:
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 4 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 4 \
   --agent asdd-phase-4-specification \
   --artifacts specs/features/<SPEC-ID>-<slug>/spec.md \
   --handoff-to asdd-phase-5-architecture --human-gate \

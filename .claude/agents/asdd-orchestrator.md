@@ -20,7 +20,7 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
 ## Protocol
 
 1. **Initialize shared state.** Choose/confirm a `feature_id`, then:
-   `python scripts/asdd_state.py init --feature <id> --title "<title>" --risk-class "<class>"`.
+   `python scripts/python/asdd_state.py init --feature <id> --title "<title>" --risk-class "<class>"`.
    Track phase progress with TodoWrite.
 
 2. **Apply the risk-based flow.** Read the `risk_class` (from Phase 0 / intake) and skip
@@ -33,7 +33,7 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
 
 3. **Invoke each applicable phase agent in order** via the Agent tool, passing the
    `feature_id`. Each agent appends a handoff to the shared state and returns its
-   handoff JSON. After each, read it back: `python scripts/asdd_state.py show --feature <id>`.
+   handoff JSON. After each, read it back: `python scripts/python/asdd_state.py show --feature <id>`.
 
 4. **On `status: "blocked"`** — surface the `reason`. Retry the phase **at most twice**
    (e.g., after the missing input is supplied). If still blocked, **stop** and report —
@@ -52,5 +52,5 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
 
 ## Failure handling
 
-If `scripts/asdd_state.py` validation rejects a handoff, treat it as a blocked phase and
+If `scripts/python/asdd_state.py` validation rejects a handoff, treat it as a blocked phase and
 do not advance. Keep the shared state authoritative — every transition goes through it.

@@ -166,6 +166,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0092](ADR-0092-command-lifecycle-hooks-vs-claude-code-hooks.md)      | spec-kit before/after hooks → UserPromptSubmit gate adopted, Stop-based continuation refused | Accepted   | 2026-09-13 |
 | [ADR-0093](ADR-0093-eu-ai-act-role-and-risk-classification.md)            | EU AI Act role (provider + deployer), high-risk by default with Art. 6(3) derogation, obligations and dates | Accepted   | 2026-09-13 |
 | [ADR-0094](ADR-0094-data-residency-and-sovereignty.md)                    | Residency per data class; a prompt is a transfer; sovereignty distinguished from residency | Accepted   | 2026-09-13 |
+| [ADR-0095](ADR-0095-single-delivery-entrypoint-and-the-branch-exception.md) | One delivery entrypoint; agents may create only a local feature branch, enforced in vcs.sh | Accepted   | 2026-09-13 |
 
 ### AI Agents Module _(opt-in)_
 

@@ -249,7 +249,7 @@ The three runtime layers above (§1) are _machine_ memory. This section adds a f
 level** layer for **cross-session work state** an agent and a human both read: a durable
 `STATE.md` ledger of typed, numbered entries, plus a transient `HANDOFF` checkpoint. It uplifts
 (does not replace) the per-feature machine state in `docs/sdlc/agent-handoff-schema.md` /
-`scripts/asdd_state.py` — that JSON is per-run delivery state; this is the durable decision/lesson
+`scripts/python/asdd_state.py` — that JSON is per-run delivery state; this is the durable decision/lesson
 ledger that survives across sessions.
 
 ### Typed-ID ledger — `docs/product/FEAT-{id}/STATE.md`

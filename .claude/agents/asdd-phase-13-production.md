@@ -36,7 +36,7 @@ Canary + rollback plan and a readiness verdict (summarize in `notes`).
 ## Handoff (HUMAN GATE — human executes the deploy)
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 13 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 13 \
   --agent asdd-phase-13-production --handoff-to asdd-phase-14-post-deploy --human-gate \
   --notes "readiness verified; canary+rollback plan ready; awaiting human-executed deploy"
 ```

@@ -211,7 +211,7 @@ Do **not** remove existing rules without a governance decision — they exist be
 ## 6b. GitHub-only governance (what you lose on another host)
 
 Every workflow under `.github/workflows/` and the governance gates they run are GitHub Actions.
-Agents, skills and scripts reach the host only through `scripts/vcs.sh` (W14-T6), so porting the
+Agents, skills and scripts reach the host only through `scripts/bash/vcs.sh` (W14-T6), so porting the
 *calls* is one file — but these capabilities have no equivalent until you rebuild them:
 
 | Capability | GitHub-specific pieces | On GitLab / Bitbucket / Azure DevOps |
@@ -221,7 +221,7 @@ Agents, skills and scripts reach the host only through `scripts/vcs.sh` (W14-T6)
 | Release automation | release-please, `release.yml`, attestations | semantic-release or host-native release notes |
 | Template init/sync | `template-init.yml`, `template-sync.yml` (the script `scripts/template_sync.sh` itself is host-neutral) | run the script from any CI and open the MR yourself |
 | Security scanning uploads | CodeQL, SARIF upload, Dependabot | host-native SAST/SCA |
-| Delivery agents' issue/PR verbs | `scripts/vcs.sh` → `gh` | implement the `VCS_PROVIDER=<host>` branch in `scripts/vcs.sh` |
+| Delivery agents' issue/PR verbs | `scripts/bash/vcs.sh` → `gh` | implement the `VCS_PROVIDER=<host>` branch in `scripts/bash/vcs.sh` |
 
 Everything else — the Python service, Helm charts, governance *scripts* under `scripts/governance/`,
 `make` targets — is host-neutral.

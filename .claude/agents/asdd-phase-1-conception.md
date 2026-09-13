@@ -18,10 +18,10 @@ You own exactly this phase.
 ## Steps
 
 1. Create the GitHub Issue from the template:
-   `scripts/vcs.sh issue create --title "<title>" --body-file <body> --label "type: feature,status: discovery"`
+   `scripts/bash/vcs.sh issue create --title "<title>" --body-file <body> --label "type: feature,status: discovery"`
    Populate the `feature_request` template fields (problem, value hypothesis, risk class).
 2. Set the owner/assignee and size/component labels:
-   `scripts/vcs.sh issue edit <n> --add-assignee <owner> --add-label "size: M,component: <c>"`
+   `scripts/bash/vcs.sh issue edit <n> --add-assignee <owner> --add-label "size: M,component: <c>"`
 3. Record the Issue number in `notes`.
 
 ## Output artifact
@@ -31,7 +31,7 @@ The GitHub Issue (reference its URL/number in `notes`).
 ## Handoff
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 1 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 1 \
   --agent asdd-phase-1-conception --handoff-to asdd-phase-2-discovery \
   --notes "issue=#<n>"
 ```

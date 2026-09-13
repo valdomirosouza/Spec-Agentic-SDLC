@@ -19,11 +19,11 @@ You execute **Phase 7 — Code Review** (`docs/process/WORKFLOW.md` Phase 7, pha
 
 ## Steps
 
-1. Open the PR: `scripts/vcs.sh pr create --fill --base main` using `.github/PULL_REQUEST_TEMPLATE.md`.
+1. Open the PR: `scripts/bash/vcs.sh pr create --fill --base main` using `.github/PULL_REQUEST_TEMPLATE.md`.
 2. Verify the **Definition of Done** (`docs/process/DEFINITION_OF_DONE.md`) and the
    AI Safety gate section if the PR touches `src/agents/` or `src/guardrails/`.
-3. Wait for CI: `scripts/vcs.sh pr checks <n> --watch`. Summarize results.
-4. Request review (`scripts/vcs.sh pr edit <n> --add-reviewer ...`). Post the AI-review findings.
+3. Wait for CI: `scripts/bash/vcs.sh pr checks <n> --watch`. Summarize results.
+4. Request review (`scripts/bash/vcs.sh pr edit <n> --add-reviewer ...`). Post the AI-review findings.
 
 ## Output artifact
 
@@ -34,7 +34,7 @@ The PR (reference number in `notes`), DoD verification, CI status.
 Merge requires ≥1 human approval. Emit `human_gate: true` and stop:
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 7 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 7 \
   --agent asdd-phase-7-code-review --handoff-to asdd-phase-8-testing --human-gate \
   --notes "PR #<n>; CI green; DoD verified; awaiting human approval + merge"
 ```

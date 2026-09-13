@@ -36,7 +36,7 @@ You own exactly this phase. You draft and recommend; a human prioritizes and dec
 Record the result on the shared state, then stop:
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 0 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 0 \
   --agent asdd-phase-0-intake --artifacts docs/product/FEAT-{id}/intake-form.md \
   --handoff-to asdd-phase-1-conception \
   --notes "risk_class=<class>; owner=<owner>"

@@ -18,7 +18,8 @@
 #      the corpus banner or the adopter-paths marker (scripts/python/adopter_paths.py --check)
 #   C8 governance invariants that must never regress: tests-first and mandatory tests in the
 #      tasks template; scripts never create/switch branches, push, merge or commit; constitution
-#      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept
+#      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept;
+#      vcs.sh keeps its refusal list; asdd_state.py touches no version control
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
@@ -151,8 +152,13 @@ say "C8 governance invariants (finding 8 of the spec-kit comparison)"
 inv_bad=0
 grep -q '^### Tests first' templates/tasks-template.md && grep -q 'tests are NOT optional (Constitution II)' templates/tasks-template.md \
     && result "tasks-template keeps tests-first and mandatory tests" ok || { result "tasks-template keeps tests-first and mandatory tests" fail; inv_bad=1; }
-gitcmd=$(grep -nE 'git (checkout|switch|push|merge|commit|rebase|reset)' scripts/bash/*.sh | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | grep -vE 'echo|printf|"[^"]*git (checkout|switch)' || true)
-[ -z "$gitcmd" ] && result "scripts never checkout/switch/push/merge/commit" ok || { result "scripts never checkout/switch/push/merge/commit" fail "$gitcmd"; }
+# No script performs an outward or irreversible version-control action. This is absolute.
+gitcmd=$(grep -nE 'git (push|merge|commit|rebase|reset|switch)' scripts/bash/*.sh | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | grep -vE 'echo|printf|refuse|"[^"]*git (push|merge)' || true)
+[ -z "$gitcmd" ] && result "scripts never push/merge/commit/rebase/reset/switch" ok || { result "scripts never push/merge/commit/rebase/reset/switch" fail "$gitcmd"; }
+# Exactly one named exception: vcs.sh may create a LOCAL feature branch, which has no outward
+# effect, and only behind the protected-name guard. Any other script doing it is a regression.
+ckout=$(grep -nE '(^|;|&&|\||\bthen |\bdo |run )[[:space:]]*git checkout' scripts/bash/*.sh | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | grep -vE 'echo|printf' | grep -vE 'scripts/bash/(vcs|check-corpus)\.sh' | cut -d: -f1 | sort -u || true)
+if [ -z "$ckout" ] && grep -q 'guard_branch_name "$name"' scripts/bash/vcs.sh; then result "only vcs.sh creates a branch, and only behind the protected-name guard" ok; else result "only vcs.sh creates a branch, behind the guard" fail "${ckout:-guard missing in vcs.sh}"; fi
 art_missing=""
 for a in "I. Specification First" "II. Test-Backed Change" "III. Privacy by Design" "IV. Security Gates Are Not Optional" "V. Human Oversight of Agents" "VI. Observability Is Part of Done" "VII. Traceability and Auditability" "VIII. Simplicity and No Gold-Plating" "IX. Grounding and Non-Fabrication"; do
     grep -q "^### $a" memory/constitution.md || art_missing="$art_missing [$a]"
@@ -169,6 +175,13 @@ sys.exit(0 if ok else 1)
 PY2
 grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
     && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved" fail
+nref=$(grep -c 'refuse "' scripts/bash/vcs.sh 2>/dev/null || echo 0)
+[ "${nref:-0}" -ge 5 ] && grep -q 'gh pr merge' scripts/bash/vcs.sh \
+    && result "vcs.sh keeps its refusal list (merge, release, deploy, push, protected branch)" ok "$nref refusals" \
+    || result "vcs.sh keeps its refusal list" fail "only ${nref:-0} refusals"
+grep -qE '"(git|gh)"' scripts/python/asdd_state.py \
+    && result "asdd_state.py runs no git or gh" fail \
+    || result "asdd_state.py runs no git or gh" ok
 
 say "C9 rendered per-agent commands"
 if out=$(python3 scripts/python/render_commands.py --check 2>&1); then result "render_commands --check" ok "$(printf '%s' "$out" | head -1)"; else result "render_commands --check" fail "$(printf '%s' "$out" | head -1)"; printf '%s\n' "$out" | sed -n '2,12p' | sed 's/^/      /'; fi

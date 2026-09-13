@@ -33,7 +33,7 @@ DORA report + retrospective drafts (summarize in `notes`).
 ## Handoff (HUMAN GATE — terminal)
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 14 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 14 \
   --agent asdd-phase-14-post-deploy --handoff-to "none (terminal)" --human-gate \
   --notes "DORA collected; retros drafted; awaiting human retrospective review"
 ```

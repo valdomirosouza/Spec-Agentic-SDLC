@@ -66,7 +66,8 @@ file that names one (each such file carries an `adopter-paths` marker; `check-co
 3. Start a feature: `/sdd-specify …` → Spec-as-PR → `/sdd-plan` → `/sdd-checklist` →
    `/sdd-tasks` → `/sdd-analyze` → `/sdd-implement` ⇄ `/sdd-converge`. Every command names the
    human gate it stops at.
-4. Optional: `/deliver dry-run <spec.md>` runs the 15 phases as a governed simulation.
+4. For delivery, invoke `asdd-orchestrator` — the delivery entrypoint (ADR-0095). To rehearse a
+   spec through the 15 phases with no side effects first, `/deliver dry-run <spec.md>`.
 
 ## 4. Keep it in sync
 

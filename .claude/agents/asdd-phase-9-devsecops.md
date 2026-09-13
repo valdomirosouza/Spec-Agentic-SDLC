@@ -36,7 +36,7 @@ Zero unmitigated HIGH/CRITICAL is the gate. If clean, proceed; if HIGH/CRITICAL 
 a Security Lead must explicitly accept/mitigate — emit `human_gate: true`:
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 9 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 9 \
   --agent asdd-phase-9-devsecops --handoff-to asdd-phase-10-ai-safety \
   --notes "SAST/SCA/secrets/Trivy/SBOM clean; DAST staged"
 ```

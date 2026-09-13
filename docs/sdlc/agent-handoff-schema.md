@@ -46,7 +46,7 @@ Every phase agent emits exactly one handoff message and then stops:
 | `human_gate` | bool                    | `true` ⇒ a **mandatory human approval** is required before the next phase runs |
 | `timestamp`  | ISO-8601                | When the handoff was emitted                                                   |
 
-**Validation rules** (enforced by `scripts/asdd_state.py`, fail-closed): `status` in the
+**Validation rules** (enforced by `scripts/python/asdd_state.py`, fail-closed): `status` in the
 enum, `phase` ∈ [0, 14], `agent` non-empty, `artifacts` a list, `handoff_to` present,
 `reason` present when `blocked`.
 
@@ -75,11 +75,11 @@ The orchestrator maintains one shared context per feature at
 Helper (called by agents via Bash):
 
 ```bash
-python scripts/asdd_state.py init --feature FEAT-42 --title "..." --risk-class "normal feature"
-python scripts/asdd_state.py append-handoff --feature FEAT-42 --status done --phase 0 \
+python scripts/python/asdd_state.py init --feature FEAT-42 --title "..." --risk-class "normal feature"
+python scripts/python/asdd_state.py append-handoff --feature FEAT-42 --status done --phase 0 \
     --agent asdd-phase-0-intake --artifacts intake-form.md \
     --handoff-to asdd-phase-1-conception --notes "..."
-python scripts/asdd_state.py show --feature FEAT-42
+python scripts/python/asdd_state.py show --feature FEAT-42
 ```
 
 ---

@@ -8,3 +8,6 @@
 .idea/
 # scratch
 *.tmp
+
+# per-run delivery state (asdd_state.py)
+.agent/

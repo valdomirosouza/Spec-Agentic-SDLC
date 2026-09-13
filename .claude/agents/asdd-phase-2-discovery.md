@@ -22,7 +22,7 @@ You draft; a human reviewer approves via Spec-as-PR. **This phase ends at a huma
    open questions) — include the agent-disclosure header (`docs/product/README.md`).
 2. Draft `docs/product/FEAT-{id}/nfr.md` (NFRs, PII classification, security threats).
    This is a security gate input — the Security Lead must approve it.
-3. Open a **Spec-as-PR**: short-lived branch + `scripts/vcs.sh pr create` with the two docs.
+3. Open a **Spec-as-PR**: short-lived branch + `scripts/bash/vcs.sh pr create` with the two docs.
    This is the human-review equivalent of the runtime HITL gateway (HITL-GOVERNANCE.md).
 
 ## Output artifacts
@@ -35,7 +35,7 @@ Discovery approval is mandatory before Specification begins. Emit `human_gate: t
 and stop — the orchestrator must wait for human approval:
 
 ```bash
-python scripts/asdd_state.py append-handoff --feature {id} --status done --phase 2 \
+python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 2 \
   --agent asdd-phase-2-discovery \
   --artifacts docs/product/FEAT-{id}/discovery.md docs/product/FEAT-{id}/nfr.md \
   --handoff-to asdd-phase-3-grooming --human-gate \
