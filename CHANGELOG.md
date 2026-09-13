@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- First red-team exercise executed (RT-2026-09-13, #51): 12 attempts against the two live hooks
+  and `vcs.sh`. Found and fixed **RT-04 (High)** — `$(which git) push` evaded the high-risk guard
+  because command substitution hid the binary name from the pattern; the guard now normalises that
+  indirection. All 12 attempts retained as tests and run by `check-corpus.sh`.
 - Three authority conflicts resolved and pinned as invariants: the arbiter for phase-gate data
   (#48), the distinction between 13 blocking and 9 human gates (#49), and one coverage floor
   declared in ADR-0022 and referenced rather than restated (#50).

@@ -28,6 +28,7 @@
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
+#  C11 also runs the red-team exercise suite, so a demonstrated bypass cannot reopen (ADR-0050)
 #  C13 docs/governance/spec-registry.{json,md} regenerate byte-identically from the specs on disk
 #      (scripts/python/build_spec_registry.py --check) — the drift that left it at 50 of 58
 # Exit code = number of failing checks (0 = green).
@@ -241,6 +242,7 @@ fi
 if $HOOK; then
     say "C11 sdd-gate UserPromptSubmit hook"
     if out=$(python3 tests/hooks/test_sdd_gate.py 2>&1); then result "tests/hooks/test_sdd_gate.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/hooks/test_sdd_gate.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+    if out=$(python3 tests/hooks/test_red_team_2026_09_13.py 2>&1); then result "red-team RT-2026-09-13 findings stay closed" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "red-team RT-2026-09-13 findings stay closed" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 
 if $HOOK; then

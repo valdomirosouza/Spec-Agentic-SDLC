@@ -99,6 +99,22 @@ def _leading_token(segment: str) -> str:
     return ""
 
 
+# Command substitution that RESOLVES TO A BINARY hides the binary name from the patterns above:
+# `$(which git) push` puts a `)` between `git` and `push`, so `_cmd("git", "push")` never matches.
+# Red-team exercise RT-2026-09-13 (finding RT-04) demonstrated this as a live bypass — a subagent
+# could push. Normalise the idiom back to the bare binary before matching, and match on both the
+# original and the normalised form so nothing that matched before stops matching.
+_RESOLVER = re.compile(
+    r"""\$\(\s*(?:which|command\s+-v|type\s+-P)\s+([\w./\-]+)\s*\)"""   # $(which git)
+    r"""|`\s*(?:which|command\s+-v|type\s+-P)\s+([\w./\-]+)\s*`"""          # `which git`
+)
+
+
+def _resolve_indirection(segment: str) -> str:
+    """Rewrite `$(which X)` / `` `which X` `` to `X` so the binary is visible to the patterns."""
+    return _RESOLVER.sub(lambda m: m.group(1) or m.group(2), segment)
+
+
 def _command_is_risky(command: str) -> bool:
     """True if any *executed* shell segment is a high-risk action or flag write."""
     for segment in _SEGMENT_SPLIT.split(command):
@@ -109,8 +125,9 @@ def _command_is_risky(command: str) -> bool:
         # substitution, which runs regardless of the outer command.
         if _leading_token(seg) in _READ_ONLY_LEADERS and not _CMD_SUBST.search(seg):
             continue
-        if HIGH_RISK_CMD.search(seg) or FLAG_WRITE_CMD.search(seg):
-            return True
+        for form in (seg, _resolve_indirection(seg)):
+            if HIGH_RISK_CMD.search(form) or FLAG_WRITE_CMD.search(form):
+                return True
     return False
 
 
