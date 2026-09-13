@@ -132,7 +132,7 @@ evidence, and an exercise recorded only when it fails makes the control history 
 
 | Date | Scope | Findings (C/H/M/L) | Abuse cases added | Report |
 | ---- | ----- | ------------------ | ----------------- | ------ |
-| 2026-09-13 | RT-2026-09-13 — techniques 6, 7, 8 against the two live hooks and `vcs.sh` | 0 / 1 / 0 / 2 | 12 (`tests/hooks/test_red_team_2026_09_13.py`) | §8.1 below |
+| 2026-09-13 | RT-2026-09-13 — techniques 6, 7, 8 against the two live hooks and `vcs.sh` | 0 / 1 / 1 / 2 | 12 (`tests/hooks/test_red_team_2026_09_13.py`) | §8.1 below |
 
 ### 8.1 RT-2026-09-13 — first exercise
 

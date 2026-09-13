@@ -25,7 +25,7 @@ repository's first cycle.
 
 ## Observations
 
-**Corpus integrity.** Fifteen check families run on every push. All green at the time of this note.
+**Corpus integrity.** 15 check families run on every push. All green at the time of this note.
 Two generated artefacts are now byte-compared against their source rather than trusted: the spec
 registry (C13) and the per-agent command copies (C9). Before this week the registry had drifted to
 50 of 58 entries with nothing noticing, which is the failure this signal exists to catch.
@@ -35,7 +35,7 @@ against the two live hooks and found one real bypass: command substitution resol
 evaded the high-risk guard, so a subagent could have pushed. Fixed, and all twelve attempts are now
 regression tests. Two low findings were accepted with reasons rather than fixed.
 
-**Change quality.** Across 43 completed CI runs the change failure rate is 9.3%. Every
+**Change quality.** Across 45 completed CI runs the change failure rate is 8.9%. Every
 failure was caught by the corpus check before reaching the default branch in a broken state, and
 each was followed by a green run. Full numbers: [`../corpus-metrics-2026-09-13.md`](../corpus-metrics-2026-09-13.md).
 
@@ -61,3 +61,5 @@ adoption has something real to monitor rather than four empty rows.
 Due 2026-10-13. It compares this note's numbers rather than starting from nothing, which is the
 whole point of having taken a first measurement: the prose-to-code ratio, the CI failure rate and
 the check count become a trend the second time they are taken.
+
+> **Numbers in this note are derived from [`../corpus-metrics-2026-09-13.md`](../corpus-metrics-2026-09-13.md), not retyped.** The first version restated them by hand and drifted from its own source within a day (43 versus 44 runs, 9.3% versus 9.1%, fifteen families versus twelve). Regenerate with `scripts/python/corpus_metrics.py --json` before editing.

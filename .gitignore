@@ -11,3 +11,7 @@
 
 # per-run delivery state (asdd_state.py)
 .agent/
+
+# python bytecode
+__pycache__/
+*.pyc
