@@ -248,10 +248,14 @@ def main():
 
     specs = collect()
     errs = problems(specs)
-    if errs and not a.json:
-        print(f"spec registry: {len(errs)} malformed or duplicate spec(s) — refusing to register")
+    # Validate BEFORE choosing an output format. `and not a.json` let --json skip validation
+    # entirely — and --json is exactly what check_data_quality.py consumes, so the one caller
+    # that feeds a governance gate was the one caller the gate could not protect (R5-T6).
+    if errs:
+        print(f"spec registry: {len(errs)} malformed or duplicate spec(s) — refusing to register",
+              file=sys.stderr)
         for e in errs:
-            print(f"  {e}")
+            print(f"  {e}", file=sys.stderr)
         return 1
     js, md = render_json(specs), render_md(specs)
 

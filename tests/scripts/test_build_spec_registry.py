@@ -132,6 +132,29 @@ class Drift(unittest.TestCase):
         self.assertEqual(len(after), 2)
         self.assertNotEqual(reg.render_json(before), reg.render_json(after))
 
+    def test_json_output_does_not_skip_validation(self):
+        """R5-T6. `if errs and not a.json` let --json emit a registry built from a malformed spec.
+        --json is what check_data_quality.py consumes, so the one caller feeding a governance gate
+        was the one caller the gate could not protect."""
+        def go():
+            self._write("specs/api/bad.md",
+                        FM.format(id="NOT-A-SPEC-ID", kind="spec", status="draft", issue=3))
+            return reg.problems(reg.collect())
+        import contextlib, io
+        def run_json():
+            go()
+            buf = io.StringIO()
+            argv = sys.argv
+            sys.argv = ["build_spec_registry.py", "--json"]
+            try:
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+                    return reg.main(), buf.getvalue()
+            finally:
+                sys.argv = argv
+        rc, out = self._in_scratch(run_json)
+        self.assertEqual(rc, 1, "--json must refuse a corpus it would refuse in every other mode")
+        self.assertEqual(out, "", "a refusal must not emit a registry on stdout")
+
     def test_output_is_deterministic(self):
         def go():
             return reg.render_json(reg.collect()), reg.render_json(reg.collect())

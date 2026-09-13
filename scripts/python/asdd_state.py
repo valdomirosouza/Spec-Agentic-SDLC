@@ -33,7 +33,12 @@ import re
 import sys
 from datetime import datetime, timezone
 
-SCHEMA_VERSION = "asdd_state_v1"
+SCHEMA_VERSION = "asdd_state_v2"
+# v1 keyed `artifacts` by basename and stored the path as the value. v2 keys by path and stores
+# the phase. The two are shaped alike — both are objects of strings — so a v1 file loaded as v2
+# renders every artefact inverted and `validate` calls it valid. The version was not bumped when
+# the meaning changed, which is the one thing a version exists for (R5-T6).
+LEGACY_VERSIONS = ("asdd_state_v1",)
 STATUSES = ("done", "blocked")
 PHASE_MIN, PHASE_MAX = 0, 14
 FEATURE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_.-]{0,63}$")
@@ -83,8 +88,15 @@ def validate_handoff(h):
 
 
 def validate_state(s):
-    if s.get("schema_version") != SCHEMA_VERSION:
-        raise SchemaError(f"schema_version must be {SCHEMA_VERSION!r}, got {s.get('schema_version')!r}")
+    got = s.get("schema_version")
+    if got in LEGACY_VERSIONS:
+        raise SchemaError(
+            f"this state was written by {got}, whose `artifacts` map was {{basename: path}}. "
+            f"{SCHEMA_VERSION} keys it by {{path: phase}}, so the old file renders inverted and "
+            f"would validate anyway. Re-run: asdd_state.py init --feature "
+            f"{s.get('feature_id', '<ID>')} --title ... --force")
+    if got != SCHEMA_VERSION:
+        raise SchemaError(f"schema_version must be {SCHEMA_VERSION!r}, got {got!r}")
     check_feature(s.get("feature_id"))
     cur = s.get("current_phase")
     if not isinstance(cur, int) or not PHASE_MIN <= cur <= PHASE_MAX:
@@ -146,15 +158,22 @@ def cmd_init(a):
 
 def cmd_append(a):
     s = load(a.feature)
-    if s["blocked"] and not a.force:
+    # Two guards, two flags. One `--force` cleared both, so an operator overriding a block also
+    # silently rewound the phase order, and neither decision was recorded as its own (R5-T6).
+    if s["blocked"] and not a.force_unblock:
         last = s["handoffs"][-1] if s["handoffs"] else {}
         print(f"pipeline is blocked at phase {last.get('phase')}: {last.get('reason')}\n"
-              f"resolve it and re-run, or pass --force to override deliberately", file=sys.stderr)
+              f"resolve it and re-run, or pass --force-unblock to override deliberately",
+              file=sys.stderr)
         return 1
-    last = s["handoffs"][-1]["phase"] if s["handoffs"] else None
-    if last is not None and a.phase <= last and not a.force:
-        print(f"phase {a.phase} would follow phase {last}: the 15-phase lifecycle runs forward. "
-              f"A re-run of the same phase, or a deliberate jump, needs --force.", file=sys.stderr)
+    # Against the HIGHEST phase ever recorded, not the last one. Comparing with the last gave the
+    # guard an escape one entry deep: 5 → 3 (forced) → 4 replaced the yardstick with the forced
+    # entry, so the unforced step back to 4 passed and `validate` called the result valid.
+    high = max((h["phase"] for h in s["handoffs"]), default=None)
+    if high is not None and a.phase <= high and not a.force_order:
+        print(f"phase {a.phase} would not advance past phase {high}, the furthest already "
+              f"recorded: the 15-phase lifecycle runs forward. A re-run of the same phase, or a "
+              f"deliberate jump backwards, needs --force-order.", file=sys.stderr)
         return 1
     h = validate_handoff({
         "status": a.status,
@@ -236,7 +255,10 @@ def main(argv=None):
     h.add_argument("--reason", default="")
     h.add_argument("--notes", default="")
     h.add_argument("--human-gate", action="store_true", dest="human_gate")
-    h.add_argument("--force", action="store_true")
+    h.add_argument("--force-order", action="store_true", dest="force_order",
+                   help="record a phase that does not advance past the furthest already recorded")
+    h.add_argument("--force-unblock", action="store_true", dest="force_unblock",
+                   help="append even though the pipeline is blocked")
     h.set_defaults(fn=cmd_append)
 
     s = sub.add_parser("show", help="print the delivery state")

@@ -59,7 +59,7 @@ The orchestrator maintains one shared context per feature at
 
 ```json
 {
-  "schema_version": "asdd_state_v1",
+  "schema_version": "asdd_state_v2",
   "feature_id": "FEAT-42",
   "title": "Bulk HITL approval",
   "risk_class": "normal feature",
@@ -67,10 +67,20 @@ The orchestrator maintains one shared context per feature at
   "blocked": false,
   "started_at": "2026-06-06T00:00:00+00:00",
   "updated_at": "2026-06-06T00:00:00+00:00",
-  "artifacts": { "intake-form.md": "docs/product/FEAT-42/intake-form.md" },
+  "artifacts": { "docs/product/FEAT-42/intake-form.md": 0 },
   "handoffs": [{ "...": "one entry per phase" }]
 }
 ```
+
+`artifacts` is keyed by **path** and valued by the phase that produced it. In `asdd_state_v1` it
+was the other way round, keyed by basename: two phases each producing a `spec.md` left only the
+later one, and the final report reads this map. The version was bumped when the meaning changed,
+so a `v1` file is refused with an explanation instead of being rendered inverted and called valid.
+
+Two guards protect the append, each with its own flag. `--force-order` records a phase that does
+not advance past the furthest already reached; `--force-unblock` appends while the pipeline is
+blocked. They were one flag, which meant overriding a block also rewound the phase order without
+anyone choosing that.
 
 Helper (called by agents via Bash):
 

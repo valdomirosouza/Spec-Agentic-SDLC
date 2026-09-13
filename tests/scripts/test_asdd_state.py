@@ -33,7 +33,8 @@ class AsddState(unittest.TestCase):
         if kw.get("artifacts"): args += ["--artifacts", *kw["artifacts"]]
         if kw.get("reason"): args += ["--reason", kw["reason"]]
         if kw.get("human_gate"): args += ["--human-gate"]
-        if kw.get("force"): args += ["--force"]
+        if kw.get("force_order"): args += ["--force-order"]
+        if kw.get("force_unblock"): args += ["--force-unblock"]
         return self.run_cmd(*args)
 
     def state(self, feature="FEAT-42"):
@@ -47,7 +48,7 @@ class AsddState(unittest.TestCase):
         self.assertEqual(rc, 0, err)
         self.assertTrue(os.path.isfile(os.path.join(self.root, ".agent", "delivery", "FEAT-42", "state.json")))
         s = self.state()
-        self.assertEqual(s["schema_version"], "asdd_state_v1")
+        self.assertEqual(s["schema_version"], "asdd_state_v2")
         self.assertEqual((s["current_phase"], s["blocked"], s["handoffs"]), (0, False, []))
 
     def test_init_refuses_to_overwrite_without_force(self):
@@ -75,7 +76,7 @@ class AsddState(unittest.TestCase):
         self.assertTrue(self.state()["blocked"])
         rc, _, err = self.append(2)                      # pipeline must not advance
         self.assertEqual(rc, 1); self.assertIn("blocked", err)
-        self.assertEqual(self.append(2, force=True)[0], 0)
+        self.assertEqual(self.append(2, force_unblock=True)[0], 0)
 
     def test_a_phase_cannot_go_backwards(self):
         """R4-T3. The state accepted any phase in any order, so it could record a sequence the
@@ -83,8 +84,40 @@ class AsddState(unittest.TestCase):
         self.init(); self.append(5)
         rc, _, err = self.append(3)
         self.assertEqual(rc, 1); self.assertIn("runs forward", err)
-        self.assertEqual(self.append(5)[0], 1, "re-running the same phase also needs --force")
-        self.assertEqual(self.append(3, force=True)[0], 0)
+        self.assertEqual(self.append(5)[0], 1, "re-running the same phase also needs --force-order")
+        self.assertEqual(self.append(3, force_order=True)[0], 0)
+
+    def test_the_order_guard_compares_against_the_furthest_phase_not_the_last(self):
+        """R5-T6. Comparing with the LAST handoff gave the guard an escape one entry deep: the
+        forced entry became the yardstick, so the next unforced step back sailed through and
+        `validate` pronounced the whole sequence good."""
+        self.init(); self.append(5)
+        self.assertEqual(self.append(3, force_order=True)[0], 0)
+        rc, _, err = self.append(4)
+        self.assertEqual(rc, 1, "4 does not advance past 5, which is still the furthest reached")
+        self.assertIn("furthest", err)
+
+    def test_forcing_order_does_not_also_clear_a_block(self):
+        """R5-T6. One flag cleared both guards, so an operator rewinding a phase silently
+        unblocked the pipeline as well — two decisions taken by one word."""
+        self.init(); self.append(0)
+        self.assertEqual(self.append(1, status="blocked", reason="spec not approved")[0], 2)
+        rc, _, err = self.append(0, force_order=True)
+        self.assertEqual(rc, 1); self.assertIn("blocked", err)
+
+    def test_a_v1_state_is_refused_not_rendered_inverted(self):
+        """R5-T6. The artefact map flipped from {basename: path} to {path: phase} and the version
+        stayed put, so a v1 file rendered backwards and validated clean."""
+        import json as _j
+        self.init(); self.append(0, artifacts=["docs/a.md"])
+        path = os.path.join(self.root, ".agent", "delivery", "FEAT-42", "state.json")
+        st = _j.load(open(path, encoding="utf-8"))
+        st["schema_version"] = "asdd_state_v1"
+        st["artifacts"] = {"a.md": "docs/a.md"}
+        open(path, "w", encoding="utf-8").write(_j.dumps(st))
+        rc, _, err = self.run_cmd("validate", "--feature", "FEAT-42")
+        self.assertEqual(rc, 1)
+        self.assertIn("asdd_state_v1", err)
 
     def test_a_forward_jump_is_allowed_because_tiers_skip_phases(self):
         """Right-sizing (ADR-0064) legitimately skips phases, so 0 → 14 must stay possible.
