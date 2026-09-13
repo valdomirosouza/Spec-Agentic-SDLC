@@ -242,7 +242,7 @@ controls:
       corrective actions necessary, and inform distributors, deployers and authorities.
     applies_from: "2027-12-02"
     implemented_by:
-      - planned:#40:docs/runbooks/RB-AI-001-ai-incident.md
+      - docs/runbooks/RB-AI-001-ai-incident.md
       - docs/ai/model-lifecycle.md
     verified_by:
       - specs/compliance/ai-post-market-monitoring.md
@@ -346,7 +346,7 @@ controls:
     applies_from: "2027-12-02"
     implemented_by:
       - specs/compliance/ai-post-market-monitoring.md
-      - planned:#40:docs/runbooks/RB-AI-001-ai-incident.md
+      - docs/runbooks/RB-AI-001-ai-incident.md
     verified_by:
       - docs/postmortems/POSTMORTEM-TEMPLATE.md
     gate: ["Phase 13 — Production"]
