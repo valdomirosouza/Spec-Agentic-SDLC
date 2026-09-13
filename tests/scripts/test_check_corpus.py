@@ -23,10 +23,16 @@ HERE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CHECK = os.path.join(HERE, "scripts", "bash", "check-corpus.sh")
 
 
-def run_check(*extra):
-    """check-corpus.sh with the slow sub-suites off: a mutation test runs it many times."""
+def run_check(*extra, env=None):
+    """check-corpus.sh with the slow sub-suites off: a mutation test runs it many times.
+
+    A mutation run is not a commit, so the changelog gate is waived by default — every mutation
+    edits a watched file and would otherwise add an unrelated failure to every single run. The one
+    test that exists to prove that gate clears the waiver explicitly."""
+    e = dict(os.environ, CHANGELOG_WAIVER="mutation harness run, not a commit")
+    e.update(env or {})
     r = subprocess.run(["bash", CHECK, "--no-smoke", *extra], capture_output=True, text=True,
-                       cwd=HERE, timeout=300)
+                       cwd=HERE, timeout=300, env=e)
     return r.returncode, r.stdout + r.stderr
 
 
@@ -84,7 +90,7 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         if rc != 0:
             raise unittest.SkipTest(f"check-corpus is not green before mutation:\n{out[-1500:]}")
 
-    def assert_mutation_is_caught(self, mutation, check_name):
+    def assert_mutation_is_caught(self, mutation, check_name, env=None):
         """The contract: THAT check fails, named, with a message that identifies the problem.
 
         Asserting only a non-zero exit is not enough and the first version of this file proved it:
@@ -93,7 +99,7 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         check that is vacuous — the same defect it exists to find, one level up. So the failure
         marker must sit on the line naming the check under test."""
         with mutation:
-            rc, out = run_check()
+            rc, out = run_check(env=env)
         failed_lines = [l for l in out.split("\n") if l.lstrip().startswith("✗")]
         named = [l for l in failed_lines if check_name in l]
         self.assertTrue(
@@ -163,6 +169,16 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation(__file__.replace(HERE + os.sep, ""),
                      '\n            "adr-index")', '\n            "adr-index-gone")'),
             "mutation coverage has not fallen")
+
+    def test_a_changelog_that_cannot_record_anything_is_caught(self):
+        """R6-T5. Seven commits of round 5, one a breaking schema change, reached main with no entry
+        and nothing looked. The first version of this proof created a watched file and depended on
+        CHANGELOG.md happening to be clean, so it passed or failed according to the working tree.
+        The section is an invariant instead, true on every run."""
+        self.assert_mutation_is_caught(
+            Mutation("CHANGELOG.md", "## [Unreleased]", "## [Nope]"),
+            "recorded in the changelog",
+            env={"CHANGELOG_WAIVER": ""})
 
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(

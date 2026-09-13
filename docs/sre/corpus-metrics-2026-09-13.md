@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 81 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 82 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 2 (span 2 days) | — |
-| Commits per active day | 40.5 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-09-13T19:04:22 | — |
+| Commits per active day | 41.0 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-09-13T19:08:24 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -40,11 +40,11 @@ against.
 | Metric | Value |
 | --- | --- |
 | Markdown files | 532 |
-| Markdown lines | 60322 |
-| Executable lines (scripts + hooks) | 3653 |
-| Test lines | 1737 |
-| Verification lines (scripts + hooks + tests) | 5390 |
-| Prose to verification ratio | 11.2 : 1 |
+| Markdown lines | 60379 |
+| Executable lines (scripts + hooks) | 3768 |
+| Test lines | 1845 |
+| Verification lines (scripts + hooks + tests) | 5613 |
+| Prose to verification ratio | 10.8 : 1 |
 | Check families in `check-corpus.sh` | 15 |
 | ADRs | 95 |
 
@@ -59,9 +59,9 @@ computing this table, and at 2% a newly added ADR was invisible (R6-T1).
 | Metric | Value | Smallest move this threshold can see |
 | --- | ---: | ---: |
 | Markdown files | 532 | 5 |
-| Executable lines (scripts + hooks) | 3653 | 37 |
-| Test lines | 1737 | 17 |
-| Verification lines (scripts + hooks + tests) | 5390 | 54 |
+| Executable lines (scripts + hooks) | 3768 | 38 |
+| Test lines | 1845 | 18 |
+| Verification lines (scripts + hooks + tests) | 5613 | 56 |
 | Check families in `check-corpus.sh` | 15 | 1 |
 | ADRs | 95 | 1 |
 
@@ -74,10 +74,10 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 81 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 19.8 h | first commit to last |
+| Commits on the default branch | 82 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 19.9 h | first commit to last |
 | Commits per elapsed hour | 4.1 | — |
-| Cumulative diff | 460 files changed, 16178 insertions(+), 1519 deletions(-) | `git diff --shortstat` from the first commit |
+| Cumulative diff | 460 files changed, 16301 insertions(+), 1519 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of

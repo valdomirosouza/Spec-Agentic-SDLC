@@ -11,6 +11,29 @@ authorises them.
 
 ### Added
 
+- `tests/scripts/test_check_corpus.py` — the mutation harness: every entry injects the defect a
+  check exists to catch and requires **that** check to fail, named. Fifty assertions had never been
+  exercised, which is why three vacuous checks survived one round and two more the next (#66).
+- `scripts/python/mutation_coverage.py` and `tests/.mutation-coverage-baseline.json` — a ratchet on
+  how much of the verifier is proved able to fail (15 of 49 today). Deleting a proof lowers the
+  count; adding a check without a proof leaves the count alone and lowers the ratio, which is the
+  case a count cannot see (#75).
+- `.github/workflows/corpus-measure.yml` — the weekly measurement. A level is earned by repetition
+  and the monthly cadence existed only as a sentence, with no trigger anywhere in the repository
+  (#72). Rewritten one round later: it compared against a baseline the commit gate pins, measured
+  without a token so the archived report lost its CI rows, and never returned the report, so a
+  second data point could not exist (#74).
+- `tests/scripts/test_corpus_measure_workflow.py` — eight assertions on the scheduled job, the
+  substitute for being able to run it: token scope, ordering, the delta file written and read under
+  one variable, the pull request that forms the series, and the verbs Constitution V forbids (#74).
+- `scripts/python/check_changelog.py` — a change to scripts, workflows, hooks or the normative
+  contract now owes a changelog entry, with a declared `CHANGELOG_WAIVER` as the only way past
+  (#77).
+- `asdd_state.py migrate` — converts a v1 state to v2 by walking the handoffs, recovering artefacts
+  the old basename map had lost (#76).
+- `corpus_metrics.py --drift` — the periodic comparison, against a baseline at least seven days old
+  and including the numbers that move without anyone editing a file (#70, #73).
+
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
 - `skills/engineering/change-discipline.md` — the Karpathy guidelines wired into the skill system
@@ -155,7 +178,41 @@ authorises them.
   (spec, plan, research, data-model, contracts, quickstart, requirements checklist, tasks); the
   flat `SPEC-LGS-001-golden-signals-feature-spec.md` is `superseded` by it (#5).
 
+### Fixed
+
+- **Vacuous checks, second and third pass.** The refusal check counted occurrences of a string and
+  stayed green with every refusal neutralised to a no-op; the productivity-ratio regex had lost the
+  forms it used to catch; the coverage-floor regex exempted any line citing the ADR, which is what a
+  restated number would do; the scope-discipline check named two placements and verified neither
+  (#67, #68). Each is now proved by mutation.
+- **The evidence rule had been widened until it exempted the case that created it** — 145 of 146
+  paths exempt by directory prefix, including `tests/` and `.github/workflows/`, which exist here.
+  Exemption is now an explicit `adopter:` / `ci:` / `planned:` marker, and severity follows the
+  claim a spec makes about itself (#69).
+- **The freshness check approved a report it could prove was stale**, comparing section headings and
+  no numbers (#70).
+- **The periodic comparison could not find anything, by construction.** It read the newest report,
+  which the commit gate forces to equal the live numbers, so it measured a number against itself and
+  answered "no movement" even at a threshold of 0.0001% (#73).
+- **The delivery state's order guard had a one-entry escape** (a forced entry became the yardstick),
+  one flag cleared two guards, and `--json` skipped validation entirely — the output a governance
+  gate consumes (#71).
+- Seven commits of round 5, including a breaking schema change, reached `main` with no changelog
+  entry at all; nothing in this corpus checked (#77).
+
 ### Changed
+
+- **BREAKING (adopters): delivery state schema `asdd_state_v1` to `asdd_state_v2`.** The
+  `artifacts` map changed meaning from `{basename: path}` to `{path: phase}`. Both shapes are
+  objects of strings, so a v1 file loaded as v2 renders every artefact inverted and validates
+  clean. A v1 file is now refused with an explanation. **Convert with
+  `asdd_state.py migrate --feature <ID>`** — it keeps every handoff. The first version of that
+  message said to re-run `init --force`, which destroys the handoff trail Article VII reads
+  (#71, #76).
+- `append-handoff` takes `--force-order` and `--force-unblock` in place of a single `--force`
+  (#71).
+- The drift threshold is 1%, chosen by computing what each row can see and publishing that table in
+  the report; at the previous 2% a newly added ADR was invisible (#73).
 
 - SPEC-LGS-001 feature spec `approved` by its owner via Spec-as-PR (#21, 2026-09-13); plan
   Constitution Check I → pass; threat-model path corrected to the existing file.
