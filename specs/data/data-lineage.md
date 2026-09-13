@@ -151,7 +151,7 @@ A dataset whose lineage is marked stale **may not be proposed for model use** un
 
 | # | Item                                                        | Owner        | Resolve by            |
 | - | ------------------------------------------------------------- | ------------ | --------------------- |
-| 1 | Lineage recorded for the datasets in the catalog             | Data stewards | 2026-12-13           |
+| 1 | Lineage recorded for the datasets in the catalog             | Data stewards | 2026-11-27           |
 | 2 | Trace attributes carrying dataset ids (ADR-0044 extension)   | SRE Lead     | on-event: With the adopter |
 | 3 | Field-level lineage for the L1/L2 fields in the PII inventory | Data stewards | on-event: Before the next DSAR |
 

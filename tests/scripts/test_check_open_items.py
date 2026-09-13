@@ -55,6 +55,21 @@ class LiveCorpus(unittest.TestCase):
         buckets, _ = oi.audit()
         self.assertGreater(len(buckets["dated"]) + len(buckets["on-event"]), 20)
 
+    def test_no_date_carries_more_items_than_the_limit(self):
+        """R7-T4. Converting eleven quarterly deferrals to the real quarterly date put every one on
+        the same day: one morning the build turns red for everyone and the cheapest way out is to
+        push eleven dates without reading a single item."""
+        import collections
+        buckets, _ = oi.audit()
+        crowded = {d: n for d, n in collections.Counter(c for _, _, c in buckets["dated"]).items()
+                   if n > oi.MAX_PER_DATE}
+        self.assertEqual(crowded, {}, "deadlines must arrive in batches a reviewer can read")
+
+    def test_the_deadlines_are_spread_over_more_than_one_day(self):
+        buckets, _ = oi.audit()
+        self.assertGreater(len({c for _, _, c in buckets["dated"]}), 2,
+                           "a single shared date is the wall this guards against")
+
     def test_a_date_in_the_past_is_overdue(self):
         buckets, _ = oi.audit(today=datetime.date(2099, 1, 1))
         _, overdue = oi.audit(today=datetime.date(2099, 1, 1))

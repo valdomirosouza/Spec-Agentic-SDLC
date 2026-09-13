@@ -26,6 +26,9 @@ authorises them.
 - `tests/scripts/test_corpus_measure_workflow.py` — eight assertions on the scheduled job, the
   substitute for being able to run it: token scope, ordering, the delta file written and read under
   one variable, the pull request that forms the series, and the verbs Constitution V forbids (#74).
+- Open-item deadlines are spread across the quarter by the owner who reviews them, and the checker
+  alerts when too many share one date. Round 6 put all eleven on 2026-12-13, which turns the build
+  red for everyone on one morning and makes pushing eleven dates cheaper than reading one (#82).
 - The weekly job separates three outcomes instead of one. It filed an issue titled "numbers moved"
   whenever the comparison exited non-zero, which includes exit 2, meaning nothing was compared at
   all — the only issue it could produce while the series forms, and its title was false. A crash

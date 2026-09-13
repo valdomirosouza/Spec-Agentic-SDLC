@@ -53,6 +53,12 @@ _TABLES = set()
 MIN_TABLES = 11
 MIN_ITEMS = 30
 
+# A deadline loses its teeth when it arrives as a wall. Converting eleven "next quarterly review"
+# rows to the real quarterly date put every one of them on 2026-12-13: one morning the build turns
+# red for everyone and the cheapest way out is to push eleven dates without reading a single item,
+# which is the behaviour the dates exist to prevent (R7-T4). Alert above this, do not block.
+MAX_PER_DATE = 5
+
 
 def rows():
     """(path, line number, the last cell) for every open-item table row in the corpus."""
@@ -131,6 +137,13 @@ def main(argv=None):
             print("  raise the floors in check_open_items.py deliberately if the shrink is real",
                   file=sys.stderr)
             return 1
+        import collections as _c
+        crowded = [(d, n) for d, n in _c.Counter(c for _, _, c in dated).items()
+                   if n > MAX_PER_DATE]
+        if crowded:
+            for d, n in sorted(crowded):
+                print(f"{n} open items share the date {d} (limit {MAX_PER_DATE}) — they will come "
+                      f"due as one wall, and a wall gets pushed rather than read")
         if overdue:
             print(f"{len(overdue)} open item(s) past their date:", file=sys.stderr)
             for rel, n, cell, days in overdue:

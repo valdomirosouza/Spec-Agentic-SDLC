@@ -158,7 +158,7 @@ The last one is the most common and the easiest to miss.
 | - | ------------------------------------------------------------------------ | ------------------ | --------------------- |
 | 1 | Market surveillance authority and reporting channel per Member State     | Adopting organisation | on-event: First Union deployment |
 | 2 | ~~First monthly monitoring note~~ — done 2026-09-13, [`../../docs/sre/monitoring/2026-09-13-first-cycle.md`](../../docs/sre/monitoring/2026-09-13-first-cycle.md) (#54) | SRE Lead | ✅ |
-| 3 | Drift thresholds for the behavioural anomaly metric (ADR-0049)           | AI Governance Lead | 2026-12-13            |
+| 3 | Drift thresholds for the behavioural anomaly metric (ADR-0049)           | AI Governance Lead | 2026-12-11            |
 
 ## Related
 

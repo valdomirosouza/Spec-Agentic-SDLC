@@ -144,7 +144,7 @@ check. The adopting repository implements it.
 
 | # | Item                                                                  | Owner            | Resolve by            |
 | - | ----------------------------------------------------------------------- | ---------------- | --------------------- |
-| 1 | Environment register with permitted class per environment              | Data custodian   | 2026-12-13            |
+| 1 | Environment register with permitted class per environment              | Data custodian   | 2026-11-13            |
 | 2 | Synthetic generator for the datasets in the catalog                    | Data stewards    | on-event: Before the next perf test |
 | 3 | Re-identification assessment procedure for deterministically masked sets | DPO             | on-event: Before first exception |
 

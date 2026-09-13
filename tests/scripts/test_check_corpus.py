@@ -184,7 +184,10 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         """R6-T6. Every open item in the corpus was deferred to a review nothing convenes or to an
         event named only in prose, so nothing could ever come due."""
         self.assert_mutation_is_caught(
-            Mutation("specs/data/data-quality.md", "| 2026-12-13 ", "| 2026-01-05 "),
+            # The date here moves when the schedule is restaggered, so the mutation reads the
+            # live value instead of hard-coding one that goes stale (it did, in #82).
+            Mutation("specs/data/data-quality.md",
+                     r"\| 20\d\d-\d\d-\d\d\s*\|", "| 2026-01-05 |", regex=True),
             "open items carry a date")
 
     def test_deleting_a_check_from_the_verifier_is_caught(self):
