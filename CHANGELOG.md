@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/runbooks/RB-AI-001-ai-incident.md` — five AI incident scenarios (jailbreak, harmful
+  output, hallucination reaching a decision, unapproved irreversible action, model behaviour
+  change), four containment levers ordered by blast radius, an evidence-preservation table and
+  eight recovery criteria (#40).
 - `docs/ai-governance/dual-use-registry.md` populated with the seven always-HITL action categories,
   each assessed against D-01 to D-06 with its mitigation, plus the entry rule that an unregistered
   action type is not activatable (#39).

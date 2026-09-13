@@ -93,7 +93,7 @@ proposes.
 | ------------------------------ | ----------------------------------------------------------------------------- |
 | Promoting a new model version  | Full contract suite passes; residency re-verified (ADR-0094 §2); this card updated; registry entry added |
 | Provider announces a change    | Contract suite re-run; monitoring note records the outcome                    |
-| Contract test fails in production | Model incident: `docs/runbooks/RB-AI-001-ai-incident.md`; roll back by re-pinning |
+| Contract test fails in production | Model incident: [`../runbooks/RB-AI-001-ai-incident.md`](../runbooks/RB-AI-001-ai-incident.md); roll back by re-pinning |
 
 ## Related
 

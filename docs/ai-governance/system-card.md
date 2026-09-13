@@ -115,7 +115,7 @@ No dataset is used to train or fine-tune any model
 
 Post-market monitoring runs on the plan in
 `specs/compliance/ai-post-market-monitoring.md`; incidents follow
-`docs/runbooks/RB-AI-001-ai-incident.md` and, where serious, the Art. 73 procedure. A model version
+[`../runbooks/RB-AI-001-ai-incident.md`](../runbooks/RB-AI-001-ai-incident.md) and, where serious, the Art. 73 procedure. A model version
 is rolled back by re-pinning it in the dependency manifest.
 
 ## 10. Contact and reporting

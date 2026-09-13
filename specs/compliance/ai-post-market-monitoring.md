@@ -106,7 +106,7 @@ system:
 
 ### 5.2 Procedure
 
-1. **Detect and contain.** Follow `docs/runbooks/RB-AI-001-ai-incident.md`: disable the action
+1. **Detect and contain.** Follow [`../../docs/runbooks/RB-AI-001-ai-incident.md`](../../docs/runbooks/RB-AI-001-ai-incident.md): disable the action
    type, lower autonomy, roll back the model version if implicated.
 2. **Establish the causal link.** The reporting clock under Article 73 starts when the link
    between the system and the incident is established, or when it is reasonably suspected.
@@ -160,5 +160,5 @@ The last one is the most common and the easiest to miss.
 
 - [`eu-ai-act-control-matrix.yaml`](eu-ai-act-control-matrix.yaml) — `ART-72`, `ART-73`, `ART-20`
 - [ADR-0093](../../docs/adr/ADR-0093-eu-ai-act-role-and-risk-classification.md) — classification and triggers
-- `docs/runbooks/RB-AI-001-ai-incident.md` — containment (#40)
+- [`../../docs/runbooks/RB-AI-001-ai-incident.md`](../../docs/runbooks/RB-AI-001-ai-incident.md) — containment
 - [`../../docs/ai/model-lifecycle.md`](../../docs/ai/model-lifecycle.md) — promotion and rollback
