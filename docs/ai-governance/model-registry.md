@@ -106,9 +106,9 @@ question "what was running when this decision was made" must remain answerable a
 
 | # | Item                                                                 | Owner              | Resolve by            |
 | - | ---------------------------------------------------------------------- | ------------------ | --------------------- |
-| 1 | Retain dated copies of the provider's Art. 51 and Art. 53 publications | AI Governance Lead | Next quarterly review |
-| 2 | Prompt registry entries listed here by id once populated               | AI Governance Lead | With the prompt registry |
-| 3 | Embedding model version pinned in the manifest beside the reasoning model | AI platform domain | Next model change   |
+| 1 | Retain dated copies of the provider's Art. 51 and Art. 53 publications | AI Governance Lead | 2026-12-13            |
+| 2 | Prompt registry entries listed here by id once populated               | AI Governance Lead | on-event: With the prompt registry |
+| 3 | Embedding model version pinned in the manifest beside the reasoning model | AI platform domain | on-event: Next model change |
 
 ## Related
 

@@ -80,9 +80,9 @@ confirmation is an open item, not a closed one.
 
 | # | Item                                                              | Owner | Resolve by            |
 | - | ------------------------------------------------------------------- | ----- | --------------------- |
-| 1 | Supplier assessment performed for every row (all are `pending`)    | DPO   | Next quarterly review |
-| 2 | Real provider names, regions and contract references               | Adopting organisation | Before first customer DPA |
-| 3 | Customer notification procedure and notice period                  | DPO   | Before adding a sub-processor |
+| 1 | Supplier assessment performed for every row (all are `pending`)    | DPO   | 2026-12-13            |
+| 2 | Real provider names, regions and contract references               | Adopting organisation | on-event: Before first customer DPA |
+| 3 | Customer notification procedure and notice period                  | DPO   | on-event: Before adding a sub-processor |
 
 ## Related
 

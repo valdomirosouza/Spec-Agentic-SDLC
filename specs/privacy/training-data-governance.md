@@ -159,9 +159,9 @@ irreversibility in §2 makes an expedited path meaningless.
 
 | # | Item                                                                     | Owner | Resolve by                      |
 | - | -------------------------------------------------------------------------- | ----- | ------------------------------- |
-| 1 | Legitimate-interest balancing test template                               | DPO   | Before any operational data is proposed for training |
-| 2 | Leakage test procedure for synthetic data                                 | AI Governance Lead | Before synthetic data is used in a run |
-| 3 | Position on retraining as a remedy for an erasure request                 | DPO   | Next quarterly review           |
+| 1 | Legitimate-interest balancing test template                               | DPO   | on-event: Before any operational data is proposed for training |
+| 2 | Leakage test procedure for synthetic data                                 | AI Governance Lead | on-event: Before synthetic data is used in a run |
+| 3 | Position on retraining as a remedy for an erasure request                 | DPO   | 2026-12-13                      |
 
 ## Related
 

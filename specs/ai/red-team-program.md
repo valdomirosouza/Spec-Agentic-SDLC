@@ -185,8 +185,8 @@ quarterly exercise was happening, and none was. It is no longer true.
 | # | Item                                                        | Owner              | Resolve by            |
 | - | ------------------------------------------------------------- | ------------------ | --------------------- |
 | 1 | ~~First exercise conducted and logged~~ — done 2026-09-13 (RT-2026-09-13) | Security Lead | ✅ |
-| 2 | Memory-poisoning technique blocked on unimplemented controls | AI Governance Lead | With memory governance |
-| 3 | A control that examines action **sequences**, not only single actions | AI Governance Lead | Next quarterly review |
+| 2 | Memory-poisoning technique blocked on unimplemented controls | AI Governance Lead | on-event: With memory governance |
+| 3 | A control that examines action **sequences**, not only single actions | AI Governance Lead | 2026-12-13            |
 
 ## Related
 

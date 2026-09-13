@@ -144,9 +144,9 @@ check. The adopting repository implements it.
 
 | # | Item                                                                  | Owner            | Resolve by            |
 | - | ----------------------------------------------------------------------- | ---------------- | --------------------- |
-| 1 | Environment register with permitted class per environment              | Data custodian   | Next quarterly cycle  |
-| 2 | Synthetic generator for the datasets in the catalog                    | Data stewards    | Before the next perf test |
-| 3 | Re-identification assessment procedure for deterministically masked sets | DPO             | Before first exception |
+| 1 | Environment register with permitted class per environment              | Data custodian   | 2026-12-13            |
+| 2 | Synthetic generator for the datasets in the catalog                    | Data stewards    | on-event: Before the next perf test |
+| 3 | Re-identification assessment procedure for deterministically masked sets | DPO             | on-event: Before first exception |
 
 ## Related
 

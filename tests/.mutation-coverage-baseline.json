@@ -1,5 +1,5 @@
 {
   "_comment": "Mutation coverage ratchet (#75). Raise it by proving more checks; lowering it is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 51,
-  "proved": 16
+  "named": 53,
+  "proved": 17
 }

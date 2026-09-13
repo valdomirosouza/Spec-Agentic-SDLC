@@ -180,6 +180,13 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             "recorded in the changelog",
             env={"CHANGELOG_WAIVER": ""})
 
+    def test_an_open_item_past_its_date_is_caught(self):
+        """R6-T6. Every open item in the corpus was deferred to a review nothing convenes or to an
+        event named only in prose, so nothing could ever come due."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/data/data-quality.md", "| 2026-12-13 ", "| 2026-01-05 "),
+            "open items carry a date")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

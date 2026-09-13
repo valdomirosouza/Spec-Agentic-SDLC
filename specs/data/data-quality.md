@@ -167,9 +167,9 @@ check this repository cannot execute.
 
 | # | Item                                                                | Owner       | Resolve by          |
 | - | --------------------------------------------------------------------- | ----------- | ------------------- |
-| 1 | ~~First rule set for the datasets in the catalog~~ — done 2026-09-13 for this corpus's own datasets (14 rules, `scripts/python/check_data_quality.py`, #53); the adopter's datasets remain open | Data owners | Next quarterly cycle |
-| 2 | Reference source for any dataset claiming an accuracy target         | Data owners | Before claiming it   |
-| 3 | Lineage edges recorded for the datasets in the catalog               | Data stewards | Next quarterly cycle |
+| 1 | ~~First rule set for the datasets in the catalog~~ — done 2026-09-13 for this corpus's own datasets (14 rules, `scripts/python/check_data_quality.py`, #53); the adopter's datasets remain open | Data owners | 2026-12-13           |
+| 2 | Reference source for any dataset claiming an accuracy target         | Data owners | on-event: Before claiming it |
+| 3 | Lineage edges recorded for the datasets in the catalog               | Data stewards | 2026-12-13           |
 
 ## Related
 
