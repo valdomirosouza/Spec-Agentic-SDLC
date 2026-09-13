@@ -4,7 +4,7 @@
 
 > **Status:** Active · **Version:** 1.0 · **Approved:** 2026-09-13
 > **Owner:** Tech Lead · **Co-owner:** DPO
-> **Related:** `docs/data/data-catalog.md` (#31) · `docs/data/business-glossary.md` (#31) ·
+> **Related:** [`data-catalog.md`](data-catalog.md) · [`business-glossary.md`](business-glossary.md) ·
 > [`../../specs/data/data-quality.md`](../../specs/data/data-quality.md) · [`../../specs/data/data-contracts.md`](../../specs/data/data-contracts.md) ·
 > [`../../memory/constitution.md`](../../memory/constitution.md) Art. III and VII
 
@@ -69,7 +69,7 @@ keeps that true day to day. Custodian keeps it safe and available. Conflating ow
 is the most common failure: the team that runs the database is rarely the team that knows what the
 field means.
 
-**Naming.** Every dataset in `docs/data/data-catalog.md` (#31) names its owner, steward and
+**Naming.** Every dataset in [`data-catalog.md`](data-catalog.md) names its owner, steward and
 custodian by role. A dataset with an unnamed owner is a finding, not a gap to tolerate.
 
 ## 5. Council: cadence and decision rights
@@ -89,8 +89,8 @@ custodian by role. A dataset with an unnamed owner is a finding, not a gap to to
 
 ## 6. How a dataset becomes governed
 
-1. **Declare** it in `docs/data/data-catalog.md` (#31) with owner, steward, custodian, classification and purpose.
-2. **Define** its terms in `docs/data/business-glossary.md` (#31) if it introduces business meaning.
+1. **Declare** it in [`data-catalog.md`](data-catalog.md) with owner, steward, custodian, classification and purpose.
+2. **Define** its terms in [`business-glossary.md`](business-glossary.md) if it introduces business meaning.
 3. **Contract** it if anyone outside the producing domain reads it.
 4. **Measure** it: at least one quality rule per declared expectation ([`../../specs/data/data-quality.md`](../../specs/data/data-quality.md)).
 5. **Trace** it: lineage from source to consumption, so impact analysis and data-subject requests
@@ -133,7 +133,7 @@ requires full council approval.
 
 ## Related
 
-- `data-catalog.md` and `business-glossary.md` (#31) · [`data-model-catalog.md`](data-model-catalog.md)
+- [`data-catalog.md`](data-catalog.md) · [`business-glossary.md`](business-glossary.md) · [`data-model-catalog.md`](data-model-catalog.md)
 - [`../governance/raci-matrix.md`](../governance/raci-matrix.md) §5 — Data governance
 - [`../../specs/privacy/pii-inventory.md`](../../specs/privacy/pii-inventory.md) — the privacy side
 - [`../../specs/compliance/eu-ai-act-control-matrix.yaml`](../../specs/compliance/eu-ai-act-control-matrix.yaml) — `ART-10`

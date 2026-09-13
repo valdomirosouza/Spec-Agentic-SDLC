@@ -110,7 +110,7 @@ The contract is where that is caught, by a human, before the notice period start
 - One Markdown file per contract from
   [`../../templates/data-contract-template.md`](../../templates/data-contract-template.md), beside
   the producing domain's specs.
-- Registered in `docs/data/data-catalog.md` (#31), which is the index.
+- Registered in [`../../docs/data/data-catalog.md`](../../docs/data/data-catalog.md), which is the index.
 - The schema stays in the registry; the contract links to it and never copies it.
 
 ## 7. When a contract is required
@@ -140,5 +140,5 @@ complain about a silent semantic change, which makes the contract more important
 
 - [`data-quality.md`](data-quality.md) — the expectations a contract promises
 - [`../api/async-api-design.md`](../api/async-api-design.md) — event schema rules this builds on
-- `docs/data/data-catalog.md` (#31) — the contract index
+- [`../../docs/data/data-catalog.md`](../../docs/data/data-catalog.md) — the contract index
 - `docs/data/data-governance-charter.md` — who approves a breaking change
