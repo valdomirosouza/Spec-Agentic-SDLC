@@ -186,7 +186,7 @@ Full 15-phase (0–14) lifecycle: `docs/process/WORKFLOW.md` (ADR-0052, ADR-0058
 4.  VALIDATE a GitHub Issue exists and references the spec.
 5.  CHECK if DPIA/RIPD review is needed (any new PII processing) — see docs/privacy/.
 6.  IMPLEMENT following the spec. No gold-plating, no scope creep.
-7.  WRITE tests (unit ≥ 80% coverage, integration for service boundaries).
+7.  WRITE tests (unit coverage at or above the floor declared in ADR-0022, integration for service boundaries).
 8.  RUN guardrails: pii_filter, prompt_injection_guard, output_sanitizer, audit_logger.
 9.  UPDATE docs/adr/ if a new architectural decision was made.
 10. UPDATE CHANGELOG.md under the correct category.

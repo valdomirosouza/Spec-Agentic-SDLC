@@ -45,8 +45,12 @@ ROOT=$(get_repo_root); cd "$ROOT"
 EXAMPLE="specs/features/SPEC-LGS-001-log-based-golden-signals"
 fails=0
 say() { $QUIET || echo "$@"; }
-result() { # name status detail
-    if [ "$2" = ok ]; then say "  ✓ $1${3:+ — $3}"; else echo "  ✗ $1${3:+ — $3}"; fails=$((fails+1)); fi
+result() { # name status detail — ok | note | fail
+    case "$2" in
+        ok)   say "  ✓ $1${3:+ — $3}" ;;
+        note) echo "  ! $1${3:+ — $3}" ;;   # alert severity: visible, does not fail the build
+        *)    echo "  ✗ $1${3:+ — $3}"; fails=$((fails+1)) ;;
+    esac
 }
 
 say "C1 internal links"
@@ -187,7 +191,9 @@ grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q '
 # The coverage floor is one number in one place. A bare number in a normative text is how it
 # came to be stated three ways (80 in the constitution, 85 in ADR-0022, 75 as the escalation
 # trigger, with nothing reconciling them).
-cov_bad=$(grep -nE 'coverage (MUST be|≥|>=) *(7[0-9]|8[0-9]|9[0-9])%' memory/constitution.md CLAUDE.md 2>/dev/null || true)
+# Any bare percentage near the word coverage, in either order. The previous pattern required
+# "coverage" first and missed both "unit >= 80% coverage" and a hardcoded "85%".
+cov_bad=$(grep -nEi '(coverage[^.]{0,30}(7[0-9]|8[0-9]|9[0-9])%|(7[0-9]|8[0-9]|9[0-9])% *coverage)' memory/constitution.md CLAUDE.md 2>/dev/null | grep -viE 'ADR-0022|declared floor' || true)
 [ -z "$cov_bad" ] && result "constitution and CLAUDE.md reference the floor, not a bare number" ok || result "constitution and CLAUDE.md reference the floor, not a bare number" fail "$cov_bad"
 cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testing-strategy.md | grep -oE '[0-9]{2}%' | sort -u)
 [ "$(printf '%s' "$cov_n" | wc -w | tr -d ' ')" = 1 ] && result "ADR-0022 declares exactly one floor" ok "$cov_n" || result "ADR-0022 declares exactly one floor" fail "found: ${cov_n:-none}"
@@ -196,7 +202,13 @@ cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testin
 # instruction that produced it was removed, because fixing only the output regenerates it.
 # Narrow on purpose: this targets a DELIVERY-THROUGHPUT ratio (agent vs human), not a technical
 # benchmark. "uv is 10-100x faster than pip" is a tool comparison and stays.
-ratio_bad=$(grep -rnoE '(speedup ratio|human.equiv[^|]*÷|÷ *agent wall.clock)[^|]*[0-9]+(\.[0-9]+)?\s*(×|x)' --include='*.md' . 2>/dev/null | grep -v '^\./\.git/' | grep -viE 'withdrawn|no ratio|not a ratio|forbids|would require' || true)
+# Matches the form the claim actually took ("≈160× faster") as well as the labelled variants.
+# Narrow to DELIVERY throughput: a tool benchmark ("uv is 10-100x faster than pip") is a different
+# claim and stays. The previous regex required the literal "speedup ratio" and so matched nothing.
+# -n not -o: with -o the exclusion filter below only sees the matched fragment, never the words
+# around it, so "withdrawn" on the same line could not exempt the line. Same class of defect as
+# the regex this replaced.
+ratio_bad=$(grep -rniE '(≈|~|about )?[0-9]+(\.[0-9]+)?\s*(×|x)\s*(faster|quicker|speedup)|speedup ratio[^|]*[0-9]+(\.[0-9]+)?\s*(×|x)' --include='*.md' . 2>/dev/null | grep -v '^\./\.git/' | grep -viE 'withdrawn|no speedup|not a ratio|forbids|would require|than pip|benchmark' || true)
 [ -z "$ratio_bad" ] && result "no unqualified speedup ratio is published" ok || { result "no unqualified speedup ratio is published" fail "$(printf '%s' "$ratio_bad" | head -3)"; }
 # `python` is not on PATH on macOS or a stock Debian/Ubuntu. The agents shipped 20 invocations of
 # it, so the delivery layer could not start (R4-T1). Only `python3` is portable here.
@@ -242,7 +254,8 @@ else
         printf '%s\n' "$out" | grep 'CRITICAL' | head -5 | sed 's/^/      /'
     else
         # A `major` alerts and does not block (specs/data/data-quality.md §4): report it every run.
-        result "data-quality rules over the corpus's own datasets" ok "open finding(s) reported below"
+        # Printing a tick while the rule exits non-zero is how a declared rule becomes decorative.
+        result "data-quality rules over the corpus's own datasets" note "open finding(s) — see below"
         printf '%s\n' "$out" | grep -E 'MAJOR|MINOR' | head -5 | sed 's/^/      note: /'
     fi
 fi

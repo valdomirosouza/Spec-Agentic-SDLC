@@ -13,7 +13,7 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
-- The "≈160× faster" claim withdrawn and the `/deliver` instruction that generated it removed;
+- The "160x faster" claim (withdrawn — see below) and the `/deliver` instruction that generated it removed;
   the metrics report gains a Productivity section with the measured side only and the four things
   a legitimate ratio would require; a C8 invariant blocks an unqualified delivery-throughput ratio
   from returning (#55).
