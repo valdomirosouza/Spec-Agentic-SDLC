@@ -26,8 +26,9 @@ class Measurement(unittest.TestCase):
         for field in ("markdown_files", "markdown_lines", "executable_lines", "test_lines", "adrs"):
             self.assertGreater(k[field], 0, field)
         self.assertGreater(k["check_families"], 0)
-        self.assertAlmostEqual(k["prose_to_code_ratio"],
-                               round(k["markdown_lines"] / k["executable_lines"], 1), places=1)
+        self.assertEqual(k["verification_lines"], k["executable_lines"] + k["test_lines"])
+        self.assertAlmostEqual(k["prose_to_verification_ratio"],
+                               round(k["markdown_lines"] / k["verification_lines"], 1), places=1)
 
     def test_ci_metrics_declare_availability(self):
         c = self.m["ci"]
@@ -86,6 +87,29 @@ class Measurement(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         d = json.loads(r.stdout)
         self.assertIn("generated_at", d); self.assertIn("git", d)
+
+    def test_check_mode_detects_a_stale_report(self):
+        """R4-T6. There was no --check, so nothing could fail on a stale or wrong report."""
+        import shutil, tempfile
+        latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
+                        if f.startswith("corpus-metrics-"))[-1]
+        path = os.path.join(HERE, "docs", "sre", latest)
+        backup = tempfile.mktemp(); shutil.copy(path, backup)
+        try:
+            self.assertEqual(subprocess.run([sys.executable, SCRIPT, "--check", "--quiet"],
+                                            capture_output=True, cwd=HERE, timeout=180).returncode, 0)
+            text = open(path, encoding="utf-8").read().replace("## 3. Corpus shape", "## 3. Removed")
+            open(path, "w", encoding="utf-8").write(text)
+            self.assertEqual(subprocess.run([sys.executable, SCRIPT, "--check", "--quiet"],
+                                            capture_output=True, cwd=HERE, timeout=180).returncode, 1)
+        finally:
+            shutil.copy(backup, path); os.unlink(backup)
+
+    def test_check_families_matches_what_actually_runs(self):
+        """R4-T6. The count was `grep -c '^say \"C'` and reported 12 while 15 families ran."""
+        import re
+        src = open(os.path.join(HERE, "scripts", "bash", "check-corpus.sh"), encoding="utf-8").read()
+        self.assertEqual(self.m["corpus"]["check_families"], len(set(re.findall(r'say "(C\d+)', src))))
 
     def test_a_report_exists_on_disk(self):
         reports = [f for f in os.listdir(os.path.join(HERE, "docs", "sre"))

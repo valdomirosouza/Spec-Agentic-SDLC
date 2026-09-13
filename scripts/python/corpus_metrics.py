@@ -129,14 +129,21 @@ def corpus_metrics():
         return n
     exec_lines = count_lines(["scripts", ".claude/hooks"])
     test_lines = count_lines(["tests"])
-    checks = sh("grep", "-c", "^say \"C", os.path.join(ROOT, "scripts", "bash", "check-corpus.sh"), default="0")
+    # Count the DISTINCT C-labels that run, not the lines that happen to start with `say "C`.
+    # The latter reported 12 while 15 families ran, and the report published the wrong number.
+    import re as _re
+    _src = open(os.path.join(ROOT, "scripts", "bash", "check-corpus.sh"), encoding="utf-8").read()
+    checks = len(set(_re.findall(r'say "(C\d+)', _src)))
     return {
         "markdown_files": md_files,
         "markdown_lines": md_lines,
         "executable_lines": exec_lines,
         "test_lines": test_lines,
-        "prose_to_code_ratio": round(md_lines / exec_lines, 1) if exec_lines else None,
-        "check_families": int(checks or 0),
+        # Verification is scripts + hooks + tests. Excluding tests meant adding 458 test lines
+        # moved the ratio by zero while the report claimed it "falls when verification is added".
+        "verification_lines": exec_lines + test_lines,
+        "prose_to_verification_ratio": round(md_lines / (exec_lines + test_lines), 1) if (exec_lines + test_lines) else None,
+        "check_families": checks,
         "adrs": len([f for f in os.listdir(os.path.join(ROOT, "docs", "adr"))
                      if f.startswith("ADR-") and f[4:8].isdigit()]),
         "method": "file walk excluding .git, .serena, .sdd, .agent and node_modules",
@@ -258,7 +265,8 @@ def render(m):
         f"| Markdown lines | {k['markdown_lines']} |",
         f"| Executable lines (scripts + hooks) | {k['executable_lines']} |",
         f"| Test lines | {k['test_lines']} |",
-        f"| Prose to executable ratio | {k['prose_to_code_ratio']} : 1 |",
+        f"| Verification lines (scripts + hooks + tests) | {k['verification_lines']} |",
+        f"| Prose to verification ratio | {k['prose_to_verification_ratio']} : 1 |",
         f"| Check families in `check-corpus.sh` | {k['check_families']} |",
         f"| ADRs | {k['adrs']} |",
         "",
@@ -329,6 +337,7 @@ def render(m):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--report", action="store_true")
+    ap.add_argument("--check", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
@@ -336,6 +345,31 @@ def main():
     if a.json:
         json.dump(m, sys.stdout, indent=2)
         print()
+        return 0
+    if a.check:
+        import glob as _g
+        reports = sorted(_g.glob(os.path.join(ROOT, "docs", "sre", "corpus-metrics-*.md")))
+        if not reports:
+            print("no corpus-metrics report on disk")
+            return 1
+        latest = reports[-1]
+        on_disk = open(latest, encoding="utf-8").read()
+        # Compare the structure and the stated method, not the live numbers: commits and CI runs
+        # change between the report and any later run, and failing on that would be noise.
+        fresh = render(m)
+        drift = [h for h in ("## 1. Delivery", "## 2. Change quality", "## 3. Corpus shape",
+                             "## 4. Productivity", "## 5. Not measurable here")
+                 if (h in fresh) != (h in on_disk)]
+        stale = [u["metric"] for u in m["unavailable"] if u["metric"] not in on_disk]
+        if drift or stale:
+            print(f"{os.path.relpath(latest, ROOT)} is out of date — run: corpus_metrics.py --report")
+            for d in drift:
+                print(f"  section changed: {d}")
+            for u in stale:
+                print(f"  unmeasurable metric not listed: {u}")
+            return 1
+        if not a.quiet:
+            print(f"{os.path.relpath(latest, ROOT)}: structure current")
         return 0
     if a.report:
         rel = os.path.join("docs", "sre", f"corpus-metrics-{m['generated_at'][:10]}.md")
@@ -347,7 +381,7 @@ def main():
         print(f"commits {g['commits']} over {g['active_days']} active days "
               f"({g['commits_per_active_day']}/day) · "
               f"CI failure rate {c.get('change_failure_rate_pct', 'n/a')}% · "
-              f"prose:code {k['prose_to_code_ratio']}:1 · {k['check_families']} check families")
+              f"prose:verification {k['prose_to_verification_ratio']}:1 · {k['check_families']} check families")
     return 0
 
 

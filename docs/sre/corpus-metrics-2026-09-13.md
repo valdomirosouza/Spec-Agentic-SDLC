@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 66 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 67 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 2 (span 2 days) | — |
-| Commits per active day | 33.0 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-09-13T12:38:22 | — |
+| Commits per active day | 33.5 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-09-13T12:44:49 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -40,11 +40,12 @@ against.
 | Metric | Value |
 | --- | --- |
 | Markdown files | 531 |
-| Markdown lines | 60174 |
-| Executable lines (scripts + hooks) | 2971 |
+| Markdown lines | 60176 |
+| Executable lines (scripts + hooks) | 3066 |
 | Test lines | 1060 |
-| Prose to executable ratio | 20.3 : 1 |
-| Check families in `check-corpus.sh` | 12 |
+| Verification lines (scripts + hooks + tests) | 4126 |
+| Prose to verification ratio | 14.6 : 1 |
+| Check families in `check-corpus.sh` | 15 |
 | ADRs | 95 |
 
 **Why the ratio is a metric and not trivia.** The maturity assessment named governance mass
@@ -56,10 +57,10 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 66 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 13.4 h | first commit to last |
-| Commits per elapsed hour | 4.9 | — |
-| Cumulative diff | 457 files changed, 14306 insertions(+), 1467 deletions(-) | `git diff --shortstat` from the first commit |
+| Commits on the default branch | 67 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 13.5 h | first commit to last |
+| Commits per elapsed hour | 5.0 | — |
+| Cumulative diff | 457 files changed, 14322 insertions(+), 1468 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of

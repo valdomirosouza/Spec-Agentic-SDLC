@@ -71,6 +71,37 @@ def parse_frontmatter(text):
     return out
 
 
+KINDS = ("spec", "policy", "feature-spec", "threat-model")
+STATUSES = ("draft", "in-review", "approved", "implemented", "superseded")
+
+
+def validate(entry):
+    """Refuse a malformed spec rather than registering it. ID_RE was defined and never used, so the
+    registry accepted any id, any kind and any status, and a duplicate (id, kind) went unreported
+    (R4-T5)."""
+    errs = []
+    if not ID_RE.match(entry.get("id", "")):
+        errs.append(f"{entry['path']}: id {entry.get('id')!r} does not match {ID_RE.pattern}")
+    if entry.get("kind") not in KINDS:
+        errs.append(f"{entry['path']}: kind {entry.get('kind')!r} not in {KINDS}")
+    if entry.get("status") not in STATUSES:
+        errs.append(f"{entry['path']}: status {entry.get('status')!r} not in {STATUSES}")
+    return errs
+
+
+def unresolved_evidence(entry):
+    """implemented_by / verified_by paths that resolve to nothing here and are not marked as the
+    adopting repository's. Counting them as evidence renders confidence the registry cannot back."""
+    out = []
+    for field in ("implemented_by", "verified_by"):
+        for p in entry.get(field, []):
+            if p.startswith(("adopter:", "ci:", "planned:")):
+                continue
+            if not os.path.exists(os.path.join(ROOT, p.split("#")[0].strip())):
+                out.append(p)
+    return out
+
+
 def collect():
     specs = []
     for path in sorted(glob.glob(os.path.join(ROOT, "specs", "**", "*.md"), recursive=True)):
@@ -92,7 +123,24 @@ def collect():
             entry[f] = v if isinstance(v, list) else ([] if v in (None, "") else [v])
         specs.append(entry)
     specs.sort(key=lambda e: (e.get("id", ""), e["path"]))
+    for e in specs:
+        e["unresolved_evidence"] = unresolved_evidence(e)
     return specs
+
+
+def problems(specs):
+    """Validation errors plus duplicate (id, kind) among live specs."""
+    errs = []
+    for e in specs:
+        errs += validate(e)
+    live = [e for e in specs if e.get("status") != "superseded"]
+    seen = {}
+    for e in live:
+        key = (e.get("id"), e.get("kind"))
+        if key in seen:
+            errs.append(f"duplicate (id, kind) {key[0]}/{key[1]}: {seen[key]} and {e['path']}")
+        seen[key] = e["path"]
+    return errs
 
 
 def render_json(specs):
@@ -104,6 +152,13 @@ def render_json(specs):
         "count": len(specs),
         "specs": specs,
     }, indent=2, ensure_ascii=False) + "\n"
+
+
+def _evidence(entry, field):
+    """`n` when every path resolves, `n (m unresolved)` otherwise — never a bare count."""
+    paths = entry.get(field, [])
+    bad = [p for p in entry.get("unresolved_evidence", []) if p in paths]
+    return f"{len(paths)}" + (f" ({len(bad)} unresolved)" if bad else "")
 
 
 def render_md(specs):
@@ -130,7 +185,7 @@ def render_md(specs):
         lines.append(
             f"| {s.get('id','?')} | {s.get('kind','?')} | {s.get('status','?')} | "
             f"{s.get('owner','—')} | {s.get('issue') or ''} | `{s['path']}` | {adrs} | "
-            f"{len(s.get('implemented_by', []))} | {len(s.get('verified_by', []))} |"
+            f"{_evidence(s, 'implemented_by')} | {_evidence(s, 'verified_by')} |"
         )
     lines += ["", "## By kind", "", "| Kind | Count |", "| --- | --- |"]
     lines += [f"| {k} | {v} |" for k, v in sorted(by_kind.items())]
@@ -147,6 +202,12 @@ def main():
     a = ap.parse_args()
 
     specs = collect()
+    errs = problems(specs)
+    if errs and not a.json:
+        print(f"spec registry: {len(errs)} malformed or duplicate spec(s) — refusing to register")
+        for e in errs:
+            print(f"  {e}")
+        return 1
     js, md = render_json(specs), render_md(specs)
 
     if a.json:

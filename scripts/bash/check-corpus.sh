@@ -267,6 +267,11 @@ say "C14 corpus measurement"
 if $SMOKE; then
     if out=$(python3 tests/scripts/test_corpus_metrics.py 2>&1); then result "tests/scripts/test_corpus_metrics.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_metrics.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
+if out=$(python3 scripts/python/corpus_metrics.py --check --quiet 2>&1); then
+    result "the measurement report is structurally current" ok
+else
+    result "the measurement report is structurally current" fail "$(printf '%s' "$out" | head -3)"
+fi
 nrep=$(ls docs/sre/corpus-metrics-*.md 2>/dev/null | wc -l | tr -d ' ')
 [ "${nrep:-0}" -ge 1 ] && result "the corpus carries at least one measurement of itself" ok "$nrep report(s)" || result "the corpus carries at least one measurement of itself" fail
 
