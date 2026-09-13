@@ -32,7 +32,7 @@
 **Skills**: `skills/domain/domain-modeling.md`, `skills/devsecops/owasp-top10.md`
 
 - [ ] T005 Records `LogEntry`, `SignalEvent`, `Bucket`, `AuditRecord` in `src/main/java/com/yourorg/goldensignals/domain/` per data-model.md — Refs: FR-01, FR-03, FR-05, FR-14
-- [ ] T006 [P] STRIDE pass → `specs/security/threat-model-SPEC-LGS-001.md` (ingestion boundary, agent-facing analytics); reviewer ticks CHK011 — Refs: NFR-06, Spec §7
+- [ ] T006 [P] STRIDE pass → `specs/security/threat-model-SPEC-LGS-001-golden-signals.md` (ingestion boundary, agent-facing analytics); reviewer ticks CHK011 — Refs: NFR-06, Spec §7
 - [ ] T007 [P] `contracts/openapi-delta.yaml` merged into the published OpenAPI document; controller stubs generated, not hand-written — Refs: FR-01, FR-07…FR-14
 - [ ] T008 [P] `TraceIdFilter` + structured JSON logging config (`X-Trace-Id` read or generated) in `api/` — Refs: NFR-03
 - [ ] T009 `MetricStore` interface + `InMemoryMetricStore` in `infra/` (persist, query, trackedPaths, ping) — Refs: FR-05, FR-06, FR-09
