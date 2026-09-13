@@ -312,9 +312,11 @@ if [ -z "$sched_bad" ]; then
     grep -qE '^    - cron:' "$sched" || sched_bad="$sched_bad [no cron entry]"
     grep -q 'corpus_metrics.py --drift' "$sched" || sched_bad="$sched_bad [does not measure]"
     grep -q 'gh issue create' "$sched" || sched_bad="$sched_bad [movement is not reported anywhere]"
+    grep -q 'gh pr create' "$sched" || sched_bad="$sched_bad [report never returns to the repo, so no series forms]"
+    awk '/^    steps:/{exit} /GH_TOKEN/{found=1} END{exit !found}' "$sched" || sched_bad="$sched_bad [token not declared at job level: the measurement step loses its CI rows]"
 fi
 [ -z "$sched_bad" ] \
-    && result "the measurement is scheduled, not merely described" ok "weekly cron opens an issue when a structural number moves" \
+    && result "the measurement is scheduled, not merely described" ok "weekly cron, token at job level, proposes the report and files what moved" \
     || result "the measurement is scheduled, not merely described" fail "$sched_bad"
 
 nrep=$(ls docs/sre/corpus-metrics-*.md 2>/dev/null | wc -l | tr -d ' ')
@@ -373,6 +375,7 @@ if $SMOKE; then
     # Slow (it re-runs check-corpus once per mutation), so it is behind --no-smoke like the rest.
     if out=$(python3 tests/scripts/test_check_corpus.py 2>&1); then result "tests/scripts/test_check_corpus.py (mutation)" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_corpus.py (mutation)" fail "a check stayed green under its own defect"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -8 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+    if out=$(python3 tests/scripts/test_corpus_measure_workflow.py 2>&1); then result "tests/scripts/test_corpus_measure_workflow.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_measure_workflow.py" fail "the scheduled job is mis-wired"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_build_spec_registry.py 2>&1); then result "tests/scripts/test_build_spec_registry.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_build_spec_registry.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 

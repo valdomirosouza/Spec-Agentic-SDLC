@@ -137,6 +137,22 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      r"^    - cron:[^\n]*\n", "", regex=True),
             "measurement is scheduled")
 
+    def test_stripping_the_job_level_token_is_caught(self):
+        """R6-T2. Declared only on the step that filed the issue, the measurement ran without a
+        token and the archived report silently lost its CI rows — the rows --check is told to
+        ignore, so no existing gate could have noticed."""
+        self.assert_mutation_is_caught(
+            Mutation(".github/workflows/corpus-measure.yml",
+                     r"^      GH_TOKEN:[^\n]*\n", "", regex=True),
+            "measurement is scheduled")
+
+    def test_dropping_the_pull_request_that_forms_the_series_is_caught(self):
+        """Without it the report is archived and never lands, so next week there is still exactly
+        one dated report and the comparison has nothing to compare against."""
+        self.assert_mutation_is_caught(
+            Mutation(".github/workflows/corpus-measure.yml", "gh pr create", "gh pr view"),
+            "measurement is scheduled")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",
