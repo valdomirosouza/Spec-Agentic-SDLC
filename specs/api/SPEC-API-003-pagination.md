@@ -21,8 +21,8 @@ slo_ref: docs/sre/slo/slo.yaml
 kind: spec
 issue: null # GitHub issue number that delivered/owns this spec
 implemented_by:
-  - src/api/rest/pagination.py
-  - src/api/rest/routers/hitl.py
+  - adopter:src/api/rest/pagination.py
+  - adopter:src/api/rest/routers/hitl.py
 verified_by: []
 last_updated: 2026-09-12
 ---

@@ -119,6 +119,14 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("CLAUDE.md", r"\| Editing existing code[^\n]*\n", "", regex=True),
             "change-discipline")
 
+    def test_unmarking_an_implemented_spec_s_evidence_is_caught(self):
+        """R5-T4. The rule that caught SPEC-FEAT-001 was widened by directory prefix until 145 of
+        146 paths were exempt and it caught nothing. Exemption is now the author's own marker."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/api/SPEC-API-002-idempotency-keys.md",
+                     "adopter:src/agents/idempotency_store.py", "src/agents/idempotency_store.py"),
+            "evidence paths resolve")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

@@ -310,6 +310,48 @@ if out=$(python3 scripts/python/build_spec_registry.py --check --quiet 2>&1); th
 else
     result "spec registry matches disk" fail; printf '%s\n' "$out" | head -10 | sed 's/^/      /'
 fi
+# Evidence accounting (R5-T4). A path that resolves nowhere and carries no `adopter:` / `ci:` /
+# `planned:` marker is the SPEC-FEAT-001 defect and fails. A path merely missing its marker is a
+# marking backlog and alerts. The previous rule exempted both by directory prefix and caught
+# neither.
+ev=$(python3 - <<'PY_EV' 2>/dev/null
+import json, subprocess, sys
+out = subprocess.run([sys.executable, "scripts/python/build_spec_registry.py", "--json"],
+                     capture_output=True, text=True).stdout
+d = json.loads(out)
+# A spec whose status CLAIMS the work is done must be able to show it: an `implemented` or
+# `verified` spec citing evidence that neither resolves nor carries a marker is the exact
+# SPEC-FEAT-001 defect (R4-T8). At any other status an unmarked path is a marking backlog.
+CLAIMS = ("implemented", "verified")
+bad, backlog = [], []
+for s in d["specs"]:
+    strong = s.get("status") in CLAIMS
+    for p in s.get("unresolved_evidence", []):
+        bad.append((s["id"], p, "resolves nowhere, marked nowhere"))
+    for p in s.get("unmarked_evidence", []):
+        (bad if strong else backlog).append(
+            (s["id"], p, f"status {s.get('status')} claims done, path is unmarked") if strong
+            else (s["id"], p))
+print(f"{len(bad)} {len(backlog)} {len({i for i, *_ in backlog})}")
+for row in bad[:5]:
+    print(f"{row[0]} {row[1]} — {row[2]}")
+PY_EV
+)
+ev_head=$(printf '%s' "$ev" | head -1)
+ev_unresolved=$(printf '%s' "$ev_head" | cut -d' ' -f1)
+ev_unmarked=$(printf '%s' "$ev_head" | cut -d' ' -f2)
+ev_specs=$(printf '%s' "$ev_head" | cut -d' ' -f3)
+if [ -z "$ev_head" ]; then
+    result "spec evidence paths resolve or carry an explicit marker" fail "could not read the registry"
+elif [ "$ev_unresolved" != "0" ]; then
+    result "spec evidence paths resolve or carry an explicit marker" fail "$ev_unresolved unaccounted path(s) under a status that claims the work is done"
+    printf '%s\n' "$ev" | tail -n +2 | sed 's/^/      /'
+elif [ "${ev_unmarked:-0}" != "0" ]; then
+    result "spec evidence paths resolve or carry an explicit marker" note "0 unresolved; $ev_unmarked adopter-shaped path(s) in $ev_specs spec(s) still want a marker — see docs/governance/spec-registry.md"
+else
+    result "spec evidence paths resolve or carry an explicit marker" ok "every path resolves or is marked"
+fi
+
 if $SMOKE; then
     # The verifier's own test: every entry injects a defect and requires THAT check to fail.
     # Slow (it re-runs check-corpus once per mutation), so it is behind --no-smoke like the rest.

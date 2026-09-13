@@ -31,7 +31,17 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/llm_factory.py",
+        "src/agents/orchestrator/orchestrator.py",
+        "src/agents/schemas/agent_action_v1.py",
+        "src/shared/llm_client.py",
+        "src/shared/retry.py",
+        "tests/e2e/test_autonomous_resolution.py",
+        "tests/unit/agents/test_orchestrator.py",
+        "tests/unit/shared/test_retry.py"
+      ]
     },
     {
       "path": "specs/ai/agent-memory.md",
@@ -60,7 +70,18 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/memory/__init__.py",
+        "src/memory/bug_history_store.py",
+        "src/memory/document_indexer.py",
+        "src/memory/session_memory.py",
+        "src/memory/vector_store.py",
+        "tests/unit/memory/test_bug_history_store.py",
+        "tests/unit/memory/test_document_indexer.py",
+        "tests/unit/memory/test_session_memory.py",
+        "tests/unit/memory/test_vector_store.py"
+      ]
     },
     {
       "path": "specs/ai/agentic-maturity-assessment.md",
@@ -80,7 +101,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/ai/autonomous-mode-levels.md",
@@ -101,7 +123,11 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/shared/feature_flags.py",
+        "infrastructure/feature-flags/"
+      ]
     },
     {
       "path": "specs/ai/context-graph.md",
@@ -122,7 +148,11 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/context_graph.py",
+        "src/shared/feature_flags.py"
+      ]
     },
     {
       "path": "specs/ai/feedback-loop.md",
@@ -142,7 +172,11 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/feedback_loop.py",
+        "tests/unit/agents/test_feedback_loop.py"
+      ]
     },
     {
       "path": "specs/ai/guardrails.md",
@@ -178,7 +212,24 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/guardrails/action_limits.py",
+        "src/guardrails/audit_logger.py",
+        "src/guardrails/pii_filter.py",
+        "src/guardrails/prompt_injection_guard.py",
+        "src/observability/logger.py",
+        "tests/integration/test_audit_logger_integration.py",
+        "tests/integration/test_pii_filter_pipeline.py",
+        "tests/performance/benchmarks/test_orchestrator_benchmarks.py",
+        "tests/security/test_owasp_llm_top10.py",
+        "tests/security/test_pii_leakage.py",
+        "tests/unit/guardrails/test_action_limits.py",
+        "tests/unit/guardrails/test_audit_logger.py",
+        "tests/unit/guardrails/test_output_sanitizer.py",
+        "tests/unit/guardrails/test_pii_filter.py",
+        "tests/unit/guardrails/test_prompt_injection_guard.py"
+      ]
     },
     {
       "path": "specs/ai/harness-design.md",
@@ -214,7 +265,23 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/harness/__init__.py",
+        "src/agents/harness/context_manager.py",
+        "src/agents/harness/coordinator.py",
+        "src/agents/harness/decision_tree_logger.py",
+        "src/agents/harness/evaluator.py",
+        "src/agents/harness/models.py",
+        "src/agents/harness/planner.py",
+        "tests/contract/test_harness_contracts.py",
+        "tests/integration/test_harness_pipeline.py",
+        "tests/unit/agents/harness/test_context_manager.py",
+        "tests/unit/agents/harness/test_coordinator_reflection.py",
+        "tests/unit/agents/harness/test_decision_tree_logger.py",
+        "tests/unit/agents/harness/test_evaluator.py",
+        "tests/unit/agents/harness/test_planner.py"
+      ]
     },
     {
       "path": "specs/ai/hitl-hotl.md",
@@ -252,7 +319,27 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/action_policy.py",
+        "src/agents/compensation_registry.py",
+        "src/agents/hitl_gateway.py",
+        "src/agents/hitl_store.py",
+        "src/agents/hotl_monitor.py",
+        "src/agents/override_service.py",
+        "src/agents/risk_scorer.py",
+        "src/agents/tool_executor.py",
+        "src/api/rest/auth.py",
+        "src/api/rest/routers/hitl.py",
+        "src/workers/approval_consumer.py",
+        "tests/abuse_cases/test_hitl_approval_tamper.py",
+        "tests/e2e/test_hitl_operator_ui.py",
+        "tests/integration/test_hitl_gateway_integration.py",
+        "tests/integration/test_hitl_redis_store.py",
+        "tests/unit/agents/test_hitl_gateway.py",
+        "tests/unit/agents/test_risk_scorer.py",
+        "tests/unit/api/test_hitl_router.py"
+      ]
     },
     {
       "path": "specs/ai/rag-pipeline.md",
@@ -276,7 +363,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/ai/hitl-notification.md",
@@ -297,7 +385,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/hotl_monitor.py"
+      ]
     },
     {
       "path": "specs/ai/learn-stage.md",
@@ -317,7 +408,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/feedback_learner.py"
+      ]
     },
     {
       "path": "specs/ai/long-running-session.md",
@@ -340,7 +434,11 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/harness/session_checkpoint.py",
+        "tests/unit/agents/harness/test_session_checkpoint.py"
+      ]
     },
     {
       "path": "specs/ai/sandbox-execution.md",
@@ -362,7 +460,11 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/sandbox_executor.py",
+        "tests/unit/agents/test_sandbox_executor.py"
+      ]
     },
     {
       "path": "specs/ai/sub-agent-specialization.md",
@@ -385,7 +487,11 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/harness/sub_agent_registry.py",
+        "tests/unit/agents/harness/test_sub_agent_registry.py"
+      ]
     },
     {
       "path": "specs/ai/tool-registry.md",
@@ -405,7 +511,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/tool_registry.py"
+      ]
     },
     {
       "path": "specs/ai/red-team-program.md",
@@ -429,7 +538,8 @@
         "specs/security/owasp-genai-control-matrix.yaml"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/api/SPEC-API-001-error-model-and-request-correlation.md",
@@ -459,7 +569,13 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/api/rest/errors.py",
+        "src/api/rest/request_context.py",
+        "src/observability/request_context.py",
+        "tests/unit/api/test_error_model.py"
+      ]
     },
     {
       "path": "specs/api/SPEC-API-002-idempotency-keys.md",
@@ -479,14 +595,15 @@
         "api-idempotency-keys"
       ],
       "implemented_by": [
-        "src/agents/idempotency_store.py"
+        "adopter:src/agents/idempotency_store.py"
       ],
       "verified_by": [
-        "tests/unit/api/test_idempotency.py # named in §Testing of this spec (ADR-0077); frontmatter was empty while the body named it (DQ-REG-006)"
+        "adopter:tests/unit/api/test_idempotency.py # named in §Testing of this spec (ADR-0077); frontmatter was empty while the body named it (DQ-REG-006)"
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/api/SPEC-API-003-pagination.md",
@@ -504,13 +621,14 @@
         "api-pagination-standard"
       ],
       "implemented_by": [
-        "src/api/rest/pagination.py",
-        "src/api/rest/routers/hitl.py"
+        "adopter:src/api/rest/pagination.py",
+        "adopter:src/api/rest/routers/hitl.py"
       ],
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/api/SPEC-API-004-runs-trace-and-slo-status.md",
@@ -536,7 +654,13 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/api/rest/routers/governance.py",
+        "src/api/rest/routers/runs.py",
+        "tests/unit/api/test_runs.py",
+        "tests/unit/api/test_slo_status.py"
+      ]
     },
     {
       "path": "specs/api/async-api-design.md",
@@ -562,7 +686,12 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/shared/broker.py",
+        "services.yaml",
+        "tests/integration/test_kafka_events.py"
+      ]
     },
     {
       "path": "specs/compliance/iso27001-change-management.md",
@@ -583,7 +712,11 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        ".github/workflows/pr-governance.yml",
+        ".github/workflows/cd-production.yml"
+      ]
     },
     {
       "path": "specs/compliance/sox-controls.md",
@@ -603,7 +736,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/guardrails/audit_logger.py"
+      ]
     },
     {
       "path": "specs/compliance/ai-post-market-monitoring.md",
@@ -628,7 +764,8 @@
         "specs/ai/guardrails.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/data/data-quality.md",
@@ -651,7 +788,8 @@
         "specs/privacy/pii-inventory.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/data/data-contracts.md",
@@ -674,7 +812,8 @@
         "specs/api/async-api-design.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/data/data-lineage.md",
@@ -698,7 +837,8 @@
         "specs/privacy/pii-inventory.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/ethics/ethical-ai-principles.md",
@@ -718,7 +858,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/features/SPEC-FEAT-001-http-golden-signals/spec.md",
@@ -748,7 +889,8 @@
         "specs/observability/agent-performance.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/governance/team-topology.md",
@@ -764,7 +906,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/infrastructure/SPEC-INFRA-001-aws-platform-terraform.md",
@@ -782,7 +925,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "infrastructure/terraform/"
+      ]
     },
     {
       "path": "specs/k8s/probe-strategy.md",
@@ -803,7 +949,11 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "infrastructure/helm/",
+        ".github/workflows/ci-k8s-probe-lint.yml"
+      ]
     },
     {
       "path": "specs/features/SPEC-LGS-001-golden-signals-feature-spec.md",
@@ -828,7 +978,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md",
@@ -859,7 +1010,8 @@
         "specs/security/threat-model.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/security/threat-model-SPEC-LGS-001-golden-signals.md",
@@ -885,7 +1037,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/system/SPEC-LGS-001-log-based-golden-signals.md",
@@ -908,7 +1061,8 @@
         "specs/security/threat-model.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/observability/agent-performance.md",
@@ -930,7 +1084,11 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/observability/metrics.py",
+        "tests/unit/observability/test_agent_performance_metrics.py"
+      ]
     },
     {
       "path": "specs/observability/agent-supervision.md",
@@ -948,7 +1106,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "infrastructure/monitoring/grafana/"
+      ]
     },
     {
       "path": "specs/observability/dora-metrics.md",
@@ -969,7 +1130,11 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/observability/dora_metrics.py",
+        ".github/workflows/cd-production.yml"
+      ]
     },
     {
       "path": "specs/observability/otel-agentic-observability.md",
@@ -995,7 +1160,12 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/llm_client_otel.py",
+        "src/observability/span_hierarchy.py",
+        "tests/unit/observability/test_span_hierarchy.py"
+      ]
     },
     {
       "path": "specs/privacy/data-retention.md",
@@ -1016,7 +1186,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/jobs/retention_job.py"
+      ]
     },
     {
       "path": "specs/privacy/db-encryption-at-rest.md",
@@ -1038,7 +1211,11 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/shared/db_encryption.py",
+        "tests/unit/shared/test_db_encryption.py"
+      ]
     },
     {
       "path": "specs/privacy/dpia-ripd.md",
@@ -1057,7 +1234,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/privacy/pii-inventory.md",
@@ -1078,7 +1256,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/guardrails/pii_filter.py"
+      ]
     },
     {
       "path": "specs/privacy/redis-tls.md",
@@ -1101,7 +1282,12 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/api/rest/main.py",
+        "src/shared/config.py",
+        "tests/unit/agents/test_hitl_store.py"
+      ]
     },
     {
       "path": "specs/privacy/training-data-governance.md",
@@ -1125,7 +1311,8 @@
         "specs/data/data-lineage.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/privacy/test-data-management.md",
@@ -1148,7 +1335,8 @@
         "specs/data/data-quality.md"
       ],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/sdlc/development-lifecycle.md",
@@ -1168,7 +1356,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/security/pentest-checklist.md",
@@ -1184,7 +1373,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/security/rbac-model.md",
@@ -1206,7 +1396,10 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/api/rest/auth.py"
+      ]
     },
     {
       "path": "specs/security/threat-model.md",
@@ -1231,7 +1424,10 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "tests/unit/shared/test_url_allowlist.py"
+      ]
     },
     {
       "path": "specs/sre/capacity-planning.md",
@@ -1247,7 +1443,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/sre/finops.md",
@@ -1265,7 +1462,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     },
     {
       "path": "specs/system/architecture.md",
@@ -1297,7 +1495,21 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/api/rest/main.py",
+        "src/api/rest/routers/health.py",
+        "src/observability/metrics.py",
+        "src/observability/otel_setup.py",
+        "src/shared/config.py",
+        "src/shared/db_client.py",
+        "src/shared/models.py",
+        "tests/integration/test_lifespan_wiring.py",
+        "tests/unit/api/test_health.py",
+        "tests/unit/shared/test_config.py",
+        "tests/unit/shared/test_db_client.py",
+        "tests/unit/shared/test_metrics.py"
+      ]
     },
     {
       "path": "specs/system/async-event-flow.md",
@@ -1319,7 +1531,11 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/workers/request_consumer.py",
+        "src/shared/broker.py"
+      ]
     },
     {
       "path": "specs/system/request-pipeline.md",
@@ -1352,7 +1568,18 @@
       ],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": [
+        "src/agents/request_store.py",
+        "src/api/rest/routers/requests.py",
+        "src/shared/broker.py",
+        "src/workers/request_consumer.py",
+        "tests/e2e/test_request_lifecycle.py",
+        "tests/unit/agents/test_request_consumer.py",
+        "tests/unit/agents/test_request_store.py",
+        "tests/unit/api/test_requests_router.py",
+        "tests/unit/shared/test_broker.py"
+      ]
     },
     {
       "path": "specs/system/vision.md",
@@ -1368,7 +1595,8 @@
       "verified_by": [],
       "related_specs": [],
       "requirement_tests": [],
-      "unresolved_evidence": []
+      "unresolved_evidence": [],
+      "unmarked_evidence": []
     }
   ]
 }

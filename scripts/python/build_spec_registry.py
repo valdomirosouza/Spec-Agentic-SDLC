@@ -89,28 +89,36 @@ def validate(entry):
     return errs
 
 
-# The corpus already maintains one list of what the adopting repository provides; reuse it rather
-# than inventing a second that would drift (docs/reference/adopter-provided-paths.md, C7).
-ADOPTER_PREFIXES = ("src/", "tests/", "services/", "frontend/", "infrastructure/",
-                    "scripts/governance/", "alembic/", "reports/",
-                    ".github/workflows/", "services.yaml", "Makefile", "pyproject.toml")
+# Exemption is by DECLARATION, never by shape. `adopter:`, `ci:` and `planned:` are things the
+# spec author wrote down and can be held to; a directory prefix is the tool guessing on their
+# behalf. The guess was widened twice to quieten the output and ended up exempting 145 of 146
+# evidence paths, including `tests/` and `.github/workflows/`, which exist HERE — so the rule
+# stopped being able to catch the SPEC-FEAT-001 case that created it (R5-T4).
+EXPLICIT_MARKERS = ("adopter:", "ci:", "planned:")
+
+# Used only to SORT the unresolved paths, never to excuse them: a path shaped like something the
+# adopting repository provides is a missing `adopter:` marker (minor, has a known fix), while any
+# other dead path is the real finding. Both are reported; neither is silently dropped.
+ADOPTER_SHAPED = ("src/", "tests/", "services/", "frontend/", "infrastructure/",
+                  "scripts/governance/", "alembic/", "reports/",
+                  ".github/workflows/", "services.yaml", "Makefile", "pyproject.toml")
 
 
 def unresolved_evidence(entry):
-    """implemented_by / verified_by paths that resolve to nothing here AND are not adopter-side.
+    """Evidence paths that neither resolve on disk nor carry an explicit marker.
 
-    A bare `src/...` is the corpus's documented convention for the product repository, so it is
-    not a defect. What is a defect is a path that resolves nowhere and belongs nowhere — which is
-    what SPEC-FEAT-001 had before it was marked."""
-    out = []
+    Returns (unresolved, unmarked): `unmarked` is adopter-shaped and wants a marker; `unresolved`
+    resolves nowhere and belongs nowhere, which is what SPEC-FEAT-001 had before it was marked."""
+    unresolved, unmarked = [], []
     for field in ("implemented_by", "verified_by"):
         for p in entry.get(field, []):
             path = p.split("#")[0].strip()
-            if path.startswith(("adopter:", "ci:", "planned:")) or path.startswith(ADOPTER_PREFIXES):
+            if path.startswith(EXPLICIT_MARKERS):
                 continue
-            if not os.path.exists(os.path.join(ROOT, path)):
-                out.append(p)
-    return out
+            if os.path.exists(os.path.join(ROOT, path)):
+                continue
+            (unmarked if path.startswith(ADOPTER_SHAPED) else unresolved).append(p)
+    return unresolved, unmarked
 
 
 def collect():
@@ -135,7 +143,7 @@ def collect():
         specs.append(entry)
     specs.sort(key=lambda e: (e.get("id", ""), e["path"]))
     for e in specs:
-        e["unresolved_evidence"] = unresolved_evidence(e)
+        e["unresolved_evidence"], e["unmarked_evidence"] = unresolved_evidence(e)
     return specs
 
 
@@ -166,10 +174,12 @@ def render_json(specs):
 
 
 def _evidence(entry, field):
-    """`n` when every path resolves, `n (m unresolved)` otherwise — never a bare count."""
+    """`n` when every path is accounted for — never a bare count over paths nobody checked."""
     paths = entry.get(field, [])
     bad = [p for p in entry.get("unresolved_evidence", []) if p in paths]
-    return f"{len(paths)}" + (f" ({len(bad)} unresolved)" if bad else "")
+    todo = [p for p in entry.get("unmarked_evidence", []) if p in paths]
+    notes = ([f"{len(bad)} unresolved"] if bad else []) + ([f"{len(todo)} unmarked"] if todo else [])
+    return f"{len(paths)}" + (f" ({', '.join(notes)})" if notes else "")
 
 
 def render_md(specs):
@@ -200,6 +210,30 @@ def render_md(specs):
         )
     lines += ["", "## By kind", "", "| Kind | Count |", "| --- | --- |"]
     lines += [f"| {k} | {v} |" for k, v in sorted(by_kind.items())]
+
+    unresolved = [(s, p) for s in specs for p in s.get("unresolved_evidence", [])]
+    backlog = [(s, p) for s in specs for p in s.get("unmarked_evidence", [])]
+    lines += [
+        "",
+        "## Evidence accounting",
+        "",
+        "An evidence path is accounted for when it resolves on disk or carries an explicit",
+        "`adopter:` / `ci:` / `planned:` marker. Directory shape is not an exemption: exempting",
+        "anything under `src/`, `tests/` or `.github/workflows/` left 145 of 146 paths unchecked",
+        "and the rule could no longer catch the case it was written for (R5-T4).",
+        "",
+        f"- **Unresolved — resolves nowhere, marked nowhere:** {len(unresolved)}. This is the finding.",
+        f"- **Unmarked — shaped like an adopter path, missing its marker:** {len(backlog)} "
+        f"across {len({s['id'] for s, _ in backlog})} specs. Minor: the fix is one prefix per line.",
+    ]
+    if unresolved:
+        lines += ["", "| Spec | Path |", "| --- | --- |"]
+        lines += [f"| {s.get('id','?')} | `{p}` |" for s, p in unresolved]
+    if backlog:
+        from collections import Counter as _C
+        per = _C(s.get("id", "?") for s, _ in backlog)
+        lines += ["", "### Marking backlog", "", "| Spec | Paths to mark |", "| --- | --- |"]
+        lines += [f"| {k} | {v} |" for k, v in sorted(per.items())]
     lines.append("")
     return "\n".join(lines)
 

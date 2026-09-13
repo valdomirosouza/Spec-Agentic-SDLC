@@ -25,6 +25,35 @@ last_updated: 2026-09-13
 """
 
 
+class EvidenceAccounting(unittest.TestCase):
+    """R5-T4. The rule was widened until it exempted 145 of 146 paths and could no longer catch
+    the SPEC-FEAT-001 case that created it. Exemption is now by marker, not by directory shape."""
+
+    def test_an_explicit_marker_exempts_and_removing_it_does_not(self):
+        marked = {"implemented_by": ["adopter:src/api/rest/main.py"], "verified_by": []}
+        self.assertEqual(reg.unresolved_evidence(marked), ([], []))
+        unmarked = {"implemented_by": ["src/api/rest/main.py"], "verified_by": []}
+        unresolved, backlog = reg.unresolved_evidence(unmarked)
+        self.assertEqual(unresolved, [])
+        self.assertEqual(backlog, ["src/api/rest/main.py"],
+                         "stripping the marker must put the path back in front of a human")
+
+    def test_a_path_that_belongs_nowhere_is_the_finding_not_the_backlog(self):
+        entry = {"implemented_by": ["nowhere/at/all.py"], "verified_by": []}
+        self.assertEqual(reg.unresolved_evidence(entry), (["nowhere/at/all.py"], []))
+
+    def test_a_path_that_exists_here_needs_no_marker(self):
+        entry = {"implemented_by": [], "verified_by": ["scripts/python/build_spec_registry.py"]}
+        self.assertEqual(reg.unresolved_evidence(entry), ([], []))
+
+    def test_directory_shape_alone_never_exempts(self):
+        """The regression this issue exists for: `tests/` and `.github/workflows/` exist HERE, so
+        treating them as adopter-side silently excused paths this corpus can actually resolve."""
+        for shaped in ("tests/unit/test_nothing.py", ".github/workflows/nope.yml", "src/x.py"):
+            unresolved, backlog = reg.unresolved_evidence({"implemented_by": [shaped], "verified_by": []})
+            self.assertEqual((unresolved, backlog), ([], [shaped]), shaped)
+
+
 class Frontmatter(unittest.TestCase):
     def test_parses_scalars_lists_and_inline_lists(self):
         fm = reg.parse_frontmatter(FM.format(id="SPEC-AA-001", kind="spec", status="approved", issue=7))

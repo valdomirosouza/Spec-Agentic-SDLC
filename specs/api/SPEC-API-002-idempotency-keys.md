@@ -21,9 +21,9 @@ slo_ref: docs/sre/slo/slo.yaml
 kind: spec
 issue: null # GitHub issue number that delivered/owns this spec
 implemented_by: 
-  - src/agents/idempotency_store.py
+  - adopter:src/agents/idempotency_store.py
 verified_by:
-  - tests/unit/api/test_idempotency.py # named in §Testing of this spec (ADR-0077); frontmatter was empty while the body named it (DQ-REG-006)
+  - adopter:tests/unit/api/test_idempotency.py # named in §Testing of this spec (ADR-0077); frontmatter was empty while the body named it (DQ-REG-006)
 last_updated: 2026-09-12
 ---
 
