@@ -40,7 +40,7 @@ specs/features/
 
 | Directory                                      | Status        | What it shows                                                                 |
 | ---------------------------------------------- | ------------- | ----------------------------------------------------------------------------- |
-| `SPEC-LGS-001-log-based-golden-signals/`       | `draft`       | Full bundle: spec, plan, research, data-model, contracts, quickstart, tasks; two checklist items deliberately left to the DPO and Security Lead |
+| `SPEC-LGS-001-log-based-golden-signals/`       | `approved`    | Full bundle: spec, plan, research, data-model, contracts, quickstart, tasks; two checklist items deliberately left to the DPO and Security Lead; approved via Spec-as-PR (#21) |
 | `SPEC-FEAT-001-http-golden-signals/`           | `implemented` | Spec-only, small, back-filled from a delivered feature (legacy section numbering) |
 
 `SPEC-LGS-001-golden-signals-feature-spec.md` (flat file) is `superseded` by the bundle and kept

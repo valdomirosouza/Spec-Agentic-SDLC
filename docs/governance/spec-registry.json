@@ -569,11 +569,11 @@
       "implemented_by": [],
       "issue": null,
       "kind": "feature-spec",
-      "last_updated": "2026-09-12",
+      "last_updated": "2026-09-13",
       "owner": "valdomirosouza",
       "path": "specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md",
       "requirement_tests": [],
-      "status": "draft",
+      "status": "approved",
       "verified_by": []
     },
     {

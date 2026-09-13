@@ -43,6 +43,8 @@ authorises them.
 
 ### Changed
 
+- SPEC-LGS-001 feature spec `approved` by its owner via Spec-as-PR (#21, 2026-09-13); plan
+  Constitution Check I → pass; threat-model path corrected to the existing file.
 - `AGENTS.md` rewritten for the corpus: a per-agent table of what Claude Code, Copilot, Cursor,
   Codex and Gemini receive (and do not), corpus paths in the do-not-edit list, the `/sdd-*`
   workflow and the real validation commands (#18).
