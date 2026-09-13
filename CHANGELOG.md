@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/privacy/test-data-management.md` — no production copy into lower environments, environment
+  classification, synthetic-first provisioning, the five masking techniques with their failure
+  modes, the verify-after-load step, and the two agent-specific cases (prompts and traces are test
+  data; agent memory must not be seeded from production) (#35).
 - `specs/privacy/training-data-governance.md` — training as a purpose needing its own basis, the
   lawful-basis table with special-category data prohibited outright, permitted and refused sources,
   and an honest three-part answer on erasure: source and derived datasets erased, no future use,
