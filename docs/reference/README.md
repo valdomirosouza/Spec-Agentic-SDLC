@@ -22,3 +22,4 @@
 
 - `docs/data/data-model-catalog.md` · `docs/data/erd.md` — the data the pipeline touches
 - `docs/quickstart/` — getting the app running · `SETUP.md`
+- `repository-template-v2-SETUP.md` — the product template's original first-run SETUP.md (archived 2026-09-12; the corpus adoption guide is `/SETUP.md`).

@@ -66,7 +66,8 @@ CLAUDE.md · AGENTS.md           the detailed operating contract for agents (the
 
 ## Using it
 
-1. Read `memory/constitution.md`, then `CLAUDE_SESSION_INIT.md` and `CLAUDE.md`.
+1. Read `memory/constitution.md`, then `CLAUDE_SESSION_INIT.md` and `CLAUDE.md`; `SETUP.md` says
+   which layer to copy into a product repository and what that repository must provide.
 2. Start a feature with `/sdd-specify <description>` (or run `scripts/bash/create-new-feature.sh --json "<description>"`).
 3. Follow the workflow above; every command tells you the human gate it stops at.
 4. For a full governed dry-run of the 15 phases use `/deliver dry-run <spec.md>`.

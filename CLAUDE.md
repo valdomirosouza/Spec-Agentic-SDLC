@@ -556,5 +556,5 @@ Full ADR: `docs/adr/ADR-0034-agentic-escalation-protocol.md`
 - [`memory/constitution.md`](memory/constitution.md) — the nine binding articles this file condenses; root of authority.
 - [`CHANGELOG.md`](CHANGELOG.md) · [`version.txt`](version.txt) — version of record (ADR-0057).
 - [`AGENTS.md`](AGENTS.md) — concise cross-tool contract for AI coding agents (files not to edit, hard prohibitions, validation commands). This `CLAUDE.md` is the deeper authoritative contract.
-- [`SETUP.md`](SETUP.md) — first-run setup (`make template-init`, `make doctor`).
+- [`SETUP.md`](SETUP.md) — adopting the corpus: layers to copy, what the adopting repository provides, how to wire Claude Code.
 - [`docs/troubleshooting.md`](docs/troubleshooting.md) — common first-run failures.

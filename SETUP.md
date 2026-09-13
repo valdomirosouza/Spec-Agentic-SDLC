@@ -1,172 +1,86 @@
-# First-Run Setup Checklist
+# Adopting the corpus
 
-> **Step 0 — fastest path:** run `make template-init PROJECT_NAME=<name> ORG=<org> REGISTRY=<registry> [PROFILE=python-api]`
-> to perform Steps 1–4 below in one idempotent command, then `make doctor` to validate.
-> The steps below remain as the manual/verification reference.
->
-> If you created this repo with GitHub's **"Use this template"** button, the
-> `template-init` workflow (`.github/workflows/template-init.yml`) fires automatically on
-> the first push to `main` and opens a `chore: initial project customisation` PR for you —
-> review it, complete the 3 manual steps in its body, then merge.
+> This repository is a documentation, governance and agent-operating corpus. It ships no
+> application code, no `Makefile`, no CI and no service registry. **Adopting** it means copying
+> one of the layers below into your product repository and wiring the rest to what that
+> repository already has. Every command on this page runs *here*; nothing on it assumes a file
+> this corpus does not contain.
 
-Complete these steps **before opening your first PR**. Steps 1–3 are enforced by CI gates and will block every merge until done. Steps 4–6 are strongly recommended before inviting collaborators.
-
-> **Note:** the CODEOWNERS and placeholder governance checks are **automatically skipped**
-> until the template is initialised (until `@your-org/`/`yourorg/` placeholders are
-> replaced). A fresh "Use this template" clone will not fail CI on day zero; it gets a
-> reminder annotation instead. Once `make template-init` has run, the checks enforce normally.
-
----
-
-## Step 1 — Replace CODEOWNERS teams `[CI BLOCKER]`
-
-**File:** `.github/CODEOWNERS`
-
-Every line references `@your-org/<role>` placeholder teams. The `pr-governance` workflow will fail every PR with:
-
-```
-CODEOWNERS contains unresolved @org/ placeholder teams.
-These patterns silently fail GitHub reviewer auto-assignment.
-```
-
-**Action:** Replace each `@your-org/<role>` with a real GitHub username or team handle.
-
-```
-# Before
-src/                  @your-org/backend-engineers
-
-# After
-src/                  @acme/backend-engineers   # or @alice @bob
-```
-
-See `docs/governance/owner-onboarding.md` for the full role-to-team mapping guide.
-
----
-
-## Step 2 — Replace image registry in `services.yaml` `[CI BLOCKER]`
-
-**File:** `services.yaml`
-
-Every service entry has `image: yourorg/<service-name>`. Helm deploys and container pushes will fail with the wrong registry.
-
-**Action:** Replace `yourorg` with your actual container registry org on all five image fields:
-
-```yaml
-# Before
-image: yourorg/api-gateway
-
-# After
-image: acme/api-gateway          # Docker Hub
-# OR
-image: ghcr.io/acme/api-gateway  # GitHub Container Registry
-# OR
-image: 123456789.dkr.ecr.us-east-1.amazonaws.com/api-gateway  # AWS ECR
-```
-
-Services to update: `api-gateway`, `domain-service`, `event-worker`, `frontend`, `batch-jobs`.
-
----
-
-## Step 3 — Set `[REQUIRED]` values in `.env` `[APP BLOCKER]`
-
-**File:** `.env` (copy of `.env.example`)
-
-The application refuses to start in staging/production if placeholder secrets are detected (`Settings.reject_placeholder_secrets`).
+## 0. Ten-minute check (in this repository)
 
 ```bash
-cp .env.example .env
+git clone https://github.com/valdomirosouza/Spec-Agentic-SDLC.git && cd Spec-Agentic-SDLC
+cat version.txt                                        # 1.0.0
+scripts/bash/create-new-feature.sh --json --dry-run "Add cursor pagination to the requests list"
+SDD_FEATURE_DIRECTORY=specs/features/SPEC-LGS-001-log-based-golden-signals \
+  scripts/bash/check-prerequisites.sh --require-spec --require-plan --require-tasks --include-tasks
+python3 .claude/hooks/verify-high-risk-guard.py       # high-risk-action guard self-test
 ```
 
-Minimum required values (marked `[REQUIRED]` in `.env.example`):
+Open the repository in Claude Code and run `/sdd-specify <description>`: the feature bundle
+appears under `specs/features/<SPEC-ID>-<slug>/`. That is the whole minimal layer working.
 
-| Variable            | How to generate        | Used for                                                                                                                       |
-| ------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `SECRET_KEY`        | `openssl rand -hex 32` | JWT signing                                                                                                                    |
-| `DB_ENCRYPTION_KEY` | `openssl rand -hex 32` | AES-256-GCM column encryption                                                                                                  |
-| `LLM_API_KEY`       | console.anthropic.com  | **Required only when `AI_AGENTS_ENABLED=true`** — leave placeholder otherwise (`ANTHROPIC_API_KEY` is a backward-compat alias) |
+## 1. Choose a layer
 
-> `REDIS_TLS_ENABLED` and `PAGERDUTY_INTEGRATION_KEY` are required for production but not for local dev.
+| Layer        | Copy these paths                                                                                                                                                        | You get                                                                                                   |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **minimal**  | `memory/`, `templates/`, `scripts/bash/`, `.claude/skills/sdd-*/`, `.claude/settings.json`, `.claude/hooks/`, `specs/spec-frontmatter.schema.json`, `specs/features/README.md` | The spec-kit-style workflow (`/sdd-*`), the constitution, the feature bundle, the high-risk-action guard |
+| **governed** | minimal + `CLAUDE.md`, `AGENTS.md`, `CLAUDE_SESSION_INIT.md`, `skills/`, `.claude/skills/` (all), `.claude/agents/`, `.claude/personas/`, `docs/adr/`, `docs/process/`, `docs/sdlc/`, `docs/governance/`, `specs/security/`, `harness/`, `.github/` templates | The 15-phase lifecycle with nine human gates, delivery agents, `/deliver`, ADRs, control matrices, PR/issue templates, harness gate specs |
+| **full**     | governed + everything else under `docs/` and `specs/` (privacy, compliance, SRE, audit, runbooks, product, GTM)                                                          | The complete compliance and audit evidence corpus (LGPD/GDPR, ISO 27001, SOX, SOC 2, DORA, PRR)           |
 
----
+Copy with `rsync -a --ignore-existing` (or the future `scripts/bash/adopt.sh`, issue #16) so
+files you already have are never overwritten. Then edit, do not append: `CLAUDE.md` and
+`AGENTS.md` are meant to be **merged** with yours, keeping §3 (inviolable rules) and §14
+(escalation) intact.
 
-## Step 4 — Reset version `[RECOMMENDED]`
+## 2. What your repository provides
 
-**Files:** `version.txt`, `pyproject.toml`, `README.md`, `CLAUDE.md`
+The corpus describes controls that are *implemented* in the product repository. These paths and
+commands are referenced throughout `docs/`, `specs/`, `skills/` and `CLAUDE.md` and must exist
+(or be replaced by your equivalents) before the referenced gate is meaningful:
 
-Reset to `0.1.0` before your first commit so your release history starts clean.
+| Referenced in the corpus                          | You provide                                              | If you do not have it                                                |
+| ------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------- |
+| `src/`, `tests/`, `services/`, `frontend/`        | your code and tests                                      | —                                                                    |
+| `make <target>` (`lint-python`, `test-unit-python`, `doctor`, …) | your `Makefile` or CI equivalents          | map each target named in `CLAUDE.md` §0 to your own command          |
+| `services.yaml`                                   | your service/topic registry                              | the `sdd-*` skills skip registry checks; delete the row from `CLAUDE.md` §0.1 |
+| `.github/workflows/`                              | your CI (`pr-governance`, `ci.yml`, `cd-*.yml`)          | run `harness/*.yml` gate specs by hand or port them to your CI       |
+| `scripts/governance/*.py`                         | deterministic gates (spec registry, control matrices, test integrity) | `/sdd-analyze` is their human-readable twin until you port them |
+| `version.txt`, `pyproject.toml`, `CHANGELOG.md`   | your version of record and changelog                     | copy this corpus's `version.txt`/`CHANGELOG.md` pattern             |
+| `.env.example`, `.github/CODEOWNERS`              | your secrets template and ownership map                  | `CLAUDE.md` §8 lists the roles CODEOWNERS should encode              |
 
-```bash
-# version.txt
-echo "0.1.0" > version.txt
+`CLAUDE_SESSION_INIT.md` carries the same split so every agent session knows which side a path
+belongs to.
 
-# pyproject.toml
-sed -i '' 's/version = "1\.26\.[0-9]*"/version = "0.1.0"/' pyproject.toml
-```
+## 3. Wire the Claude Code layer
 
-Also update the `**Version:**` header in `README.md` and `CLAUDE.md`.
+1. `.claude/settings.json` registers the `PreToolUse` high-risk-action guard. If you already
+   have a `settings.json`, merge the `hooks` block; run
+   `python3 .claude/hooks/verify-high-risk-guard.py` afterwards — it asserts the wiring.
+2. `/sdd-constitution` — review `memory/constitution.md`. Articles I, II, V, VII and IX are
+   protected (strengthen only); rewrite III, IV, VI, VIII for your domain and bump the version.
+3. Start a feature: `/sdd-specify …` → Spec-as-PR → `/sdd-plan` → `/sdd-checklist` →
+   `/sdd-tasks` → `/sdd-analyze` → `/sdd-implement` ⇄ `/sdd-converge`. Every command names the
+   human gate it stops at.
+4. Optional: `/deliver dry-run <spec.md>` runs the 15 phases as a governed simulation.
 
----
+## 4. Keep it in sync
 
-## Step 5 — Configure CI registry credentials `[RECOMMENDED]`
+- The corpus version is `version.txt`; changes are in `CHANGELOG.md`. Record the version you
+  adopted in your own changelog.
+- The spec-kit primitives are pinned to github/spec-kit `d848fb4` (v1.0.6); the adoption
+  decisions are in ADR-0090 and `docs/sdlc/spec-kit-comparison.md`.
+- Other coding agents (Copilot, Cursor, Gemini, Codex) currently receive only `AGENTS.md`; the
+  per-agent command files are tracked in issue #17.
 
-Add these secrets to your GitHub repository (Settings → Secrets and variables → Actions):
+## 5. Where things are
 
-| Secret              | Value                                    |
-| ------------------- | ---------------------------------------- |
-| `REGISTRY_USERNAME` | Your container registry username         |
-| `REGISTRY_PASSWORD` | Your container registry token / password |
-
-Add these variables (Settings → Variables):
-
-| Variable             | Value                               |
-| -------------------- | ----------------------------------- |
-| `CONTAINER_REGISTRY` | e.g. `ghcr.io` or `docker.io`       |
-| `STAGING_BASE_URL`   | e.g. `https://api.staging.acme.com` |
-
-Without these, the `cd-staging` and `cd-production` pipelines will fail at the login step.
-
----
-
-## Step 6 — Customise or remove optional extensions `[OPTIONAL]`
-
-See [`CUSTOMISING.md`](CUSTOMISING.md) for the full adoption guide:
-
-- **Remove AI Agents** — delete `src/agents/`, `src/guardrails/`, `src/memory/` if you don't need HITL/HOTL
-- **Remove Java service** — delete `services/domain-service/` and remove from `services.yaml`
-- **Remove Go worker** — delete `services/event-worker/` and remove from `services.yaml`
-- **Remove frontend** — delete `frontend/` and remove from `services.yaml`
-- **Remove Terraform** — delete `infrastructure/terraform/` if you manage infra separately
-
----
-
-## Windows / WSL `[SUPPORTED PATH: devcontainer]`
-
-The Makefile and scripts are Bash (`#!/usr/bin/env bash`) and are exercised on macOS and Linux
-runners. On Windows the **supported path is the devcontainer** (`.devcontainer/`, Ubuntu 22.04
-with every toolchain from `versions.yaml` pre-installed): open the repo in VS Code → "Reopen in
-Container", then run `make doctor`. WSL 2 with Ubuntu also works for the Python service; Docker
-Desktop with the WSL backend is required for `make infra-up`. Native PowerShell is not supported.
-
-## Verification
-
-**Recommended: validate your environment first.** After the steps above (and after
-`make template-init` once available), run the doctor — it checks your toolchain, `.env`,
-ports, and unresolved placeholders, and tells you exactly what to fix:
-
-```bash
-make doctor        # validate tools, .env, ports, placeholders
-make check-versions  # confirm runtime versions meet the minimums
-```
-
-Then open a test PR to confirm:
-
-```bash
-# Step 1 — governance check should pass
-# Step 2 — contract-drift check should pass
-# Step 3 — app should start cleanly
-make run
-curl http://localhost:8000/ready   # → {"status": "ready"}
-```
-
-Hit a snag? See [`docs/troubleshooting.md`](docs/troubleshooting.md) — the 15 most common
-first-run failures with confirm/fix steps.
+| Need                                   | Path                                                       |
+| -------------------------------------- | ---------------------------------------------------------- |
+| Root of authority                      | `memory/constitution.md`                                   |
+| Operating contract for agents          | `CLAUDE.md` (deep), `AGENTS.md` (cross-tool), `CLAUDE_SESSION_INIT.md` (primer) |
+| Workflow commands                      | `.claude/skills/sdd-*/SKILL.md`, `.claude/skills/README.md` |
+| Feature bundle layout and example      | `specs/features/README.md`, `specs/features/SPEC-LGS-001-log-based-golden-signals/` |
+| 15-phase lifecycle                     | `docs/process/WORKFLOW.md`, `docs/sdlc/agentic-spec-driven-delivery.md` |
+| Customising or removing extensions     | `CUSTOMISING.md` (written for the product template; paths there are adopter-side) |
+| Original product-template setup        | `docs/reference/repository-template-v2-SETUP.md` (archived) |

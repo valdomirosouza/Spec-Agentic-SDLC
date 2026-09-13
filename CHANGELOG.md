@@ -17,6 +17,9 @@ authorises them.
 
 ### Changed
 
+- `SETUP.md` is now the corpus adoption guide (layers minimal/governed/full, adopter-provided
+  paths, Claude Code wiring); the product template's SETUP is archived under
+  `docs/reference/repository-template-v2-SETUP.md` (#9).
 - `/sdd-plan`, `/sdd-analyze`, `/sdd-tasks`, `/sdd-implement` now treat `services.yaml`, `src/…`
   and `make` targets as adopter-provided and conditional; `.claude/skills/README.md` documents the
   rule (#8).
