@@ -16,10 +16,11 @@ from git or the GitHub API is reported as unavailable with the reason, never as 
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -270,6 +271,21 @@ def render(m):
         f"| Check families in `check-corpus.sh` | {k['check_families']} |",
         f"| ADRs | {k['adrs']} |",
         "",
+        "### What the periodic comparison can see",
+        "",
+        f"`--drift` reports a row when it moves by **{DEFAULT_THRESHOLD_PCT}%** or more against a",
+        f"baseline at least **{DEFAULT_BASELINE_AGE_DAYS} days** old. A percentage means different",
+        "things on a count of 15 and a count of 4776, so the smallest visible move is published here",
+        "rather than left for the reader to work out. The threshold was previously 2%, chosen without",
+        "computing this table, and at 2% a newly added ADR was invisible (R6-T1).",
+        "",
+        "| Metric | Value | Smallest move this threshold can see |",
+        "| --- | ---: | ---: |",
+    ] + [
+        f"| {lab} | {live} | {max(1, round(live * DEFAULT_THRESHOLD_PCT / 100.0)):d} |"
+        for lab, live in structural_rows(m)
+    ] + [
+        "",
         "**Why the ratio is a metric and not trivia.** The maturity assessment named governance mass",
         "outgrowing verification as a structural risk. Tracking the ratio makes that visible: it",
         "should fall when verification is added and rise when documents are. A rising ratio across",
@@ -346,28 +362,82 @@ def structural_rows(m):
             ("ADRs", k["adrs"]))
 
 
-def latest_report():
+# Structural rows answer "is the committed report stale". These answer "what happened since last
+# time", and they are the numbers that move WITHOUT anyone editing a file — which is exactly why
+# --check leaves them out and exactly why --drift must put them back in (R6-T1).
+def activity_rows(m):
+    rows = [("Commits on the default branch", m["git"]["commits"])]
+    c = m["ci"]
+    if c.get("available"):
+        rows += [("Completed CI runs", c["runs_completed"]), ("Failed runs", c["failures"])]
+    return rows
+
+
+def drift_rows(m):
+    return [(lab, live) for lab, live in structural_rows(m)] + activity_rows(m)
+
+
+# One place for both the CLI default and the table the report publishes, so the document can never
+# advertise a sensitivity the tool does not have.
+DEFAULT_THRESHOLD_PCT = 1.0
+DEFAULT_BASELINE_AGE_DAYS = 7
+
+REPORT_GLOB = os.path.join("docs", "sre", "corpus-metrics-*.md")
+_REPORT_DATE = re.compile(r"corpus-metrics-(\d{4})-(\d{2})-(\d{2})\.md$")
+
+
+def dated_reports():
+    """Every report on disk as (date, path), oldest first. A report with no parsable date in its
+    name is skipped rather than guessed at."""
     import glob as _g
-    reports = sorted(_g.glob(os.path.join(ROOT, "docs", "sre", "corpus-metrics-*.md")))
+    out = []
+    for p in _g.glob(os.path.join(ROOT, REPORT_GLOB)):
+        mm = _REPORT_DATE.search(p)
+        if mm:
+            out.append((date(*(int(x) for x in mm.groups())), p))
+    return sorted(out)
+
+
+def baseline_report(min_age_days, today=None):
+    """The newest report at least `min_age_days` old, or None.
+
+    Comparing against the NEWEST report of all was the whole defect. check-corpus makes the newest
+    report match the live numbers exactly on every commit and CI enforces it on every push, so that
+    comparison measured a number against itself and reported no movement, for ever (R6-T1). A
+    baseline has to be old enough that something could have happened in between."""
+    today = today or date.today()
+    older = [(d, p) for d, p in dated_reports() if (today - d).days >= min_age_days]
+    return older[-1] if older else None
+
+
+def latest_report():
+    reports = [p for _, p in dated_reports()]
     return reports[-1] if reports else None
 
 
-def cmd_drift(m, threshold_pct):
-    """What moved since the last published report, and by how much.
+def cmd_drift(m, threshold_pct, min_age_days, today=None):
+    """What moved between an older published report and now.
 
-    Separate from --check on purpose. --check is exact because a report committed alongside a
-    change must match it. --drift tolerates small movement because it runs on a schedule against
-    a report that is legitimately days old, and an issue opened for every one-line edit is noise
-    that gets muted, which is the same as having no cadence at all (R5-T7)."""
-    import re as _re
-    latest = latest_report()
-    if not latest:
-        print("no corpus-metrics report on disk to compare against")
+    Deliberately different from --check on all three axes, because they answer different questions.
+    --check asks whether a COMMITTED artefact is stale: structural rows only, exact, against the
+    newest report. --drift asks what HAPPENED: it needs a baseline old enough for something to have
+    occurred, and it must include the numbers that move without anyone editing a file. Getting the
+    second question wrong is how the scheduled job ended up comparing a number with itself (R6-T1).
+    """
+    today = today or date.today()
+    picked = baseline_report(min_age_days, today)
+    if not picked:
+        have = dated_reports()
+        newest = f"newest is {have[-1][0]}" if have else "none on disk"
+        print(f"no baseline at least {min_age_days} day(s) old to compare against ({newest}).\n"
+              f"A periodic comparison needs a report older than the one this run would produce; "
+              f"land the dated reports so a series can form.")
         return 2, ""
-    on_disk = open(latest, encoding="utf-8").read()
+    base_date, base_path = picked
+    on_disk = open(base_path, encoding="utf-8").read()
     moved, unreadable = [], []
-    for label, live in structural_rows(m):
-        mm = _re.search(rf"\| {_re.escape(label)} \| ([0-9]+) \|", on_disk)
+    for label, live in drift_rows(m):
+        mm = re.search(rf"\| {re.escape(label)} \| ([0-9]+) \|", on_disk)
         if not mm:
             unreadable.append(label)
             continue
@@ -375,16 +445,17 @@ def cmd_drift(m, threshold_pct):
         pct = 100.0 * abs(live - was) / was if was else (100.0 if live else 0.0)
         if pct >= threshold_pct:
             moved.append((label, was, live, pct))
-    rel = os.path.relpath(latest, ROOT)
+    rel = os.path.relpath(base_path, ROOT)
+    age = (today - base_date).days
     if not moved and not unreadable:
-        print(f"no structural number moved by {threshold_pct}% or more since {rel}")
+        print(f"nothing moved by {threshold_pct}% or more since {rel} ({age} day(s) ago)")
         return 0, ""
-    lines = [f"Compared against `{rel}`, threshold {threshold_pct}%.", "",
-             "| Metric | Published | Live | Move |", "| --- | ---: | ---: | ---: |"]
+    lines = [f"Compared against `{rel}`, published {age} day(s) ago. Threshold {threshold_pct}%.",
+             "", "| Metric | Published | Live | Move |", "| --- | ---: | ---: | ---: |"]
     lines += [f"| {lab} | {was} | {live} | {live - was:+d} ({pct:.1f}%) |"
               for lab, was, live, pct in moved]
     if unreadable:
-        lines += ["", "Rows the published report does not carry, so no comparison was possible: "
+        lines += ["", "Rows the baseline does not carry, so no comparison was possible: "
                   + ", ".join(f"`{u}`" for u in unreadable) + "."]
     body = "\n".join(lines)
     print(body)
@@ -399,8 +470,11 @@ def main():
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--drift", action="store_true",
                     help="report structural numbers that moved since the last published report")
-    ap.add_argument("--threshold", type=float, default=2.0,
-                    help="percent a structural number must move for --drift to report it")
+    ap.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD_PCT,
+                    help="percent a number must move for --drift to report it")
+    ap.add_argument("--baseline-age-days", type=int, default=DEFAULT_BASELINE_AGE_DAYS,
+                    dest="baseline_age_days",
+                    help="how old the report --drift compares against has to be")
     ap.add_argument("--body-out", default="",
                     help="with --drift, write the markdown delta to this file for an issue body")
     a = ap.parse_args()
@@ -410,7 +484,7 @@ def main():
         print()
         return 0
     if a.drift:
-        rc, body = cmd_drift(m, a.threshold)
+        rc, body = cmd_drift(m, a.threshold, a.baseline_age_days)
         if a.body_out and body:
             with open(a.body_out, "w", encoding="utf-8") as fh:
                 fh.write(body + "\n")

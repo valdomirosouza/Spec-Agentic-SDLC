@@ -110,37 +110,68 @@ class Measurement(unittest.TestCase):
         finally:
             shutil.copy(backup, path); os.unlink(backup)
 
-    def test_drift_reports_a_move_and_stays_quiet_otherwise(self):
-        """R5-T7. The scheduled run needs a comparison that tolerates a legitimately days-old
-        report: --check is exact because a report committed with a change must match it, and an
-        issue opened for every one-line edit is noise that gets muted."""
+    def test_drift_refuses_when_no_baseline_is_old_enough(self):
+        """R6-T1. Comparing against the NEWEST report made the scheduled job structurally unable to
+        find anything: check-corpus forces that report to equal the live numbers on every commit,
+        so the comparison measured a number against itself and answered `no movement`, for ever.
+        With no baseline old enough the honest answer is a refusal, not an all-clear."""
+        r = subprocess.run([sys.executable, SCRIPT, "--drift"],
+                           capture_output=True, text=True, cwd=HERE, timeout=180)
+        self.assertEqual(r.returncode, 2, f"expected a refusal, got: {r.stdout}{r.stderr}")
+        self.assertIn("no baseline", r.stdout)
+
+    def test_drift_compares_against_an_older_report_and_sees_activity(self):
+        """The baseline must be old enough for something to have happened, and the comparison must
+        include the numbers that move WITHOUT anyone editing a file. Those were excluded entirely,
+        which left drift watching only the rows the commit gate pins."""
         import shutil, tempfile
+        base = os.path.join(HERE, "docs", "sre", "corpus-metrics-2026-08-15.md")
+        self.assertFalse(os.path.exists(base), "fixture name must not collide with a real report")
         latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
                         if f.startswith("corpus-metrics-"))[-1]
-        path = os.path.join(HERE, "docs", "sre", latest)
-        backup = tempfile.mktemp(); shutil.copy(path, backup)
+        text = open(os.path.join(HERE, "docs", "sre", latest), encoding="utf-8").read()
+        text = re.sub(r"^\| ADRs \| [0-9]+ \|", "| ADRs | 1 |", text, count=1, flags=re.M)
+        text = re.sub(r"^\| Commits on the default branch \| [0-9]+ \|",
+                      "| Commits on the default branch | 1 |", text, count=1, flags=re.M)
         body = tempfile.mktemp(suffix=".md")
         try:
-            subprocess.run([sys.executable, SCRIPT, "--report"],
-                           capture_output=True, cwd=HERE, timeout=180, check=True)
-            r = subprocess.run([sys.executable, SCRIPT, "--drift"],
-                               capture_output=True, text=True, cwd=HERE, timeout=180)
-            self.assertEqual(r.returncode, 0, f"a current report must not report drift: {r.stdout}")
-
-            text = open(path, encoding="utf-8").read()
-            doctored = re.sub(r"^\| ADRs \| [0-9]+ \|", "| ADRs | 1 |", text, count=1, flags=re.M)
-            self.assertNotEqual(doctored, text, "the ADRs row must be present to doctor")
-            open(path, "w", encoding="utf-8").write(doctored)
+            open(base, "w", encoding="utf-8").write(text)
             r = subprocess.run([sys.executable, SCRIPT, "--drift", "--body-out", body],
                                capture_output=True, text=True, cwd=HERE, timeout=180)
-            self.assertEqual(r.returncode, 1)
-            self.assertIn("ADRs", r.stdout)
-            self.assertIn("| Metric | Published | Live | Move |", open(body, encoding="utf-8").read(),
-                          "the issue body must carry the delta, not just an exit code")
+            self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+            self.assertIn("ADRs", r.stdout, "a structural row must still be compared")
+            self.assertIn("Commits on the default branch", r.stdout,
+                          "an activity row is the whole reason a periodic comparison exists")
+            self.assertIn("| Metric | Published | Live | Move |",
+                          open(body, encoding="utf-8").read())
         finally:
-            shutil.copy(backup, path); os.unlink(backup)
-            if os.path.exists(body):
-                os.unlink(body)
+            for f in (base, body):
+                if os.path.exists(f):
+                    os.unlink(f)
+
+    def test_the_baseline_is_the_newest_report_old_enough_not_the_newest_overall(self):
+        import datetime
+        today = datetime.date(2026, 9, 13)
+        picked = cm.baseline_report(7, today)
+        self.assertIsNone(picked, "today's report is the only one and it is not old enough")
+
+    def test_the_published_sensitivity_table_matches_the_real_threshold(self):
+        """A document advertising a sensitivity the tool does not have is the same defect as a
+        check that cannot fail, one step removed."""
+        # Regenerate first. This test file counts toward `Test lines`, so asserting against the
+        # committed report made the test fail whenever it grew — a fact about the repository, not
+        # about the behaviour under test. Same trap as the stale-report case above.
+        subprocess.run([sys.executable, SCRIPT, "--report"],
+                       capture_output=True, cwd=HERE, timeout=180, check=True)
+        latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
+                        if f.startswith("corpus-metrics-"))[-1]
+        on_disk = open(os.path.join(HERE, "docs", "sre", latest), encoding="utf-8").read()
+        self.assertIn(f"**{cm.DEFAULT_THRESHOLD_PCT}%**", on_disk)
+        self.assertIn(f"**{cm.DEFAULT_BASELINE_AGE_DAYS} days**", on_disk)
+        m = cm.build()
+        for label, live in cm.structural_rows(m):
+            want = max(1, round(live * cm.DEFAULT_THRESHOLD_PCT / 100.0))
+            self.assertIn(f"| {label} | {live} | {want} |", on_disk, label)
 
     def test_check_families_matches_what_actually_runs(self):
         """R4-T6. The count was `grep -c '^say \"C'` and reported 12 while 15 families ran."""
