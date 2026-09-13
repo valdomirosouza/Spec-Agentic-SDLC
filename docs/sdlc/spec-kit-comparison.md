@@ -59,6 +59,9 @@
 
 ## 4. Deliberately not adopted
 
+- **Command-lifecycle hooks** (`before_/after_<command>`): decided in ADR-0092 (Proposed) — the
+  `before_` shape becomes a Claude Code `UserPromptSubmit` gate; the `after_` shape as a `Stop`
+  hook is refused (Constitution V).
 - **Extensions / presets / bundles / workflow engine.** Spec-kit's layered artifact resolution
   and its YAML workflow engine are tooling for a multi-agent CLI product. This repository keeps
   Claude Code skills and the harness YAML as the extension points; adopting the engine would

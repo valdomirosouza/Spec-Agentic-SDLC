@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- ADR-0092 (Proposed): spec-kit `before_/after_<command>` hooks mapped to Claude Code hooks —
+  `UserPromptSubmit` gate for the code-producing `/sdd-*` commands adopted (to implement),
+  `Stop`-based continuation refused (Constitution V) (#20).
 - `docs/sdlc/spec-kit-upstream.json` (machine-readable upstream pin, checked by C10),
   `docs/sdlc/spec-kit-sync.md` (quarterly adopt/adapt/refuse procedure) and
   `scripts/bash/spec-kit-diff.sh` (tracked-file diff against upstream via `gh`) (#19).
