@@ -10,9 +10,16 @@ The shape is borrowed from the corpus's own test-integrity gate (ADR-0065): a ve
 a failure when the number falls, and a deliberate, visible act to move it. It does not demand
 46 of 46 today. It demands that the number never quietly go down.
 
+Guarding the ratio alone was not enough, and the way it failed is worth stating: a ratio rises
+when its denominator shrinks, so deleting twenty unproved checks moved coverage from 32% to 52%
+and the gate approved it. A gate built to protect verification had made removing verification the
+cheapest way to satisfy the gate. Mutation testing could not find that — the ratchet passed every
+one of its own tests, because proving a gate can FAIL says nothing about what it REWARDS when it
+passes (#79). The baseline records the check names now, and losing one is a failure.
+
     mutation_coverage.py            # report coverage and list what is unproved
-    mutation_coverage.py --check    # fail if coverage fell below the baseline
-    mutation_coverage.py --update   # record the current numbers as the new baseline
+    mutation_coverage.py --check    # fail if coverage fell, or if a check went missing
+    mutation_coverage.py --update   # record the current names and numbers as the new baseline
 """
 import argparse
 import ast
@@ -90,10 +97,16 @@ def read_baseline():
 
 def write_baseline(c):
     payload = {
-        "_comment": "Mutation coverage ratchet (#75). Raise it by proving more checks; lowering it "
-                    "is a deliberate act that belongs in a commit message, not a side effect.",
+        "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering "
+                    "it — including by deleting checks — is a deliberate act that belongs in a "
+                    "commit message, not a side effect.",
         "named": c["named"],
         "proved": c["proved"],
+        # The names, not just the count. Without them the ratio was the only guard, and a ratio
+        # goes UP when the denominator shrinks: deleting twenty unproved checks moved coverage
+        # from 32% to 52% and passed (#79). Recording the set lets the failure say which check
+        # went missing rather than that a number changed.
+        "checks": named_checks(),
     }
     with open(BASELINE, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=2)
@@ -121,6 +134,14 @@ def main(argv=None):
                   f"run: mutation_coverage.py --update", file=sys.stderr)
             return 1
         problems = []
+        # The denominator is guarded first, because the ratio cannot guard it: removing an unproved
+        # check raises coverage. A gate built to protect verification made deleting it the cheapest
+        # way to satisfy the gate (#79).
+        gone = sorted(set(base.get("checks", [])) - set(named_checks()))
+        if gone:
+            problems.append(f"{len(gone)} check(s) the baseline knows about are no longer in "
+                            f"check-corpus.sh:")
+            problems.extend(f"    {g}" for g in gone)
         if c["proved"] < base["proved"]:
             problems.append(f"proved checks fell from {base['proved']} to {c['proved']}")
         if c["orphan_mutations"]:

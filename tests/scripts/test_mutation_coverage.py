@@ -38,17 +38,22 @@ class Parsing(unittest.TestCase):
 
 class Ratchet(unittest.TestCase):
     def run_check(self, baseline):
+        """In-process, so a monkeypatched `named_checks` is visible. An earlier version shelled out
+        and could only vary the baseline, never the live corpus."""
+        import contextlib, io
         with tempfile.TemporaryDirectory() as d:
             path = os.path.join(d, "baseline.json")
             with open(path, "w", encoding="utf-8") as fh:
                 json.dump(baseline, fh)
-            env = dict(os.environ)
-            code = (f"import sys; sys.argv=['x','--check','--quiet'];"
-                    f"sys.path.insert(0,{os.path.join(HERE, 'scripts', 'python')!r});"
-                    f"import mutation_coverage as m; m.BASELINE={path!r}; sys.exit(m.main())")
-            r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True,
-                               cwd=HERE, env=env, timeout=120)
-            return r.returncode, r.stdout + r.stderr
+            real = mc.BASELINE
+            mc.BASELINE = path
+            out, err = io.StringIO(), io.StringIO()
+            try:
+                with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                    rc = mc.main(["--check", "--quiet"])
+            finally:
+                mc.BASELINE = real
+            return rc, out.getvalue() + err.getvalue()
 
     def test_current_coverage_satisfies_the_committed_baseline(self):
         r = subprocess.run([sys.executable, SCRIPT, "--check"], capture_output=True, text=True,
@@ -68,6 +73,35 @@ class Ratchet(unittest.TestCase):
         rc, out = self.run_check({"named": c["named"] - 1, "proved": c["proved"]})
         self.assertEqual(rc, 1)
         self.assertIn("without a mutation", out)
+
+    def test_deleting_an_unproved_check_fails_even_though_the_ratio_improved(self):
+        """R7-T1. The ratio was the only guard, and a ratio rises when its denominator shrinks:
+        deleting twenty unproved checks moved coverage from 32% to 52% and the gate approved it. A
+        gate built to protect verification had made removing verification the cheapest way to
+        satisfy it."""
+        c = mc.coverage()
+        names = mc.named_checks()
+        surviving = [n for n in names if n not in mc.proved_names()]
+        self.assertTrue(surviving, "expected at least one unproved check to pretend to delete")
+        doomed = surviving[:5]
+        baseline = {"named": c["named"], "proved": c["proved"], "checks": names}
+        real = mc.named_checks
+        mc.named_checks = lambda: [n for n in names if n not in doomed]
+        try:
+            rc, out = self.run_check(baseline)
+        finally:
+            mc.named_checks = real
+        self.assertEqual(rc, 1, "deleting checks must not be a way to pass")
+        self.assertIn("no longer in check-corpus.sh", out)
+        for d in doomed:
+            self.assertIn(d, out, "the failure must name the check that went missing")
+
+    def test_the_deletion_guard_survives_a_baseline_written_before_it_existed(self):
+        """An older baseline has no `checks` key. It must not crash, and it must not pretend to
+        guard something it cannot see."""
+        c = mc.coverage()
+        rc, _ = self.run_check({"named": c["named"], "proved": c["proved"]})
+        self.assertEqual(rc, 0)
 
     def test_a_missing_baseline_fails_rather_than_passing_by_default(self):
         with tempfile.TemporaryDirectory() as d:

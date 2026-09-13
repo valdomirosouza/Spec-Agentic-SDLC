@@ -187,6 +187,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("specs/data/data-quality.md", "| 2026-12-13 ", "| 2026-01-05 "),
             "open items carry a date")
 
+    def test_deleting_a_check_from_the_verifier_is_caught(self):
+        """R7-T1. The ratchet guarded the ratio, and a ratio rises when its denominator shrinks, so
+        deleting unproved checks was the cheapest way to satisfy the gate that exists to protect
+        them. Renaming one keeps the count identical and the ratio unchanged, which is why the
+        baseline had to record names."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/check-corpus.sh", 'result "bash -n"', 'result "bash -n gone"'),
+            "mutation coverage has not fallen")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

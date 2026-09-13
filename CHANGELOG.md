@@ -26,6 +26,9 @@ authorises them.
 - `tests/scripts/test_corpus_measure_workflow.py` — eight assertions on the scheduled job, the
   substitute for being able to run it: token scope, ordering, the delta file written and read under
   one variable, the pull request that forms the series, and the verbs Constitution V forbids (#74).
+- The coverage ratchet records the check **names**, not only the counts. Guarding the ratio alone
+  inverted the incentive: a ratio rises when its denominator shrinks, so deleting twenty unproved
+  checks moved coverage from 32% to 52% and the gate approved it (#79).
 - `scripts/python/check_open_items.py` — every open item now carries an ISO date, which fails once
   it passes, or a declared `on-event: <trigger>`. All 31 were prose deferrals to a review nothing
   convenes, so none could ever come due; 11 became the next quarterly date and 19 a named trigger
