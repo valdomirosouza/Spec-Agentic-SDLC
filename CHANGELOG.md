@@ -37,6 +37,9 @@ authorises them.
 
 ### Changed
 
+- `AGENTS.md` rewritten for the corpus: a per-agent table of what Claude Code, Copilot, Cursor,
+  Codex and Gemini receive (and do not), corpus paths in the do-not-edit list, the `/sdd-*`
+  workflow and the real validation commands (#18).
 - markdownlint pass over the corpus: blank lines around fences/lists/headings, consistent
   emphasis style, one malformed reference link, heading levels in `docs/troubleshooting.md` (#12).
 - `specs/spec-frontmatter.schema.json` id pattern now admits digits in the domain code
