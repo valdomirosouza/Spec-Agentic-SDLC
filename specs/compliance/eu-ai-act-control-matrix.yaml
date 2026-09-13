@@ -99,7 +99,7 @@ controls:
       up to date, containing at minimum the elements of Annex IV.
     applies_from: "2027-12-02"
     implemented_by:
-      - planned:#38:docs/ai-governance/system-card.md
+      - docs/ai-governance/system-card.md
       - docs/ai-governance/model-card.md
       - planned:#42:docs/ai-governance/model-registry.md
     verified_by:
@@ -137,7 +137,7 @@ controls:
       appropriately, and is accompanied by instructions for use.
     applies_from: "2027-12-02"
     implemented_by:
-      - planned:#38:docs/ai-governance/system-card.md
+      - docs/ai-governance/system-card.md
       - docs/ai-governance/autonomy-boundaries.md
     verified_by:
       - docs/ai-governance/ai-safety-checklist.md
@@ -286,7 +286,7 @@ controls:
       text are disclosed; emotion recognition and biometric categorisation are disclosed to those exposed.
     applies_from: "2026-08-02"
     implemented_by:
-      - planned:#38:docs/ai-governance/system-card.md
+      - docs/ai-governance/system-card.md
     verified_by:
       - docs/ai-governance/ai-safety-checklist.md
     gate: ["Phase 10 — AI Safety & Agent Governance"]

@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `templates/model-card-template.md` (the former blank card, moved) and two filled artefacts:
+  `docs/ai-governance/model-card.md` for the pinned model and `docs/ai-governance/system-card.md`
+  describing the system the model sits inside, including what it cannot do by construction and a
+  residual-risk table that does not claim zero (#38).
 - `docs/privacy/sub-processor-register.md` — six rows with the personal data each can access, its
   class, processing region, transfer instrument, contract and assessment state (all `pending`, the
   true state), the seven-step addition path and a retirement rule that keeps the row (#37).
