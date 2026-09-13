@@ -1,7 +1,7 @@
 ---
 id: SPEC-LGS-001
 kind: feature-spec
-status: draft # draft | in-review | approved | implemented | superseded (ADR-0085)
+status: approved # draft | in-review | approved | implemented | superseded (ADR-0085)
 owner: valdomirosouza
 issue: null
 governing_adrs:
@@ -23,7 +23,7 @@ related_specs:
   - specs/system/SPEC-LGS-001-log-based-golden-signals.md
   - specs/security/threat-model.md
 roadmap: null
-last_updated: 2026-09-12
+last_updated: 2026-09-13
 ---
 
 # Feature Specification: Log-Based Golden Signals — ingestion and percentile analytics

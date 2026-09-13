@@ -37,7 +37,7 @@ _GATE: must pass before Phase 0 research; re-checked after Phase 1 design. Cite 
 
 | Article               | Question the plan must answer                                        | Status (pass / justified / FAIL) |
 | --------------------- | -------------------------------------------------------------------- | -------------------------------- |
-| I Specification First | Is the spec `approved`? Does every plan decision trace to an FR/NFR? | **justified** — spec is `draft`; this plan was drafted for the worked example and must not enter Phase 6 until the Spec-as-PR is approved. Every section cites FR/NFR ids. |
+| I Specification First | Is the spec `approved`? Does every plan decision trace to an FR/NFR? | pass — spec `approved` on 2026-09-13 (Spec-as-PR, owner); every section cites FR/NFR ids |
 | II Test-Backed Change | Which tests fail first? Which coverage floors apply?                 | pass — AC-02…AC-10 tests listed in tasks.md precede code; ≥ 80% on `domain` (NFR-05) |
 | III Privacy by Design | New PII? Class? Masking point? DPIA needed?                          | pass — `client_ip` L2, masked in `IpMasker` before queueing; RIPD entry; full-DPIA decision open with DPO (A2) |
 | IV Security Gates     | New attack surface? STRIDE pass done? Controls in the matrices?      | **justified** — new ingestion boundary and agent-facing API; STRIDE pass scheduled in tasks.md (T006) before US2 closes; ASVS V2/V4/V5/V7 rows named |
@@ -50,7 +50,7 @@ _GATE: must pass before Phase 0 research; re-checked after Phase 1 design. Cite 
 ## Phase 5 Obligations (this repository)
 
 - **ADR required?** no new ADR — ADR-0066, ADR-0067, ADR-0068, ADR-0069 are Accepted and cover runtime, store, extraction and queue.
-- **Threat model delta?** yes → `specs/security/threat-model-SPEC-LGS-001.md` (STRIDE over the ingestion boundary and the agent-facing analytics surface; task T006).
+- **Threat model delta?** yes → `specs/security/threat-model-SPEC-LGS-001-golden-signals.md` (exists, `draft`; STRIDE over the ingestion boundary and the agent-facing analytics surface is completed in task T006).
 - **DPIA / RIPD?** RIPD entry yes → `docs/privacy/ripd/`; full DPIA — DPO decision at the Discovery gate (spec A2).
 - **Phase 10 (AI Safety) mandatory?** yes — the output is consumed by an autonomous agent and carries the HITL/HOTL recommendation (FR-12/13).
 
@@ -116,7 +116,7 @@ verify` (R7).
    Bucket, AuditRecord, GovernanceBlock; key grammar from ADR-0068).
 2. REST contract → `contracts/openapi-delta.yaml` (five paths); no events, no Avro.
 3. Runnable scenarios mirroring AC-01…AC-10 → `quickstart.md`.
-4. Constitution Check re-run after design: unchanged (I, IV, VII, VIII remain "justified").
+4. Constitution Check re-run after design: unchanged (IV, VII, VIII remain "justified").
 
 ## Observability Design (Article VI)
 
@@ -133,4 +133,3 @@ verify` (R7).
 | Violation                                        | Why needed                                                                                     | Simpler alternative rejected because                                                  |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | `MetricStore` interface + two implementations    | Keeps NFR-05 core-logic tests Redis-free and is the exit seam to a TSDB (ADR-0067)             | Direct Redis calls would force Testcontainers into every unit test and hide the seam |
-| Spec still `draft` while plan exists (Article I) | Worked example of the bundle; Phase 6 is blocked by `check-prerequisites.sh --require-approved` | Marking the spec `approved` would be the agent approving its own work (Article V)     |
