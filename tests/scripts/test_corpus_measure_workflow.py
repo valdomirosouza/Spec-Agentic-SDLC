@@ -56,8 +56,37 @@ class Wiring(unittest.TestCase):
         self.assertIn('"$DRIFT_BODY"', self.t.split("File what moved")[1],
                       "the issue step must read the same file the drift step wrote")
 
-    def test_the_issue_is_filed_only_when_something_moved(self):
-        self.assertIn("if: steps.drift.outputs.rc != '0'", self.t)
+    def test_only_the_step_that_measured_movement_may_claim_movement(self):
+        """R7-T3. One step filed an issue whenever the exit code was non-zero, under a fixed title
+        reading `numbers moved` — including exit 2, which means nothing was compared at all. While
+        the series forms that is the only issue the job can produce, so the title would have been
+        false every time, and a title is all most people see in an issue list."""
+        claims = re.compile(r"moved|changed|drift(ed)?", re.I)
+        for step in self.t.split("- name: ")[1:]:
+            titles = re.findall(r'--title "([^"]*)"', step)
+            if not titles:
+                continue
+            guard = re.search(r"if: ([^\n]*)", step)
+            condition = guard.group(1) if guard else ""
+            for title in titles:
+                if claims.search(title):
+                    self.assertIn("rc == '1'", condition,
+                                  f"a title claiming movement must be guarded by the outcome that "
+                                  f"measured it, not by {condition!r}: {title!r}")
+
+    def test_no_baseline_is_reported_as_itself_not_as_movement(self):
+        branch = self.t.split("Note that no comparison was possible")[1]
+        self.assertIn("rc == '2'", branch)
+        self.assertIn("they were not measured against anything", branch)
+        self.assertNotRegex(branch.split("--title")[1].split("\n")[0] if "--title" in branch else "",
+                            re.compile(r"moved", re.I))
+
+    def test_a_crash_does_not_become_a_movement_report(self):
+        """An unhandled exception also exits 1. Branching on the code alone would have filed a
+        `numbers moved` issue describing a result nobody obtained."""
+        self.assertIn("body=yes", self.t)
+        self.assertIn("steps.drift.outputs.body == 'yes'", self.t)
+        self.assertIn("Fail if the measurement did not run cleanly", self.t)
 
     def test_drift_runs_before_the_report_is_regenerated(self):
         """--report writes a file dated today. Generating first would add a baseline zero days old
