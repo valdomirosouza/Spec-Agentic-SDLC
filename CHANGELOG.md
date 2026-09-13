@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/compliance/iso42001-scope-and-soa.md` (scope, interested parties, clauses 4–10, Statement
+  of Applicability over the nine Annex A objectives, certification posture) and
+  `iso42001-annex-a-control-matrix.md`; REM-015 to REM-018 opened for the clause 6, 9, 10 and A.2
+  gaps (#25).
 - `specs/compliance/eu-ai-act-control-matrix.yaml` — 17 obligations (Art. 5, Arts. 9–17 and 20,
   Arts. 43/47/48/49, Art. 50, Arts. 51–55, Arts. 72–73, Annex IV) with owner, status, gate,
   application date and gap; `adopter:` and `planned:#issue:` path prefixes; the compliance page

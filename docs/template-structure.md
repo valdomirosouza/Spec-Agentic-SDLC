@@ -807,7 +807,7 @@ This section applies to **any system component** that incorporates:
 | **EU AI Act**        | Human oversight, transparency, audit trail | Arts. 9, 12, 13, 14          |
 | **NIST AI RMF**      | AI risk governance, autonomy controls      | Govern, Map, Measure, Manage |
 | **OWASP LLM Top 10** | LLM-specific attack surface                | LLM01–LLM10                  |
-| **ISO 42001**        | AI management system                       | All clauses                  |
+| **ISO/IEC 42001**    | AI management system                       | Clauses 4–10 · Annex A A.2–A.10 (`docs/compliance/iso42001-scope-and-soa.md`) |
 
 ### Model Card (docs/ai-governance/model-card.md)
 

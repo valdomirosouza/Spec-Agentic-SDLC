@@ -5,10 +5,10 @@
 > The single, prioritised backlog of control gaps surfaced by this compliance package and the
 > [`specs/security/threat-model.md`](../../specs/security/threat-model.md). **REM-001…004 are
 > owned by the threat model** (reproduced here for one consolidated view); **REM-005+ are new,
-> surfaced by the ISO/SOC 2/SLSA assessment.** When an item lands, flip its row(s) in the
+> surfaced by the ISO/SOC 2/SLSA assessment; REM-015+ by the ISO/IEC 42001 assessment (#25).** When an item lands, flip its row(s) in the
 > [control matrix](iso27001-annex-a-control-matrix.md) to ✅ and move it to **Done** below.
 >
-> **Last updated:** 2026-05-31 · Owners reference `.github/CODEOWNERS` roles (replace placeholders with real team slugs — see REM-009).
+> **Last updated:** 2026-09-13 · Owners reference `.github/CODEOWNERS` roles (replace placeholders with real team slugs — see REM-009).
 
 ## Priority legend
 
@@ -24,6 +24,11 @@
 | **REM-009** | **P1** _(partial)_ | **CODEOWNERS ✅ resolved** (`@org/*` placeholders replaced with real GitHub handles; CI gate added). **DPIA still Draft** — DPO sign-off not yet obtained. Follow `docs/governance/owner-onboarding.md` Step 5.                                                  | DPIA must reach Approved before enterprise deployment. ISO 5.31, GDPR Art. 35.                                                            | DPO                     | Before first enterprise engagement   |
 | **REM-003** | **P1** _(partial)_ | **Phase 1 done** (NetworkPolicy manifests + ADR-0007 Accepted: Istio). **Phase 2 blocked**: Istio sidecar STRICT mTLS requires a running cluster — activate with `infrastructure/k8s/network-policies/istio-peer-auth.yaml` once Kubernetes is provisioned.      | Lateral-movement / eavesdropping risk. ISO 5.14/8.20, SOC 2 CC6.7                                                                         | DevOps Lead             | Phase 2: when cluster is provisioned |
 | **REM-011** | P2                 | **Supply-chain remainder of REM-007:** OIDC for registry/cloud auth (replace long-lived `REGISTRY_USERNAME`/`PASSWORD`); admission-time image-signature verification (Kyverno/cosign policy); replace `Syft`/`Cosign` `curl \| sh` installs with pinned binaries | Completes SLSA L2→L3. **Needs real cloud OIDC role + cluster policy — not implementable in the template alone.** ISO 5.21/8.19, SOC 2 CC9 | DevSecOps + DevOps Lead | When cloud/cluster is provisioned    |
+
+| **REM-015** | P2 | **No internal audit programme and no management review for the AI management system** (ISO/IEC 42001 clauses 9.2, 9.3). The corpus reviews artefacts continuously and the management system never. | First finding a 42001 certification audit would raise. ISO/IEC 42001 cl. 9. | AI Governance Lead | Before pursuing certification |
+| **REM-016** | P2 | **No single AI risk register** (ISO/IEC 42001 clause 6.1; EU AI Act Art. 9). Risks are documented across DPIAs, threat models and ADR consequence sections, so top AI risks and residual-risk acceptance cannot be read from one place. | ISO/IEC 42001 cl. 6.1, EU AI Act Art. 9 (`ART-9` gap in the control matrix). | AI Governance Lead | Next quarterly review |
+| **REM-017** | P3 | **The AI policy is not named as a policy** (ISO/IEC 42001 A.2). `memory/constitution.md` is stronger than most AI policies but an auditor searching for "the AI policy" does not find it. | ISO/IEC 42001 A.2. Presentation gap, not a control gap. | AI Governance Lead | With the next constitution amendment |
+| **REM-018** | P3 | **No nonconformity register for the management system itself** (ISO/IEC 42001 clause 10). Corrective action exists for incidents; management-system nonconformities have no home. | ISO/IEC 42001 cl. 10.2. | AI Governance Lead | Before pursuing certification |
 
 ---
 

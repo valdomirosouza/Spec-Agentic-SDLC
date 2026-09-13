@@ -12,7 +12,7 @@
 ## Audience
 
 - **External** — enterprise prospects/clients completing a security questionnaire (SIG / CAIQ),
-  requesting a SOC 2 report, an ISO 27001 statement, or a DPA. Start with
+  requesting a SOC 2 report, an ISO 27001, ISO/IEC 42001 statement, or a DPA. Start with
   [`trust-summary.md`](trust-summary.md) and [`security-questionnaire-quickref.md`](security-questionnaire-quickref.md).
 - **Internal** — engineering, security, and SRE leads driving the controls to an auditable
   state. Start with the [control matrix](iso27001-annex-a-control-matrix.md) and the
@@ -51,7 +51,7 @@
 ## Scope & boundaries — read this first
 
 This is a **self-assessment of the controls that can be evidenced within the repository/template**.
-It is **not a certification** and does not by itself constitute SOC 2 or ISO 27001 compliance.
+It is **not a certification** and does not by itself constitute SOC 2 or ISO 27001, ISO/IEC 42001 compliance.
 
 The template is the _technical and procedural substrate_. To reach a certifiable posture, the
 **adopting organization** must additionally provide the controls that require an operating
@@ -61,7 +61,7 @@ in `.github/CODEOWNERS` (`@org/security-lead`, `@org/dpo`, `@org/sre-lead`, etc.
 owners. Controls of this kind are marked **⬜ N/A** with a note identifying who owns them.
 
 Physical controls (ISO Annex A §7) are **inherited** from the cloud provider (AWS) under the
-shared-responsibility model and covered by the provider's own SOC 2 / ISO 27001 attestations.
+shared-responsibility model and covered by the provider's own SOC 2 / ISO 27001, ISO/IEC 42001 attestations.
 
 ## Keeping this current
 
