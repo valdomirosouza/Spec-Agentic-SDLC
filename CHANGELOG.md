@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/ai/red-team-program.md` — ten techniques mapped to OWASP LLM ids, rules of engagement,
+  five cadence triggers including a blocking exercise before any autonomy increase, and every
+  Critical/High/Medium finding required to become an abuse case; the exercise log records the
+  empty state deliberately (#41).
 - `docs/runbooks/RB-AI-001-ai-incident.md` — five AI incident scenarios (jailbreak, harmful
   output, hallucination reaching a decision, unapproved irreversible action, model behaviour
   change), four containment levers ordered by blast radius, an evidence-preservation table and

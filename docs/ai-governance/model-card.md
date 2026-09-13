@@ -60,7 +60,7 @@ dependency manifest and in the sub-processor register, row 2.
 | Behavioural contract conformance        | `tests/model_contract/`, ADR-0051                                  | 16/16 at contract v1.1 on 2026-09-12                  |
 | Groundedness                            | SLI, ADR-0080, target ≥ 0.9 with zero tolerance for fabrication    | Threshold defined; no production series recorded yet  |
 | Evaluator quality across four dimensions | `docs/ai/eval-scorecard.md`, threshold 0.75                       | Threshold defined                                     |
-| Adversarial robustness                  | `tests/abuse_cases/`, ADR-0050; red-team programme (#41)           | Abuse-case ratchet in place; no red-team exercise recorded |
+| Adversarial robustness                  | `tests/abuse_cases/`, ADR-0050; [red-team programme](../../specs/ai/red-team-program.md) | Abuse-case ratchet in place; no red-team exercise recorded |
 | Accuracy for the intended purpose       | —                                                                  | **Not declared.** Open gap, shared with EU AI Act `ART-15` |
 | Fairness and bias                       | Quarterly procedure in `skills/ethics/ethical-ai-review.md`        | **No result recorded**                                |
 

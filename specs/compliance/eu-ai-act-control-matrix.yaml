@@ -185,7 +185,7 @@ controls:
     verified_by:
       - adopter:tests/abuse_cases/
       - adopter:tests/model_contract/
-      - planned:#41:specs/ai/red-team-program.md
+      - specs/ai/red-team-program.md
     gate: ["Phase 8 — Testing", "Phase 9 — DevSecOps", "Phase 10 — AI Safety & Agent Governance"]
     owner: Security Lead
     status: partial
