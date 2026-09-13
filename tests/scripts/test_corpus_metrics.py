@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Tests for scripts/python/corpus_metrics.py (#52). stdlib only."""
-import json, os, subprocess, sys, unittest
+import json, os, re, subprocess, sys, unittest
 
 HERE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 SCRIPT = os.path.join(HERE, "scripts", "python", "corpus_metrics.py")
@@ -109,6 +109,38 @@ class Measurement(unittest.TestCase):
                                             capture_output=True, cwd=HERE, timeout=180).returncode, 1)
         finally:
             shutil.copy(backup, path); os.unlink(backup)
+
+    def test_drift_reports_a_move_and_stays_quiet_otherwise(self):
+        """R5-T7. The scheduled run needs a comparison that tolerates a legitimately days-old
+        report: --check is exact because a report committed with a change must match it, and an
+        issue opened for every one-line edit is noise that gets muted."""
+        import shutil, tempfile
+        latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
+                        if f.startswith("corpus-metrics-"))[-1]
+        path = os.path.join(HERE, "docs", "sre", latest)
+        backup = tempfile.mktemp(); shutil.copy(path, backup)
+        body = tempfile.mktemp(suffix=".md")
+        try:
+            subprocess.run([sys.executable, SCRIPT, "--report"],
+                           capture_output=True, cwd=HERE, timeout=180, check=True)
+            r = subprocess.run([sys.executable, SCRIPT, "--drift"],
+                               capture_output=True, text=True, cwd=HERE, timeout=180)
+            self.assertEqual(r.returncode, 0, f"a current report must not report drift: {r.stdout}")
+
+            text = open(path, encoding="utf-8").read()
+            doctored = re.sub(r"^\| ADRs \| [0-9]+ \|", "| ADRs | 1 |", text, count=1, flags=re.M)
+            self.assertNotEqual(doctored, text, "the ADRs row must be present to doctor")
+            open(path, "w", encoding="utf-8").write(doctored)
+            r = subprocess.run([sys.executable, SCRIPT, "--drift", "--body-out", body],
+                               capture_output=True, text=True, cwd=HERE, timeout=180)
+            self.assertEqual(r.returncode, 1)
+            self.assertIn("ADRs", r.stdout)
+            self.assertIn("| Metric | Published | Live | Move |", open(body, encoding="utf-8").read(),
+                          "the issue body must carry the delta, not just an exit code")
+        finally:
+            shutil.copy(backup, path); os.unlink(backup)
+            if os.path.exists(body):
+                os.unlink(body)
 
     def test_check_families_matches_what_actually_runs(self):
         """R4-T6. The count was `grep -c '^say \"C'` and reported 12 while 15 families ran."""

@@ -41,7 +41,9 @@ class Mutation:
     def __enter__(self):
         self.original = open(self.path, encoding="utf-8").read()
         if self.regex:
-            new, n = re.subn(self.before, self.after, self.original, count=1)
+            # MULTILINE: every mutation here anchors a whole line, and `^` without it matches
+            # only the start of the file, which made the pattern silently un-findable.
+            new, n = re.subn(self.before, self.after, self.original, count=1, flags=re.MULTILINE)
         else:
             n = self.original.count(self.before)
             new = self.original.replace(self.before, self.after, 1)
@@ -126,6 +128,14 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("specs/api/SPEC-API-002-idempotency-keys.md",
                      "adopter:src/agents/idempotency_store.py", "src/agents/idempotency_store.py"),
             "evidence paths resolve")
+
+    def test_removing_the_schedule_is_caught(self):
+        """R5-T7. The cadence lived in a sentence for five rounds and never fired. Deleting the
+        cron entry must be as loud as deleting a test."""
+        self.assert_mutation_is_caught(
+            Mutation(".github/workflows/corpus-measure.yml",
+                     r"^    - cron:[^\n]*\n", "", regex=True),
+            "measurement is scheduled")
 
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(

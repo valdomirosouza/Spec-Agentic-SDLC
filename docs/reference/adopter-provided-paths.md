@@ -10,23 +10,23 @@ names one of them must carry the corpus banner or the `adopter-paths` marker; th
 
 | Referenced path / command | Provided by the adopting repository as | Files citing it |
 | --- | --- | --- |
-| `src/` | application code | 237 |
+| `src/` | application code | 238 |
 | `make <target>` | Makefile targets / CI equivalents | 86 |
 | `services.yaml` | service and topic registry | 68 |
 | `scripts/governance/` | deterministic governance gates (Python) | 37 |
-| `.github/workflows/` | CI/CD pipelines | 73 |
+| `.github/workflows/` | CI/CD pipelines | 75 |
 
-**Files referencing at least one adopter path:** 321 · marked: 321 · unmarked: 0
+**Files referencing at least one adopter path:** 323 · marked: 323 · unmarked: 0
 
 ## By directory
 
 | Directory | Files |
 | --- | --- |
-| `docs` | 186 |
+| `docs` | 187 |
 | `specs` | 55 |
 | `skills` | 21 |
 | `.claude` | 17 |
-| `.github` | 12 |
+| `.github` | 13 |
 | `(root)` | 9 |
 | `harness` | 5 |
 | `.agents` | 4 |

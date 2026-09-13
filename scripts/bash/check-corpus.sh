@@ -301,6 +301,22 @@ if out=$(python3 scripts/python/corpus_metrics.py --check --quiet 2>&1); then
 else
     result "the measurement report is structurally current" fail "$(printf '%s' "$out" | head -3)"
 fi
+# The measurement has to REPEAT, and a cadence written in prose is not a cadence. Five rounds
+# produced one data point per control while a note said "monthly" and nothing anywhere fired
+# (R5-T7). This asserts the trigger exists, not that someone wrote about it.
+sched=".github/workflows/corpus-measure.yml"
+sched_bad=""
+[ -f "$sched" ] || sched_bad="[workflow missing]"
+if [ -z "$sched_bad" ]; then
+    grep -q '^  schedule:' "$sched" || sched_bad="$sched_bad [no schedule trigger]"
+    grep -qE '^    - cron:' "$sched" || sched_bad="$sched_bad [no cron entry]"
+    grep -q 'corpus_metrics.py --drift' "$sched" || sched_bad="$sched_bad [does not measure]"
+    grep -q 'gh issue create' "$sched" || sched_bad="$sched_bad [movement is not reported anywhere]"
+fi
+[ -z "$sched_bad" ] \
+    && result "the measurement is scheduled, not merely described" ok "weekly cron opens an issue when a structural number moves" \
+    || result "the measurement is scheduled, not merely described" fail "$sched_bad"
+
 nrep=$(ls docs/sre/corpus-metrics-*.md 2>/dev/null | wc -l | tr -d ' ')
 [ "${nrep:-0}" -ge 1 ] && result "the corpus carries at least one measurement of itself" ok "$nrep report(s)" || result "the corpus carries at least one measurement of itself" fail
 

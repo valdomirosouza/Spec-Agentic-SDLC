@@ -334,18 +334,87 @@ def render(m):
     return "\n".join(L)
 
 
+# One definition, read by both --check (exact, for the pre-commit gate) and --drift (thresholded,
+# for the scheduled run). Two hand-maintained lists would disagree the first time one gained a row.
+def structural_rows(m):
+    k = m["corpus"]
+    return (("Markdown files", k["markdown_files"]),
+            ("Executable lines (scripts + hooks)", k["executable_lines"]),
+            ("Test lines", k["test_lines"]),
+            ("Verification lines (scripts + hooks + tests)", k["verification_lines"]),
+            ("Check families in `check-corpus.sh`", k["check_families"]),
+            ("ADRs", k["adrs"]))
+
+
+def latest_report():
+    import glob as _g
+    reports = sorted(_g.glob(os.path.join(ROOT, "docs", "sre", "corpus-metrics-*.md")))
+    return reports[-1] if reports else None
+
+
+def cmd_drift(m, threshold_pct):
+    """What moved since the last published report, and by how much.
+
+    Separate from --check on purpose. --check is exact because a report committed alongside a
+    change must match it. --drift tolerates small movement because it runs on a schedule against
+    a report that is legitimately days old, and an issue opened for every one-line edit is noise
+    that gets muted, which is the same as having no cadence at all (R5-T7)."""
+    import re as _re
+    latest = latest_report()
+    if not latest:
+        print("no corpus-metrics report on disk to compare against")
+        return 2, ""
+    on_disk = open(latest, encoding="utf-8").read()
+    moved, unreadable = [], []
+    for label, live in structural_rows(m):
+        mm = _re.search(rf"\| {_re.escape(label)} \| ([0-9]+) \|", on_disk)
+        if not mm:
+            unreadable.append(label)
+            continue
+        was = int(mm.group(1))
+        pct = 100.0 * abs(live - was) / was if was else (100.0 if live else 0.0)
+        if pct >= threshold_pct:
+            moved.append((label, was, live, pct))
+    rel = os.path.relpath(latest, ROOT)
+    if not moved and not unreadable:
+        print(f"no structural number moved by {threshold_pct}% or more since {rel}")
+        return 0, ""
+    lines = [f"Compared against `{rel}`, threshold {threshold_pct}%.", "",
+             "| Metric | Published | Live | Move |", "| --- | ---: | ---: | ---: |"]
+    lines += [f"| {lab} | {was} | {live} | {live - was:+d} ({pct:.1f}%) |"
+              for lab, was, live, pct in moved]
+    if unreadable:
+        lines += ["", "Rows the published report does not carry, so no comparison was possible: "
+                  + ", ".join(f"`{u}`" for u in unreadable) + "."]
+    body = "\n".join(lines)
+    print(body)
+    return 1, body
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--report", action="store_true")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--drift", action="store_true",
+                    help="report structural numbers that moved since the last published report")
+    ap.add_argument("--threshold", type=float, default=2.0,
+                    help="percent a structural number must move for --drift to report it")
+    ap.add_argument("--body-out", default="",
+                    help="with --drift, write the markdown delta to this file for an issue body")
     a = ap.parse_args()
     m = build()
     if a.json:
         json.dump(m, sys.stdout, indent=2)
         print()
         return 0
+    if a.drift:
+        rc, body = cmd_drift(m, a.threshold)
+        if a.body_out and body:
+            with open(a.body_out, "w", encoding="utf-8") as fh:
+                fh.write(body + "\n")
+        return rc
     if a.check:
         import glob as _g
         import re as _re
@@ -369,12 +438,7 @@ def main():
 
         # Structural numbers: these move only when the corpus changes, so a difference is staleness.
         k = m["corpus"]
-        for label, live in (("Markdown files", k["markdown_files"]),
-                            ("Executable lines (scripts + hooks)", k["executable_lines"]),
-                            ("Test lines", k["test_lines"]),
-                            ("Verification lines (scripts + hooks + tests)", k["verification_lines"]),
-                            ("Check families in `check-corpus.sh`", k["check_families"]),
-                            ("ADRs", k["adrs"])):
+        for label, live in structural_rows(m):
             mm = _re.search(rf"\| {_re.escape(label)} \| ([0-9]+) \|", on_disk)
             if not mm:
                 problems.append(f"row missing: {label}")

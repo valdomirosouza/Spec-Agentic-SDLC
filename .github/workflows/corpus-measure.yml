@@ -1,0 +1,90 @@
+# adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md
+# Scheduled corpus measurement (issue #72). Owner: SRE Lead · Co-owner: DevOps Lead (CLAUDE.md §8).
+#
+# Why this file exists. Five maturity rounds produced one data point per control and a monthly
+# cadence that existed only as a sentence in a note. A measurement taken once is a snapshot; a
+# level is earned by repetition, and repetition nobody scheduled does not happen. This is the
+# trigger that sentence was missing.
+#
+# What it deliberately does not do: commit, push, merge or tag. Constitution V — the corpus never
+# writes to a protected branch on its own. The regenerated report is uploaded as a build artifact
+# and the delta is filed as an issue for a human to land.
+
+name: corpus-measure
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      threshold:
+        description: "Percent a structural number must move to be reported"
+        required: false
+        default: "2.0"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  measure:
+    name: measure the corpus and report what moved
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # commit and CI history are inputs to the measurement
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Drift BEFORE report. --report writes a new dated file, and the comparison picks the newest
+      # report on disk, so generating first would leave the run comparing against itself and
+      # reporting no movement, for ever.
+      - name: What moved since the last published report
+        id: drift
+        run: |
+          set +e
+          python3 scripts/python/corpus_metrics.py --drift \
+            --threshold "${{ github.event.inputs.threshold || '2.0' }}" \
+            --body-out "$RUNNER_TEMP/drift.md"
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Regenerate the dated report
+        run: python3 scripts/python/corpus_metrics.py --report
+
+      # Dated filename, never overwritten: the history is the point. The artifact is the copy a
+      # human lands in the repository via PR.
+      - name: Keep the report
+        uses: actions/upload-artifact@v4
+        with:
+          name: corpus-metrics-${{ github.run_id }}
+          path: docs/sre/corpus-metrics-*.md
+          retention-days: 90
+
+      - name: File what moved
+        if: steps.drift.outputs.rc != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          body_file="$RUNNER_TEMP/issue.md"
+          {
+            cat "$RUNNER_TEMP/drift.md" 2>/dev/null || echo "The comparison could not run; see the job log."
+            echo
+            echo "Regenerated report is attached to [run ${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) as a build artifact."
+            echo "Land it with: \`python3 scripts/python/corpus_metrics.py --report\` on a branch, then open a PR."
+            echo
+            echo "Opened by \`.github/workflows/corpus-measure.yml\`. The workflow measures and reports; it does not commit (Constitution V)."
+          } > "$body_file"
+          open=$(gh issue list --label corpus-drift --state open --limit 1 --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file "$body_file"
+            echo "commented on #$open"
+          else
+            gh label create corpus-drift --color 1F5F6B --description "A structural corpus number moved" --force >/dev/null 2>&1 || true
+            gh issue create --title "Corpus measurement: structural numbers moved ($(date -u +%Y-%m-%d))" \
+              --label corpus-drift --body-file "$body_file"
+          fi

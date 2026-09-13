@@ -6,7 +6,8 @@
 > [`../../../specs/compliance/ai-post-market-monitoring.md`](../../../specs/compliance/ai-post-market-monitoring.md),
 > executed for the first time. That plan's own open item 2 said it had never been executed; this
 > note closes it.
-> **Owner:** SRE Lead · **Co-owner:** AI Governance Lead · **Cadence:** monthly
+> **Owner:** SRE Lead · **Co-owner:** AI Governance Lead · **Cadence:** weekly, scheduled in
+> [`.github/workflows/corpus-measure.yml`](../../../.github/workflows/corpus-measure.yml)
 
 ## What this cycle could observe
 
@@ -51,15 +52,27 @@ adoption has something real to monitor rather than four empty rows.
 
 ## Decisions
 
-1. **Cadence confirmed monthly**, with the honest note that three of five families will stay
-   unobservable here until an adopting repository runs the agents.
+1. **Cadence is now scheduled, not described.** It was written here as "monthly" and nothing
+   anywhere fired: five assessment rounds produced exactly one data point per control, which is a
+   snapshot, not a trend. `corpus-measure.yml` runs the measurement every Monday, compares the
+   structural numbers against the last published report, and opens an issue when one moves by 2%
+   or more. Weekly rather than monthly because the comparison is cheap and a month is long enough
+   for the reason a number moved to be forgotten. Three of five families stay unobservable here
+   until an adopting repository runs the agents; that is unchanged and honest.
 2. **No threshold changed**, for the reason above.
 3. **One item carried forward:** the open `DQ-REG-006` finding, owner Tech Lead.
 
 ## Next cycle
 
-Due 2026-10-13. It compares this note's numbers rather than starting from nothing, which is the
-whole point of having taken a first measurement: the prose-to-code ratio, the CI failure rate and
-the check count become a trend the second time they are taken.
+The next measurement fires on its own, on the first Monday after this note. It compares this
+note's numbers rather than starting from nothing, which is the whole point of having taken a first
+measurement: the prose-to-verification ratio, the executable-line count and the check-family count
+become a trend the second time they are taken. The workflow measures and files; it does not commit
+(Constitution V), so landing each report stays a human act.
+
+A thing worth stating plainly, because five rounds of this work argue for it: **scheduling the
+repetition is the only change in this wave that moves the maturity position.** Everything else
+corrected defects in checks that already existed. A control with one observation is declared, not
+measured, however well it is written.
 
 > **Numbers in this note are derived from [`../corpus-metrics-2026-09-13.md`](../corpus-metrics-2026-09-13.md), not retyped.** The first version restated them by hand and drifted from its own source within a day (43 versus 44 runs, 9.3% versus 9.1%, fifteen families versus twelve). Regenerate with `scripts/python/corpus_metrics.py --json` before editing.
