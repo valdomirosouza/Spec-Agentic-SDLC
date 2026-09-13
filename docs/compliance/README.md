@@ -12,7 +12,7 @@
 ## Audience
 
 - **External** — enterprise prospects/clients completing a security questionnaire (SIG / CAIQ),
-  requesting a SOC 2 report, an ISO 27001, ISO/IEC 42001 statement, or a DPA. Start with
+  requesting a SOC 2 report, an ISO/IEC 27001 or ISO/IEC 42001 statement, or a DPA. Start with
   [`trust-summary.md`](trust-summary.md) and [`security-questionnaire-quickref.md`](security-questionnaire-quickref.md).
 - **Internal** — engineering, security, and SRE leads driving the controls to an auditable
   state. Start with the [control matrix](iso27001-annex-a-control-matrix.md) and the
@@ -23,6 +23,8 @@
 | Document                                                                   | Purpose                                                       | Status       |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------ |
 | [`iso27001-annex-a-control-matrix.md`](iso27001-annex-a-control-matrix.md) | All 93 ISO/IEC 27001:2022 Annex A controls, status + evidence | ✅ This wave |
+| [`iso42001-scope-and-soa.md`](iso42001-scope-and-soa.md)                   | AI management system: scope, clauses 4–10, Statement of Applicability | ✅ 2026-09-13 |
+| [`iso42001-annex-a-control-matrix.md`](iso42001-annex-a-control-matrix.md) | ISO/IEC 42001 Annex A objectives A.2–A.10, status + evidence  | ✅ 2026-09-13 |
 | [`soc2-tsc-mapping.md`](soc2-tsc-mapping.md)                               | SOC 2 Trust Services Criteria → repo evidence                 | ⏳ Wave 2    |
 | [`slsa-supply-chain-assessment.md`](slsa-supply-chain-assessment.md)       | SLSA v1.0 build/release maturity assessment                   | ⏳ Wave 2    |
 | [`remediation-register.md`](remediation-register.md)                       | Prioritised gap closure with owners + targets                 | ⏳ Wave 3    |
@@ -34,6 +36,7 @@
 | Framework                     | Version                          | Used for                                          |
 | ----------------------------- | -------------------------------- | ------------------------------------------------- |
 | ISO/IEC 27001 Annex A         | **2022** (93 controls, 4 themes) | Primary control spine                             |
+| ISO/IEC 42001 Annex A         | **2023** (38 controls, A.2–A.10) | AI management system spine                        |
 | SOC 2 Trust Services Criteria | 2017 (rev. 2022)                 | Cross-mapping for US enterprise buyers            |
 | SLSA                          | **v1.0**                         | Build/release supply-chain integrity              |
 | GDPR / LGPD                   | —                                | Privacy (DPIA / RIPD, RoPA — see `docs/privacy/`) |
@@ -51,7 +54,7 @@
 ## Scope & boundaries — read this first
 
 This is a **self-assessment of the controls that can be evidenced within the repository/template**.
-It is **not a certification** and does not by itself constitute SOC 2 or ISO 27001, ISO/IEC 42001 compliance.
+It is **not a certification** and does not by itself constitute SOC 2, ISO/IEC 27001 or ISO/IEC 42001 compliance.
 
 The template is the _technical and procedural substrate_. To reach a certifiable posture, the
 **adopting organization** must additionally provide the controls that require an operating
