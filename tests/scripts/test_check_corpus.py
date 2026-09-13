@@ -113,7 +113,10 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
 
     def test_dropping_the_change_discipline_reference_is_caught(self):
         self.assert_mutation_is_caught(
-            Mutation("CLAUDE.md", "skills/engineering/change-discipline.md", "skills/engineering/xxx.md"),
+            # Delete the activation-table ROW. Renaming the first occurrence of the path mutated a
+            # prose mention three sections earlier and the check stayed green off a later line —
+            # the mutation has to remove the thing the check claims to verify.
+            Mutation("CLAUDE.md", r"\| Editing existing code[^\n]*\n", "", regex=True),
             "change-discipline")
 
     def test_an_unindexed_adr_is_caught(self):
@@ -189,13 +192,23 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             "data-quality")
 
 
+def _tracked_status():
+    r = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True,
+                       cwd=HERE, timeout=60)
+    # Untracked files are the author's business; a leak shows up as a MODIFIED tracked file.
+    return sorted(l for l in r.stdout.split("\n") if l and not l.startswith("??"))
+
+
+# Taken at import, before any mutation runs. Demanding a clean tree instead compared the harness
+# against the wrong baseline: the tree is never clean at the moment this runs, because it runs
+# from check-corpus.sh immediately before a commit. It reported a leak on the author's own edits.
+_STATUS_AT_START = _tracked_status()
+
+
 class TreeIsClean(unittest.TestCase):
     def test_no_mutation_leaked(self):
-        r = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True,
-                           cwd=HERE, timeout=60)
-        # Untracked files are the author's business; a leak is a MODIFIED tracked file.
-        modified = [l for l in r.stdout.split("\n") if l and not l.startswith("??")]
-        self.assertEqual(modified, [], f"a mutation leaked into the tree:\n{chr(10).join(modified)}")
+        leaked = [l for l in _tracked_status() if l not in _STATUS_AT_START]
+        self.assertEqual(leaked, [], f"a mutation leaked into the tree:\n{chr(10).join(leaked)}")
 
 
 if __name__ == "__main__":

@@ -223,9 +223,14 @@ ratio_bad=$(grep -rniE '([0-9]+(\.[0-9]+)?\s*(×|x)\s*(faster|quicker|speedup))|
 for f in skills/engineering/change-discipline.md .claude/skills/change-discipline/SKILL.md; do
     [ -f "$f" ] || { result "change-discipline skill present" fail "$f missing"; break; }
 done
-grep -q 'change-discipline' CLAUDE.md \
+# The message promised two placements and a single grep verified neither: it matched the PR
+# checklist line alone and stayed green when the activation row was dropped (R5-T3 audit).
+cd_bad=""
+grep -qE '^\|.*skills/engineering/change-discipline\.md' CLAUDE.md || cd_bad="$cd_bad [activation table row missing]"
+grep -q 'Every changed line traces to the issue' CLAUDE.md || cd_bad="$cd_bad [PR checklist item missing]"
+[ -z "$cd_bad" ] \
     && result "change-discipline is in the activation table and the PR checklist" ok \
-    || result "change-discipline is in the activation table and the PR checklist" fail
+    || result "change-discipline is in the activation table and the PR checklist" fail "$cd_bad"
 bare_py=$(grep -rn '\bpython [a-z_/]*\.py' .claude/agents/*.md docs/sdlc/*.md 2>/dev/null | grep -v 'python3' || true)
 [ -z "$bare_py" ] && result "documented agent commands use python3, not bare python" ok || { result "documented agent commands use python3, not bare python" fail "$(printf '%s' "$bare_py" | head -3)"; }
 n_human=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | wc -l | tr -d " ")

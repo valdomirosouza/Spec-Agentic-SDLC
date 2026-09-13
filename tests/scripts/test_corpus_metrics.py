@@ -96,6 +96,11 @@ class Measurement(unittest.TestCase):
         path = os.path.join(HERE, "docs", "sre", latest)
         backup = tempfile.mktemp(); shutil.copy(path, backup)
         try:
+            # Refresh first: this test is about what --check does, not about whether the report
+            # committed yesterday is current. Asserting the repo's freshness here made the test red
+            # every time the verifier itself gained a line, which is a false signal.
+            subprocess.run([sys.executable, SCRIPT, "--report"],
+                           capture_output=True, cwd=HERE, timeout=180, check=True)
             self.assertEqual(subprocess.run([sys.executable, SCRIPT, "--check", "--quiet"],
                                             capture_output=True, cwd=HERE, timeout=180).returncode, 0)
             text = open(path, encoding="utf-8").read().replace("## 3. Corpus shape", "## 3. Removed")
