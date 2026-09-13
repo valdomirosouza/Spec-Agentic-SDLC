@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/ai-governance/dual-use-registry.md` populated with the seven always-HITL action categories,
+  each assessed against D-01 to D-06 with its mitigation, plus the entry rule that an unregistered
+  action type is not activatable (#39).
 - `templates/model-card-template.md` (the former blank card, moved) and two filled artefacts:
   `docs/ai-governance/model-card.md` for the pinned model and `docs/ai-governance/system-card.md`
   describing the system the model sits inside, including what it cannot do by construction and a
