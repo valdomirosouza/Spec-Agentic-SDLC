@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # REST API Standards
 
 > **Owner:** Platform / Tech Lead | **Scope:** all synchronous REST endpoints (`/v1/...`)

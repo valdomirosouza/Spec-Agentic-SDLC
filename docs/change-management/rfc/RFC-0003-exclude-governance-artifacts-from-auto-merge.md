@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0003 — Exclude governance/contract artifacts from auto-merge eligibility
 
 > **Status:** Implemented (verified shipped — audit 2026-06-16)

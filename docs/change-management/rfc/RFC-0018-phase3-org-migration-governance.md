@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0018 — Phase 3: org migration to enforce CODEOWNERS reviews & dual-approval
 
 > **Status:** Proposed (human-executed migration — see §6)

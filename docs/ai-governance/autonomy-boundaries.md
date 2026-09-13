@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Autonomy Boundaries — HITL / HOTL Definitions
 
 **Owner:** AI Governance Lead + Security Lead

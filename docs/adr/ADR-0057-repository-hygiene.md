@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0057 — Repository Hygiene: Version Single-Source-of-Truth, Reference Integrity & Generated Context Graph
 
 **Status:** Accepted

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # EU AI Act Compliance Checklist
 
 **Scope:** This system incorporates AI agents with autonomous decision-making capabilities.

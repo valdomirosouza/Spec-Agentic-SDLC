@@ -26,6 +26,7 @@ related_specs: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # Request Pipeline Spec
 
 **Status:** Approved | **Owner:** Tech Lead | **Last updated:** 2026-05-26

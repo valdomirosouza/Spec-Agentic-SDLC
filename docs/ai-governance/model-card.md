@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Model Card — \<Model Name\>
 
 **Version:** 1.0 | **Date:** 2026-05-24 | **Owner:** AI Governance Lead

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Agent Memory Governance
 
 > **Owner:** AI Governance Lead (with DPO) | **Status:** Living policy

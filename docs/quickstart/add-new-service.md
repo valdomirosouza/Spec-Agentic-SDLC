@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Adding a New Service
 
 > **Read first:** [docs/quickstart/README.md](README.md) and your language guide before starting.

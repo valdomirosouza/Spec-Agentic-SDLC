@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart — Scheduled Jobs & Batch Workers
 
 > **Stack:** Python 3.13 · APScheduler or Celery · asyncpg · aiokafka · OpenTelemetry

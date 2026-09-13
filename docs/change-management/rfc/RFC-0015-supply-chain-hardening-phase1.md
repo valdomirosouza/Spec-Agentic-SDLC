@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0015 — Supply-chain hardening (Phase 1): SHA-pin all actions + full SCA
 
 > **Status:** Implemented (verified shipped — audit 2026-06-16)

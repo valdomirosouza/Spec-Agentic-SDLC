@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Skill — Domain Modeling
 
 **Owner:** Tech Lead | **Reviewer:** Software Architect | **Status:** Active | **Last updated:** 2026-05-28

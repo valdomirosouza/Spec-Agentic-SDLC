@@ -1,3 +1,4 @@
+# adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md
 name: doc-check
 description: Documentation gate — ensures all documentation obligations are met before merge
 version: "1.0"

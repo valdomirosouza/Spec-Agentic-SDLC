@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart — Frontend (React / Next.js)
 
 > **Stack:** Node 22 · Next.js 15 · TypeScript · React Query · Tailwind CSS · OpenTelemetry Browser SDK

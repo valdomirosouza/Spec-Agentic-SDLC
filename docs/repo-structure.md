@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Repository Structure — Annotated Directory Tree
 
 > Auto-generated reference. If the actual tree diverges from this document, update

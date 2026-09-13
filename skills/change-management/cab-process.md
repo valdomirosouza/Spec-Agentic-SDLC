@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Skill — CAB Process (Change Advisory Board)
 
 **Owner:** Tech Lead | **Reviewer:** DevOps Lead | **Status:** Active | **Last updated:** 2026-05-28

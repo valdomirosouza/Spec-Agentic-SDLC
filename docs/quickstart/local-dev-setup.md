@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Local Development Environment Setup
 
 This guide covers prerequisites, IDE setup, the devcontainer option, and solutions to common setup errors. Read this before your language-specific quickstart guide.

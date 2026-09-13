@@ -15,6 +15,7 @@ related_specs: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # Spec: Database Encryption at Rest
 
 **ID:** SPEC-db-encryption-at-rest

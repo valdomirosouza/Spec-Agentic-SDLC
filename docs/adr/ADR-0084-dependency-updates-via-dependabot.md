@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0084 — Dependency & Digest Updates via Dependabot (supersedes ADR-0074)
 
 **Status:** Accepted

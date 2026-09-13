@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Traceability Matrix
 
 > **Owner:** Tech Lead · **Status:** Living document · **Last updated:** 2026-06-14

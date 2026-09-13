@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart — Java Backend
 
 > **Stack:** Java 21 · Spring Boot 3 · Spring Data JPA · Spring Kafka · Micrometer · OpenTelemetry Java Agent

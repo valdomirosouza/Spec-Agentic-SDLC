@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Specs — Spec-Driven Development
 
 All implementation in this repository is governed by a spec. No PR may be merged

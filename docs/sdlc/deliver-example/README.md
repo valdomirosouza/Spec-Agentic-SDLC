@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # `/deliver` — example dry-run output (SPEC-LGS-001)
 
 These files are an **illustrative, committed example** of what the [`/deliver`](../../../.claude/skills/deliver/SKILL.md)

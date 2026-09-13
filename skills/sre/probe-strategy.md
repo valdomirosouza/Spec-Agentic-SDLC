@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Skill: Kubernetes Probe Strategy
 
 > **Activation:** Any Helm chart edit, new K8s Deployment, health endpoint change, or probe-related SLO work  

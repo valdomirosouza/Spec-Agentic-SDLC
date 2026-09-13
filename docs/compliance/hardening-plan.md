@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Security & Resilience Hardening Plan
 
 > **Status:** Active · **Version:** 1.0 · **Last updated:** 2026-05-29

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0001 — Auto-merge must preserve long-lived integration branches
 
 > **Status:** Approved — implemented in PR #65 (merged to `main` as `03cea96`, 2026-06-07)

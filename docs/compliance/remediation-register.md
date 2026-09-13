@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Remediation Register
 
 > The single, prioritised backlog of control gaps surfaced by this compliance package and the

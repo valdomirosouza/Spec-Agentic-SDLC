@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Security Questionnaire Quick-Reference
 
 > Reusable, honest answers to the items that recur in enterprise security questionnaires

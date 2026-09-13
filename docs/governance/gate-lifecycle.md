@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Governance Gate Enforcement Lifecycle — Burn-in Log
 
 > **Status:** Active · **Governing ADR:** [ADR-0070](../adr/ADR-0070-governance-gate-enforcement-lifecycle.md) · **Owner:** Tech Lead + Security Lead

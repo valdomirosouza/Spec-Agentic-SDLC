@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ISO/IEC 27001:2022 Annex A — Control Matrix
 
 > Self-assessment of all **93 controls** across the four 2022 themes. Status taxonomy and scope

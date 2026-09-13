@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # AI Safety & Agent Governance Checklist
 
 > **Gate:** Phase 10 of the [Agentic Spec-Driven Delivery Workflow](../sdlc/agentic-spec-driven-delivery.md).

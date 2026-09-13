@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart: Log-Based Golden Signals
 
 **Spec**: `spec.md` | **Plan**: `plan.md` | **Phase**: 5 / Phase 1 design → executed at Phase 6 and 8

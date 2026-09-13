@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Delivery Plan — SPEC-LGS-001 Log-Based Golden Signals
 
 - **Mode:** `DRY-RUN` (governed simulation — no real side-effects; artefacts under `reports/<SLUG>/` only)

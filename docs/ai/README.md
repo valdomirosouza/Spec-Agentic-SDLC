@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # AI-Native Production Assets
 
 > **Owner:** AI Governance Lead | **Phase:** runtime (production AI quality)

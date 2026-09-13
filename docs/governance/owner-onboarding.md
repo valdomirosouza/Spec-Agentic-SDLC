@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Owner Onboarding — Assigning Real Code Owners
 
 > REM-009 · ISO 5.2 / 5.31 · SOC 2 CC5.2

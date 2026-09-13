@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Feature Specs
 
 > **Owner:** Tech Lead | **Phase:** 4 (Specification) → 6 (Development)

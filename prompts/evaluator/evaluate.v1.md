@@ -7,6 +7,7 @@ eval_dataset: tests/model_contract/
 supersedes: null
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 The prompt body is the verbatim contents of the fenced block below. The loader
 (`src/agents/prompts/loader.py`) returns exactly those bytes — the surrounding
 front-matter and prose are metadata only. The body is fenced so the repository's

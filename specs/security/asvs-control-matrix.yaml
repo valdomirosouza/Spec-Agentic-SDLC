@@ -1,3 +1,4 @@
+# adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md
 # OWASP ASVS 5.0.0 Control Matrix (ADR-0072)
 #
 # Maps pinned ASVS 5.0.0 requirements to the code that implements them, the tests/CI jobs that

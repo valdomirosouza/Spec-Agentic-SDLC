@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Discovery — FEAT-001 HTTP Golden Signals for the API Gateway
 
 > **Phase:** 2 (Discovery) · **Issue:** #357 · **Spec:** `specs/features/SPEC-FEAT-001-http-golden-signals/spec.md` (SPEC-FEAT-001)

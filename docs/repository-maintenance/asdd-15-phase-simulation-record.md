@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ASDD 15-Phase Delivery Simulation — Evidence Report
 
 > **Feature:** FEAT-SIM01 — Request Status Count Endpoint  

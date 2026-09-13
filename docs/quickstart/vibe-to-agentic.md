@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart — From Vibe Coding to Full Agentic
 
 > **Audience:** Engineers joining the team with a vibe-coding background — comfortable

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Orphan Files and Folders Analysis
 
 > **Type:** Report-only (no files moved or deleted by this document). **Issue:** #61

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0081 — RAG Reference Pipeline (Chunk → Embed → Retrieve → Rerank → Cite → Eval)
 
 **Status:** Accepted

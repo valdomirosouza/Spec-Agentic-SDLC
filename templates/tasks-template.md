@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Tasks: [FEATURE NAME]
 
 **Input**: `specs/features/[SPEC-ID]-[slug]/` — plan.md (required), spec.md (required), research.md, data-model.md, contracts/

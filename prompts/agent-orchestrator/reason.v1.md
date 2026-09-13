@@ -7,6 +7,7 @@ eval_dataset: tests/model_contract/
 supersedes: null
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 The prompt body is the verbatim contents of the fenced block below. It is the
 **static base** Reason-phase system prompt only. The orchestrator
 (`src/agents/orchestrator/orchestrator.py`) still appends the dynamic precedents

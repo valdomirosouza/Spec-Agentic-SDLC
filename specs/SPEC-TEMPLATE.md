@@ -19,6 +19,7 @@ related_specs: [] # e.g. [specs/privacy/, specs/security/threat-model.md]
 slo_ref: docs/sre/slo/slo.yaml # where this feature's SLOs are/were recorded
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # SPEC-XXX-000 — <Title>
 
 > **One-line scope.** <What this delivers, for whom, and the value — in one sentence.>

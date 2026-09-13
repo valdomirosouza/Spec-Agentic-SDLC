@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # NIST AI Risk Management Framework (AI RMF 1.0) Mapping
 
 **Owner:** AI Governance Lead | **Last reviewed:** 2026-05-24

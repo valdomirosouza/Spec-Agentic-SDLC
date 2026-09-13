@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # FINAL-REPORT — SPEC-FEAT-001 HTTP Golden Signals for the API Gateway
 
 ## 0. Run header

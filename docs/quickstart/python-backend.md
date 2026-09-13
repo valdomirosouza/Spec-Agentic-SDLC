@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart — Python Backend
 
 > **Stack:** Python 3.13 · FastAPI · asyncpg · aiokafka · OpenTelemetry · Anthropic SDK

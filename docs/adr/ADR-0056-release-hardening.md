@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0056 — Release Hardening: CAB-Gated Deploy, DORA Lead-Time Provenance & Artifact Integrity Verification
 
 **Status:** Accepted

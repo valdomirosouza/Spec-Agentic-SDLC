@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Deploy to Production
 
 This guide walks through the complete production deployment flow — from pre-flight checks through

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0010 — Publish release images to GHCR via the built-in GITHUB_TOKEN
 
 > **Status:** Implemented (verified shipped — audit 2026-06-16)

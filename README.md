@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Spec-Agentic-SDLC
 
 > The documentation, governance and agent-operating layer of an enterprise Agentic

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0045: GenAI Semantic Conventions for LLM Instrumentation
 
 | Field       | Value             |

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RB-SRE-004 — Canary Probe Validation & Rollback
 
 > **Spec:** specs/k8s/probe-strategy.md §6  

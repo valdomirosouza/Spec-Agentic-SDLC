@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Customising This Template
 
 This guide walks you through adopting this repository as the foundation for a new project.

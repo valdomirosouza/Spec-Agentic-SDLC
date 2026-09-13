@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Database Migrations Guide
 
 > **Owner:** Tech Lead | **Status:** Living guide

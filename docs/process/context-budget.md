@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Per-Phase Context Budget
 
 > **Status:** Active | **Owner:** Tech Lead | **ADR:** ADR-0058 (lifecycle), ADR-0060 (ambient

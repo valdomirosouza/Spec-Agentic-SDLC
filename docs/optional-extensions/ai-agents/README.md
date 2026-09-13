@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # AI Agents Module — Optional Extension
 
 > **Status:** Opt-in. This module is **not enabled by default.** Nothing in this directory

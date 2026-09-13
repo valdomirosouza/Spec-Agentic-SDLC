@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Runbook: Database Encryption Key Rotation
 
 **Topic:** Rotating `DB_ENCRYPTION_KEY` without downtime

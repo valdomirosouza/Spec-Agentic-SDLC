@@ -1,3 +1,4 @@
+# adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md
 name: release-check
 description: Release gate — all gates must pass before a production release is cut
 version: "1.0"

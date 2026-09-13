@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # How-to: Deliver a spec with `/deliver`
 
 > **Audience:** anyone driving a feature through the repo's lifecycle.

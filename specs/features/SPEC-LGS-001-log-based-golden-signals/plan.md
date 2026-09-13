@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Implementation Plan: Log-Based Golden Signals
 
 **Spec**: `specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md` | **Branch**: `feature/SPEC-LGS-001-log-based-golden-signals` | **Date**: 2026-09-12

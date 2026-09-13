@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Agent Onboarding — How Claude Code Starts a Session
 
 **Audience:** Engineers who deploy or supervise Claude Code sessions

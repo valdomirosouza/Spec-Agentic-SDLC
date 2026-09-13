@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # System Architecture
 
 **Owner:** Tech Lead | **Last updated:** 2026-05-28

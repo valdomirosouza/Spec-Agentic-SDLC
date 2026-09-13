@@ -16,6 +16,7 @@ related_specs: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # Spec — Long-Running Agent Session Durability
 
 **Status:** Approved | **Owner:** Tech Lead | **Last updated:** 2026-06-05

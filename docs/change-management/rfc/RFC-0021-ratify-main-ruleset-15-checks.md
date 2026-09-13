@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0021 — Ratify the enforced `main` ruleset (15 required checks) and reconcile RFC-0013/0014
 
 > **Status:** Implemented (source-of-truth; live apply via `scripts/governance/apply_branch_protection.sh` — admin step)

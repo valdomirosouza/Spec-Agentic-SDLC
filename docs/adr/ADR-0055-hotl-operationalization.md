@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0055 — HOTL Operationalization: Monitor, Override Window, Compensation & Reversibility Metadata
 
 **Status:** Accepted

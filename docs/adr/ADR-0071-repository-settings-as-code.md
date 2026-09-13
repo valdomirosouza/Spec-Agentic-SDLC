@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0071 — Repository Settings as Code (branch protection codified + drift-checked)
 
 **Status:** Accepted

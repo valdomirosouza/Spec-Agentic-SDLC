@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # NFR Taxonomy — Consolidated Reference Standard
 
 > **Owner:** Product Owner + Tech Lead | **Phase:** 2 (Discovery) · 4 (Specification)

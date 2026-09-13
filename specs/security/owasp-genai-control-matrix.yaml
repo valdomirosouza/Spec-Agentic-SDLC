@@ -1,3 +1,4 @@
+# adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md
 # OWASP Top 10 for LLM Applications (2025) Control Matrix (ADR-0072)
 #
 # Maps the pinned 2025 GenAI/LLM risk taxonomy to the code that defends each risk, the tests/CI

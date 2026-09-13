@@ -27,6 +27,7 @@ verified_by: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # SPEC-AI-010 — RAG reference pipeline
 
 > **One-line scope.** A single governed, **opt-in reference pattern** for retrieval-augmented

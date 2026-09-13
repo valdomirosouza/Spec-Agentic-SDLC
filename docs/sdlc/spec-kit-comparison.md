@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Spec-Agentic-SDLC × github/spec-kit — comparison and adopted improvements
 
 > **Compared on:** 2026-09-12 · spec-kit at commit `d848fb4` (2026-09-11, v1.0.x) ·

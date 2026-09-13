@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Data Model Catalog
 
 > **Owner:** Tech Lead (with DPO for classification) | **Status:** Living reference

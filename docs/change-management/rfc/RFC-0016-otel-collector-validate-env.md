@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0016 — Fix OTel Collector config validation (inject placeholder envs)
 
 > **Status:** Implemented (verified shipped — audit 2026-06-16)

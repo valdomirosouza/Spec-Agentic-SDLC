@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Worked Walkthrough — one feature, end to end (SPEC-LGS-001)
 
 > **This is the canonical worked example** of the 15-phase Agentic Spec-Driven Delivery

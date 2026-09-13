@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0058 — Agentic Spec-Driven Delivery Workflow (naming, Phase 0 Intake, AI Safety phase)
 
 **Status:** Accepted

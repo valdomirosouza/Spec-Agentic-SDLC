@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0053 — Runtime Correctness: HITL Suspend/Resume, Graduated Autonomy, Mandatory Policy & Tool-Registry Enforcement
 
 **Status:** Accepted

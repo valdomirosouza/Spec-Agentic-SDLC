@@ -30,6 +30,7 @@ verified_by:
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # SPEC-API-004 — Read-only run-trace and SLO-status endpoints
 
 > **One-line scope.** Two authenticated, read-only GET endpoints — a per-request execution

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0012 — Single CHANGELOG owner: release-please (retire the manual [Unreleased] gate)
 
 > **Status:** Implemented (verified shipped — audit 2026-06-16)

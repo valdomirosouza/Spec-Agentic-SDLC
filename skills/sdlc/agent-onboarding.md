@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Skill — Agent Onboarding Protocol
 
 **Owner:** Tech Lead | **Status:** Active | **Last updated:** 2026-06-05

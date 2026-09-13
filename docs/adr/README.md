@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Architecture Decision Records (ADRs)
 
 ADRs capture significant architectural decisions made during the evolution of this system.

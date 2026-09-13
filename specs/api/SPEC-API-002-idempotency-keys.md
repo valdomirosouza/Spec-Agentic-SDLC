@@ -26,6 +26,7 @@ verified_by: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # SPEC-API-002 — Idempotency keys for POST endpoints
 
 > **One-line scope.** Let clients safely retry `POST /v1/requests` by sending an `Idempotency-Key`;

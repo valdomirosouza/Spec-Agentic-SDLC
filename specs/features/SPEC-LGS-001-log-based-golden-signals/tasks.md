@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Tasks: Log-Based Golden Signals
 
 **Input**: `specs/features/SPEC-LGS-001-log-based-golden-signals/` — plan.md (required), spec.md (required), research.md, data-model.md, contracts/

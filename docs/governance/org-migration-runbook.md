@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Org Migration Runbook (Phase 3 — RFC-0018)
 
 > Moves `Repository-Template-v2` from a personal namespace into a GitHub **org** so CODEOWNERS

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RBAC Matrix
 
 > **Owner:** Security Lead + Tech Lead · **Status:** Living standard · **Last updated:** 2026-06-14

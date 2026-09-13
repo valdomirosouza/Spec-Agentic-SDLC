@@ -12,6 +12,7 @@ related_specs: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # Spec TT-001: Team Topology Document
 
 **Spec ID:** TT-001

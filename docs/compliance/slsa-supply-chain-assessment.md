@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # SLSA v1.0 — Supply-Chain Assessment
 
 > Assesses the build/release pipeline against **SLSA v1.0** (Build track, L0–L3). The repo's

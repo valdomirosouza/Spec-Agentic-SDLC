@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Quickstart — Go Backend
 
 > **Stack:** Go 1.24 · net/http (or chi) · pgx · confluent-kafka-go · OpenTelemetry Go SDK

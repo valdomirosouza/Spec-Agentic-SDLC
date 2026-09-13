@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0076 — Structured API Error Model and Request Correlation (X-Request-ID)
 
 **Status:** Accepted

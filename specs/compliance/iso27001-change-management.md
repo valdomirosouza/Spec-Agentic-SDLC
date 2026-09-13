@@ -15,6 +15,7 @@ related_specs: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # ISO 27001 A.12.1 Change Management — Specification
 
 **ID:** SPEC-iso27001-change-management

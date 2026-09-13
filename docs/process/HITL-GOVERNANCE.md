@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # HITL Governance — Two-Tier Architecture
 
 > **Version:** 1.0.0 | **Last updated:** 2026-06-06

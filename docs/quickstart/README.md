@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Developer Quickstart Guides
 
 This directory contains role-specific onboarding guides for every developer persona

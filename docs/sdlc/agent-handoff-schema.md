@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Delivery Agent Handoff Schema
 
 > **Version:** 1.0.0 | **ADR:** ADR-0058 | **Spec:** `docs/sdlc/agentic-spec-driven-delivery.md`

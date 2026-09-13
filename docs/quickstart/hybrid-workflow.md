@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Hybrid Workflow: Vibe → Agêntico
 
 > **Audience:** Engineers onboarding to the multi-agent harness  

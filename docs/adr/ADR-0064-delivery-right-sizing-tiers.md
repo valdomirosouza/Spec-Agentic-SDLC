@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0064 — Delivery Right-Sizing / Phase Applicability Tiers + Auto-Escalation Safety Valve
 
 **Status:** Accepted

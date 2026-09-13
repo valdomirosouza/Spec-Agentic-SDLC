@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # ADR-0052 — Agentic SDLC E2E Workflow
 
 **Status:** Accepted (extended by ADR-0058)

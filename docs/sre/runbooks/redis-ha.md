@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Runbook: Redis High Availability (Sentinel)
 
 **Topic:** Redis HA activation and failover procedure

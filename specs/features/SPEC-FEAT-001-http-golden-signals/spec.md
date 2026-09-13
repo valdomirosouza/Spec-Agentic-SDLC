@@ -19,6 +19,7 @@ related_specs:
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # Feature Spec: HTTP Golden Signals for the API Gateway
 
 > **⚡ Agent-Generated:** drafted by Claude Code on 2026-09-12 (Wave 12 · W12-T4, Wave 13 · W13-T7).

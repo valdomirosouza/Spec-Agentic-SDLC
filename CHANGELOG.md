@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Changelog
 
 All notable changes to the Spec-Agentic-SDLC corpus are documented here. The format follows
@@ -11,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/adopter_paths.py` (check / inventory / mark) and the generated
+  `docs/reference/adopter-provided-paths.md`; every file naming an adopter-provided path now
+  carries the `adopter-paths` marker, enforced as `check-corpus.sh` C7 (#14).
 - `tests/scripts/test_scripts.sh`: 43 behavioural tests of the bash scripts (numbering, slugs,
   feature resolution, approval gate, plan setup, tasks-to-issues), run by `check-corpus.sh` (#13).
 - `.github/workflows/corpus-check.yml` (check-corpus.sh, markdownlint-cli2, guard self-test on

@@ -36,6 +36,7 @@ verified_by: []
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # SPEC-LGS-001 — Log-Based Golden Signals
 
 > **One-line scope.** A governed, containerised pipeline that ingests HAProxy

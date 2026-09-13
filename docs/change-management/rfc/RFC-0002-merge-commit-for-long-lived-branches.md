@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # RFC-0002 — Merge commits (not squash) for long-lived integration branches
 
 > **Status:** Approved — implemented in PR #68 (merged to `main`, 2026-06-07)

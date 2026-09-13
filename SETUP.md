@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Adopting the corpus
 
 > This repository is a documentation, governance and agent-operating corpus. It ships no
@@ -50,7 +52,8 @@ commands are referenced throughout `docs/`, `specs/`, `skills/` and `CLAUDE.md` 
 | `.env.example`, `.github/CODEOWNERS`              | your secrets template and ownership map                  | `CLAUDE.md` §8 lists the roles CODEOWNERS should encode              |
 
 `CLAUDE_SESSION_INIT.md` carries the same split so every agent session knows which side a path
-belongs to.
+belongs to, and `docs/reference/adopter-provided-paths.md` is the generated inventory of every
+file that names one (each such file carries an `adopter-paths` marker; `check-corpus.sh` C7).
 
 ## 3. Wire the Claude Code layer
 

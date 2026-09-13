@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Branch Protection as Code
 
 > **Status:** Active · **Governing ADR:** [ADR-0071](../adr/ADR-0071-repository-settings-as-code.md) · **Owner:** DevOps Lead + Tech Lead

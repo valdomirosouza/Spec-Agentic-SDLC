@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # API Error Model
 
 > **Owner:** Platform / Tech Lead | **Scope:** synchronous REST error responses

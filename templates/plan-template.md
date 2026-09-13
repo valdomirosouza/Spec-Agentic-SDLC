@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Implementation Plan: [FEATURE]
 
 **Spec**: `specs/features/[SPEC-ID]-[slug]/spec.md` | **Branch**: `feature/[SPEC-ID]-[slug]` | **Date**: [DATE]

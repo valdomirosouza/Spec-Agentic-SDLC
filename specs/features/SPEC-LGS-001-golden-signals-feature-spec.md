@@ -20,6 +20,7 @@ superseded_by: specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md
 last_updated: 2026-09-12
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 > **Superseded (2026-09-12).** This flat file was split into the feature bundle
 > `specs/features/SPEC-LGS-001-log-based-golden-signals/` (spec.md, plan.md, tasks.md, research,
 > data-model, contracts, quickstart, checklists) per ADR-0090. Its stack-level content now lives
