@@ -69,8 +69,15 @@ agent actually sent.
 New `docs/process/gates/phase-gates.yaml` (schema `phase_gates_v1`) projects all 13
 phases into structured records: `required_artifacts`, `required_approvals`,
 `ci_checks`, `blocking`, `allowed_agent_actions`, `prohibited_agent_actions`, and
-`exit_criteria`. `docs/process/WORKFLOW.md` remains the source of truth; the YAML is
-its projection and must be kept in sync. Default-deny: an action not listed in
+`exit_criteria`.
+
+> **Amended 2026-09-13 (ADR-0095 §2, issue #48).** This paragraph originally read "`WORKFLOW.md`
+> remains the source of truth; the YAML is its projection", which ADR-0064 later contradicted by
+> making `phase-gates.yaml` the single source of truth. Two binding ADRs assigned authority to
+> opposite artefacts for the same data. Resolved: **`phase-gates.yaml` is the arbiter for the gate
+> data** (which phases block, required artefacts and approvals, what a tier skips);
+> **`WORKFLOW.md` is the normative narrative** (why a phase exists, what it means). Neither is a
+> projection of the other; they answer different questions about the same phases. Default-deny: an action not listed in
 `allowed_agent_actions` is treated as prohibited.
 
 ### 3. Feature-level state manifests (P1-7)

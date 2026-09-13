@@ -152,7 +152,8 @@ drops a phase it has re-acquired. The `TIER_ESCALATION` line records
 
 - No phase gate, guardrail, approval, or SDD invariant is weakened or removed; this ADR only
   declares _when a process phase may be down-scoped_, never _whether a control may be skipped_.
-- `phase-gates.yaml` remains the single source of truth; `WORKFLOW.md` and
+- `phase-gates.yaml` is the arbiter for the gate **data**; `WORKFLOW.md` is the normative
+  narrative (ADR-0095 §2 settles the authority question this line and ADR-0054 disagreed on). `WORKFLOW.md` and
   `applicability-matrix.yml` are kept in sync with it.
 
 ## Alternatives Considered

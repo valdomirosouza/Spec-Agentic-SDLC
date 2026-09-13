@@ -2,9 +2,14 @@
 # Machine-readable phase gate contracts for the 15-phase (0–14) Agentic
 # Spec-Driven Delivery lifecycle.
 #
-# Purpose: let agents enforce phase gates programmatically instead of parsing
-# Markdown. The human-readable source of truth is docs/process/WORKFLOW.md; this
-# file is its machine-readable projection and MUST be kept in sync.
+# Purpose: let agents enforce phase gates programmatically instead of parsing Markdown.
+#
+# AUTHORITY (ADR-0095 §2, resolving the ADR-0054 / ADR-0064 conflict). This file is the arbiter
+# for the gate DATA — which phases block, what artefacts and approvals each needs, what a tier
+# skips. docs/process/WORKFLOW.md is the normative NARRATIVE: why each phase exists and what it
+# means. Where the two disagree about a fact, this file wins and WORKFLOW.md is corrected; where
+# they disagree about intent, WORKFLOW.md wins and this file is corrected. Two ADRs previously
+# assigned authority to opposite artefacts for the same data.
 #
 # Spec:  Agentic-SDLC-Repository-Improvement-Directive.md §9
 # ADR:   ADR-0052 (E2E workflow), ADR-0058 (Phase 0 Intake + AI Safety phase),
