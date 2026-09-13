@@ -5,7 +5,7 @@
 > **Status:** Active · **Version:** 1.0 · **Approved:** 2026-09-13
 > **Owner:** Tech Lead · **Co-owner:** DPO
 > **Related:** `docs/data/data-catalog.md` (#31) · `docs/data/business-glossary.md` (#31) ·
-> `specs/data/data-quality.md` (#29) · `specs/data/data-contracts.md` (#30) ·
+> [`../../specs/data/data-quality.md`](../../specs/data/data-quality.md) · `specs/data/data-contracts.md` (#30) ·
 > [`../../memory/constitution.md`](../../memory/constitution.md) Art. III and VII
 
 ## 1. Why this charter exists
@@ -92,7 +92,7 @@ custodian by role. A dataset with an unnamed owner is a finding, not a gap to to
 1. **Declare** it in `docs/data/data-catalog.md` (#31) with owner, steward, custodian, classification and purpose.
 2. **Define** its terms in `docs/data/business-glossary.md` (#31) if it introduces business meaning.
 3. **Contract** it if anyone outside the producing domain reads it.
-4. **Measure** it: at least one quality rule per declared expectation.
+4. **Measure** it: at least one quality rule per declared expectation ([`../../specs/data/data-quality.md`](../../specs/data/data-quality.md)).
 5. **Trace** it: lineage from source to consumption, so impact analysis and data-subject requests
    can be answered.
 6. **Datasheet** it if it will ever feed or evaluate a model.
@@ -115,7 +115,7 @@ quarterly note. **An expired exception is a violation**, not a renewal by defaul
 | DPIA current at release             | `dpia-ripd-current` in `harness/release-check.yml` (blocking)                |
 | Schema compatibility                | Contract-drift gate                                                          |
 | Owner, steward, custodian named     | **Review only** — no automated check yet                                     |
-| Quality rules measured              | **Review only** — arrives with `specs/data/data-quality.md` (#29)            |
+| Quality rules measured              | **Review only** — rules defined in `specs/data/data-quality.md`, run by the adopter |
 | Datasheet before a model uses data  | **Review only** — Phase 10 checklist item                                    |
 
 The last three rows are honest gaps, not oversights: they are review-enforced today and named as

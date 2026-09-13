@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/data/data-quality.md` — the six dimensions with one operational definition each, the rule
+  shape, severity and response, data SLOs in the same form as the service SLOs, observability with
+  masked violation samples, the five points where quality is checked, and data incidents with a
+  rule ratchet (#29).
 - `docs/data/data-governance-charter.md` — scope, seven principles, the data owner / steward /
   custodian split, the data governance council with decision rights and two vetoes, the path a
   dataset takes to become governed, time-boxed exceptions, and an honest table of what is enforced

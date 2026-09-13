@@ -83,7 +83,7 @@ controls:
       - planned:#33:templates/datasheet-template.md
       - planned:#28:docs/data/data-governance-charter.md
     verified_by:
-      - planned:#29:specs/data/data-quality.md
+      - specs/data/data-quality.md
       - planned:#31:docs/data/data-catalog.md
     gate: ["Phase 2 — Discovery", "Phase 10 — AI Safety & Agent Governance"]
     owner: DPO
