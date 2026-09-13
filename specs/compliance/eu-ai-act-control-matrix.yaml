@@ -80,7 +80,7 @@ controls:
     applies_from: "2027-12-02"
     implemented_by:
       - planned:#34:specs/privacy/training-data-governance.md
-      - planned:#33:templates/datasheet-template.md
+      - templates/datasheet-template.md
       - planned:#28:docs/data/data-governance-charter.md
     verified_by:
       - specs/data/data-quality.md

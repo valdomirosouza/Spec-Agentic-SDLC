@@ -42,7 +42,7 @@ organisation replaces them and keeps the columns. Roles are named by role, not b
 | `requests`             | platform domain  | platform eng.  | SRE       | L2     | `internal`    | none declared  | no                                 |
 | `audit_events`         | platform domain  | platform eng.  | SRE       | L3     | `internal`    | none declared  | no — immutable evidence            |
 | `hitl_requests_archive`| AI platform      | AI platform eng. | SRE     | L2     | `internal`    | none declared  | no                                 |
-| `agent_memory_documents` | AI platform    | AI platform eng. | SRE     | L2     | `internal`    | none declared  | **yes** — datasheet required (#33) |
+| `agent_memory_documents` | AI platform    | AI platform eng. | SRE     | L2     | `internal`    | none declared  | **not cleared** — [datasheet](datasheets/agent-memory-documents.md) is `draft` |
 | `agent_context_graphs` | AI platform      | AI platform eng. | SRE     | L3     | `internal`    | none declared  | no                                 |
 | `domain.request.created` | platform domain | platform eng. | SRE       | L2     | **required**  | none declared  | no                                 |
 | `agent.action.approved` | AI platform     | AI platform eng. | SRE     | L2     | **required**  | none declared  | no                                 |
@@ -57,8 +57,9 @@ Three things, stated plainly rather than left to be inferred:
    one in; it is open item 1 of that spec.
 2. **Two event topics need contracts and do not have them.** They cross a domain boundary, so
    §7 of the contracts spec requires one. Until then they are a known exception, not an oversight.
-3. **One dataset feeds a model.** `agent_memory_documents` is the retrieval and memory corpus, and
-   under EU AI Act `ART-10` it may not do so without a datasheet. That datasheet is #33.
+3. **One dataset would feed a model and is not cleared to.** `agent_memory_documents` is the
+   retrieval and memory corpus; its [datasheet](datasheets/agent-memory-documents.md) is `draft`
+   with six unresolved rows, so under EU AI Act `ART-10` it is not cleared for model use.
 
 ## Adding a dataset
 
