@@ -2,6 +2,10 @@
 
 # Canonical Glossary
 
+> **Technical and governance vocabulary.** For the *business* meaning of the things the system
+> reasons about — request, approval, agent action, serious incident — see
+> [`data/business-glossary.md`](data/business-glossary.md).
+
 All terms used in this repository are defined here. When a term is ambiguous,
 this glossary definition takes precedence over any other source.
 

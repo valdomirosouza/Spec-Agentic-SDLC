@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/data/business-glossary.md` (business meaning, separate from the technical glossary, with a
+  "not to be confused with" field on every term) and `docs/data/data-catalog.md` (governance index:
+  owner, steward, custodian, classification, contract, quality, model use) (#31).
 - `specs/data/data-contracts.md` and `templates/data-contract-template.md` — the contract around
   the schema (parties, semantics, classification, quality, service level, lifecycle, lineage), the
   five-step breaking-change process with a minimum coexistence window, and the rule that an agent
