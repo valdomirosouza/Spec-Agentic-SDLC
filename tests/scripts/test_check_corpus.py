@@ -142,7 +142,7 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("scripts/bash/vcs.sh",
                      'refuse() {\n    echo "REFUSED: $1" >&2',
                      'refuse() {\n    return 0\n    echo "REFUSED: $1" >&2'),
-            "refusal list")
+            "refuses merge, release, deploy, push")
 
     def test_a_productivity_ratio_is_caught_in_every_form(self):
         """R5-T3. The repaired regex caught only `N× faster` and lost the divided form the

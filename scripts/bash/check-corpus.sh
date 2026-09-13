@@ -192,9 +192,11 @@ grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q '
 # The coverage floor is one number in one place. A bare number in a normative text is how it
 # came to be stated three ways (80 in the constitution, 85 in ADR-0022, 75 as the escalation
 # trigger, with nothing reconciling them).
-# Any bare percentage near the word coverage, in either order. The previous pattern required
-# "coverage" first and missed both "unit >= 80% coverage" and a hardcoded "85%".
-cov_bad=$(grep -nEi '(coverage[^.]{0,30}(7[0-9]|8[0-9]|9[0-9])%|(7[0-9]|8[0-9]|9[0-9])% *coverage)' memory/constitution.md CLAUDE.md 2>/dev/null | grep -viE 'ADR-0022|declared floor' || true)
+# A bare percentage anywhere near the word coverage, in either order. The exclusion may not be
+# line-wide: exempting any line that mentions ADR-0022 exempted `Coverage MUST be 80% per
+# ADR-0022.`, and citing the ADR is exactly what a restated number would do (R5-T3).
+cov_bad=$(grep -nEi '(coverage[^.]{0,30}(7[0-9]|8[0-9]|9[0-9])%|(7[0-9]|8[0-9]|9[0-9])% *coverage)' memory/constitution.md CLAUDE.md 2>/dev/null \
+    | grep -viE 'ratcheted from|floor declared in ADR-0022 before merge \(' || true)
 [ -z "$cov_bad" ] && result "constitution and CLAUDE.md reference the floor, not a bare number" ok || result "constitution and CLAUDE.md reference the floor, not a bare number" fail "$cov_bad"
 cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testing-strategy.md | grep -oE '[0-9]{2}%' | sort -u)
 [ "$(printf '%s' "$cov_n" | wc -w | tr -d ' ')" = 1 ] && result "ADR-0022 declares exactly one floor" ok "$cov_n" || result "ADR-0022 declares exactly one floor" fail "found: ${cov_n:-none}"
@@ -203,13 +205,15 @@ cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testin
 # instruction that produced it was removed, because fixing only the output regenerates it.
 # Narrow on purpose: this targets a DELIVERY-THROUGHPUT ratio (agent vs human), not a technical
 # benchmark. "uv is 10-100x faster than pip" is a tool comparison and stays.
-# Matches the form the claim actually took ("≈160× faster") as well as the labelled variants.
-# Narrow to DELIVERY throughput: a tool benchmark ("uv is 10-100x faster than pip") is a different
-# claim and stays. The previous regex required the literal "speedup ratio" and so matched nothing.
-# -n not -o: with -o the exclusion filter below only sees the matched fragment, never the words
-# around it, so "withdrawn" on the same line could not exempt the line. Same class of defect as
-# the regex this replaced.
-ratio_bad=$(grep -rniE '(≈|~|about )?[0-9]+(\.[0-9]+)?\s*(×|x)\s*(faster|quicker|speedup)|speedup ratio[^|]*[0-9]+(\.[0-9]+)?\s*(×|x)' --include='*.md' . 2>/dev/null | grep -v '^\./\.git/' | grep -viE 'withdrawn|no speedup|not a ratio|forbids|would require|than pip|benchmark' || true)
+# Every form the claim can take. The round-4 repair caught only `N× faster` and silently dropped
+# the divided form the version before it caught, so a regression shipped inside a fix (R5-T3).
+# Forms proven by tests/scripts/test_check_corpus.py:
+#   160× faster · 160 times faster · speedup ratio: 160 · human-equiv 320h ÷ agent 2h = 160×
+# Exclusion is deliberately narrow: only a line that says the claim is withdrawn or hypothetical.
+# The previous filter dropped any line containing "benchmark", so one word bought an exemption.
+ratio_bad=$(grep -rniE '([0-9]+(\.[0-9]+)?\s*(×|x)\s*(faster|quicker|speedup))|([0-9]+(\.[0-9]+)?\s*times\s+(faster|quicker))|(speedup ratio[^|]{0,40}[0-9])|(human.equiv[^|]{0,60}÷)|(÷\s*agent wall.clock)' --include='*.md' . 2>/dev/null \
+    | grep -v '^\./\.git/' \
+    | grep -viE 'withdrawn|no speedup ratio|not a ratio|would require|forbids|hypothetical|than pip' || true)
 [ -z "$ratio_bad" ] && result "no unqualified speedup ratio is published" ok || { result "no unqualified speedup ratio is published" fail "$(printf '%s' "$ratio_bad" | head -3)"; }
 # `python` is not on PATH on macOS or a stock Debian/Ubuntu. The agents shipped 20 invocations of
 # it, so the delivery layer could not start (R4-T1). Only `python3` is portable here.
@@ -231,10 +235,20 @@ if [ "$n_human" = 9 ] && [ "$n_block" = 13 ]; then
 else
     result "gates: 13 blocking, 9 requiring a human" fail "found $n_block blocking and $n_human human — update the docs that state these numbers, then this assertion"
 fi
-nref=$(grep -c 'refuse "' scripts/bash/vcs.sh 2>/dev/null || echo 0)
-[ "${nref:-0}" -ge 5 ] && grep -q 'gh pr merge' scripts/bash/vcs.sh \
-    && result "vcs.sh keeps its refusal list (merge, release, deploy, push, protected branch)" ok "$nref refusals" \
-    || result "vcs.sh keeps its refusal list" fail "only ${nref:-0} refusals"
+# Behaviour, not word count. Counting occurrences of `refuse "` passed with every refusal
+# neutralised to a no-op, leaving the one script that touches git guarded by a grep (R5-T2).
+vcs_bad=""
+for verb in "pr merge 1" "release create v1" "deploy staging x" "push origin main" "branch create main"; do
+    # shellcheck disable=SC2086
+    if bash scripts/bash/vcs.sh --dry-run $verb >/dev/null 2>&1; then
+        vcs_bad="$vcs_bad [$verb exited 0]"
+    else
+        rc=$?; [ "$rc" = 3 ] || vcs_bad="$vcs_bad [$verb exited $rc, expected 3]"
+    fi
+done
+[ -z "$vcs_bad" ] \
+    && result "vcs.sh refuses merge, release, deploy, push and protected branches" ok "5 verbs, exit 3 each" \
+    || result "vcs.sh refuses merge, release, deploy, push and protected branches" fail "$vcs_bad"
 grep -qE '"(git|gh)"' scripts/python/asdd_state.py \
     && result "asdd_state.py runs no git or gh" fail \
     || result "asdd_state.py runs no git or gh" ok
