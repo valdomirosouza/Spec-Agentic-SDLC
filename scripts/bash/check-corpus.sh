@@ -172,7 +172,7 @@ gitcmd=$(grep -nE 'git (push|merge|commit|rebase|reset|switch)' scripts/bash/*.s
 # Exactly one named exception: vcs.sh may create a LOCAL feature branch, which has no outward
 # effect, and only behind the protected-name guard. Any other script doing it is a regression.
 ckout=$(grep -nE '(^|;|&&|\||\bthen |\bdo |run )[[:space:]]*git checkout' scripts/bash/*.sh | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#' | grep -vE 'echo|printf' | grep -vE 'scripts/bash/(vcs|check-corpus)\.sh' | cut -d: -f1 | sort -u || true)
-if [ -z "$ckout" ] && grep -q 'guard_branch_name "$name"' scripts/bash/vcs.sh; then result "only vcs.sh creates a branch, and only behind the protected-name guard" ok; else result "only vcs.sh creates a branch, behind the guard" fail "${ckout:-guard missing in vcs.sh}"; fi
+if [ -z "$ckout" ] && grep -q 'guard_branch_name "$name"' scripts/bash/vcs.sh; then result "only vcs.sh creates a branch, and only behind the protected-name guard" ok; else result "only vcs.sh creates a branch, and only behind the protected-name guard" fail "${ckout:-guard missing in vcs.sh}"; fi
 art_missing=""
 for a in "I. Specification First" "II. Test-Backed Change" "III. Privacy by Design" "IV. Security Gates Are Not Optional" "V. Human Oversight of Agents" "VI. Observability Is Part of Done" "VII. Traceability and Auditability" "VIII. Simplicity and No Gold-Plating" "IX. Grounding and Non-Fabrication"; do
     grep -q "^### $a" memory/constitution.md || art_missing="$art_missing [$a]"
@@ -188,7 +188,7 @@ ok=any('high-risk-action-guard.py' in h.get('command','') and h.get('type')=='co
 sys.exit(0 if ok else 1)
 PY2
 grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
-    && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved" fail
+    && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved (approved|implemented only)" fail
 # The coverage floor is one number in one place. A bare number in a normative text is how it
 # came to be stated three ways (80 in the constitution, 85 in ADR-0022, 75 as the escalation
 # trigger, with nothing reconciling them).
@@ -353,6 +353,17 @@ if out=$(python3 scripts/python/check_changelog.py --quiet 2>&1); then
                   || result "changed scripts and contracts are recorded in the changelog" ok
 else
     result "changed scripts and contracts are recorded in the changelog" fail
+    printf '%s\n' "$out" | head -8 | sed 's/^/      /'
+fi
+
+# Structural vacuity. Neutering a check — replacing its two-branch construct with an unconditional
+# pass — keeps the name, so the coverage ratchet, which guards names, approves it. Proved by doing
+# exactly that: the verifier printed `✓ bash -n — neutered` and stayed green (R8-T1). A name that
+# can only print ok cannot fail the build, whatever it claims to inspect. Costs no runtime.
+if out=$(python3 scripts/python/mutation_coverage.py --vacuity --quiet 2>&1); then
+    result "every named check has a failing path" ok
+else
+    result "every named check has a failing path" fail
     printf '%s\n' "$out" | head -8 | sed 's/^/      /'
 fi
 

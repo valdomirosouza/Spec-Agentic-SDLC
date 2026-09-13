@@ -216,6 +216,16 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("CHANGELOG.md", "> **Next version:** 2.0.0", "> Next release: soon"),
             "declares the next version")
 
+    def test_neutering_a_check_into_an_unconditional_pass_is_caught(self):
+        """R8-T1. Replacing a check's two-branch construct with a bare `ok` keeps its name, so the
+        coverage ratchet approved it: the verifier printed `bash -n — neutered` and stayed green.
+        Two thirds of the checks could be turned into no-ops that way."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/check-corpus.sh",
+                     r'\n[^\n]*result "bash -n"[^\n]*\n', '\nresult "bash -n" ok "neutered"\n',
+                     regex=True),
+            "every named check has a failing path")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

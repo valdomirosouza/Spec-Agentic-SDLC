@@ -34,6 +34,8 @@ HARNESS = os.path.join(ROOT, "tests", "scripts", "test_check_corpus.py")
 BASELINE = os.path.join(ROOT, "tests", ".mutation-coverage-baseline.json")
 
 _RESULT = re.compile(r'\bresult\s+"([^"]+)"')
+# The status token that follows the name. `;` may be glued on by `{ result X fail; ... }`.
+_RESULT_STATUS = re.compile(r'\bresult\s+"([^"]+)"\s+(ok|note|fail)\b')
 
 
 def named_checks():
@@ -63,6 +65,41 @@ def proved_names():
         if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
             out.append(arg.value)
     return sorted(set(out))
+
+
+def call_sites():
+    """Every check name mapped to the set of statuses it can print."""
+    with open(VERIFIER, encoding="utf-8") as fh:
+        text = fh.read()
+    sites = {}
+    for name, status in _RESULT_STATUS.findall(text):
+        sites.setdefault(name, set()).add(status)
+    # A name whose status is not a literal token cannot be classified here; say so rather than
+    # counting it as fine.
+    for name in _RESULT.findall(text):
+        sites.setdefault(name, set())
+    return sites
+
+
+def vacuity_problems():
+    """A check name that can only ever print `ok` is vacuous by construction.
+
+    Neutering a check — replacing its two-branch construct with an unconditional pass — keeps the
+    name, so the coverage ratchet, which guards names, approves it. Proved by doing exactly that:
+    the verifier printed `✓ bash -n — neutered` and the build stayed green (R8-T1).
+
+    What this does NOT catch, stated here so it does not become a later round's finding: a
+    condition that is always true. `if true; then result X ok; else result X fail; fi` has both
+    sites and is just as vacuous. Mutation coverage is the deeper guard; this is the cheap one,
+    it costs no runtime at all, and it covers the shape that was actually exploitable."""
+    problems = []
+    for name, statuses in sorted(call_sites().items()):
+        if not statuses:
+            problems.append(f"`{name}` has no literal status token, so it cannot be classified")
+        elif "fail" not in statuses:
+            problems.append(f"`{name}` can only print {'/'.join(sorted(statuses))} — it has no "
+                            f"failing path, so nothing it checks can ever fail the build")
+    return problems
 
 
 def coverage():
@@ -118,9 +155,22 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true", help="fail if coverage fell below the baseline")
     ap.add_argument("--update", action="store_true", help="record current coverage as the baseline")
+    ap.add_argument("--vacuity", action="store_true",
+                    help="fail if any check name has no failing path")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
     c = coverage()
+
+    if a.vacuity:
+        problems = vacuity_problems()
+        if problems:
+            print("check(s) that cannot fail:", file=sys.stderr)
+            for p in problems:
+                print(f"  {p}", file=sys.stderr)
+            return 1
+        if not a.quiet:
+            print(f"every one of the {c['named']} named checks has a failing path")
+        return 0
 
     if a.update:
         p = write_baseline(c)

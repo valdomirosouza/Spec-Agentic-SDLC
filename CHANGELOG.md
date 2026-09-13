@@ -47,6 +47,9 @@ authorises them.
 - The open-item checker covers `Open finding(s)` headings and numbered headings, not only the
   literal `Open items`, and carries floors on the number of tables and items it sees. DQ-REG-006,
   the corpus's only live open finding, sat outside the old scope (#80).
+- `mutation_coverage.py --vacuity` — a check name that can only print `ok` cannot fail the build.
+  Neutering a check keeps its name, so the ratchet that guards names approved it: the verifier
+  printed `✓ bash -n — neutered` and stayed green (#84).
 - `scripts/python/check_open_items.py` — every open item now carries an ISO date, which fails once
   it passes, or a declared `on-event: <trigger>`. All 31 were prose deferrals to a review nothing
   convenes, so none could ever come due; 11 became the next quarterly date and 19 a named trigger

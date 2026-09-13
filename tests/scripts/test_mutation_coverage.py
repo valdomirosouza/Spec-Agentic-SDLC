@@ -36,6 +36,47 @@ class Parsing(unittest.TestCase):
             mc.proved_names = real
 
 
+class Vacuity(unittest.TestCase):
+    """R8-T1. The cheap guard: a name that can only print `ok` cannot fail the build."""
+
+    def test_the_live_verifier_has_no_check_that_cannot_fail(self):
+        self.assertEqual(mc.vacuity_problems(), [])
+
+    def test_a_check_with_only_an_ok_site_is_reported(self):
+        real = mc.call_sites
+        mc.call_sites = lambda: {"a real check": {"ok", "fail"}, "neutered": {"ok"}}
+        try:
+            problems = mc.vacuity_problems()
+        finally:
+            mc.call_sites = real
+        self.assertEqual(len(problems), 1)
+        self.assertIn("neutered", problems[0])
+
+    def test_a_note_only_check_is_still_reported(self):
+        """`note` is visible and does not fail the build, so a check that can only note is as
+        unable to stop anything as one that can only pass."""
+        real = mc.call_sites
+        mc.call_sites = lambda: {"alerts only": {"ok", "note"}}
+        try:
+            self.assertEqual(len(mc.vacuity_problems()), 1)
+        finally:
+            mc.call_sites = real
+
+    def test_an_unclassifiable_status_is_reported_not_assumed_fine(self):
+        real = mc.call_sites
+        mc.call_sites = lambda: {"computed status": set()}
+        try:
+            self.assertIn("cannot be classified", mc.vacuity_problems()[0])
+        finally:
+            mc.call_sites = real
+
+    def test_every_name_resolves_to_one_set_of_call_sites(self):
+        """Two checks printed a different name from their ok and fail branches, so the name a
+        reader saw passing was not the name that appeared on failure, and the count included
+        phantoms (R8-T1)."""
+        self.assertEqual(len(mc.call_sites()), len(mc.named_checks()))
+
+
 class Ratchet(unittest.TestCase):
     def run_check(self, baseline):
         """In-process, so a monkeypatched `named_checks` is visible. An earlier version shelled out

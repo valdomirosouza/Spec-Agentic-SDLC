@@ -1,7 +1,7 @@
 {
   "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering it \u2014 including by deleting checks \u2014 is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 54,
-  "proved": 18,
+  "named": 53,
+  "proved": 19,
   "checks": [
     "ADR-0022 declares exactly one floor",
     "a BREAKING entry declares the next version",
@@ -13,7 +13,6 @@
     "change-discipline skill present",
     "changed scripts and contracts are recorded in the changelog",
     "check-prerequisites (example)",
-    "check-prerequisites keeps --require-approved",
     "check-prerequisites keeps --require-approved (approved|implemented only)",
     "check_control_matrix",
     "constitution and CLAUDE.md reference the floor, not a bare number",
@@ -21,6 +20,7 @@
     "create-new-feature --dry-run",
     "data-quality rules over the corpus's own datasets",
     "documented agent commands use python3, not bare python",
+    "every named check has a failing path",
     "example bundle present",
     "frontmatter",
     "gates: 13 blocking, 9 requiring a human",
@@ -28,7 +28,6 @@
     "mutation coverage has not fallen",
     "no unqualified speedup ratio is published",
     "only vcs.sh creates a branch, and only behind the protected-name guard",
-    "only vcs.sh creates a branch, behind the guard",
     "open items carry a date or a named trigger",
     "red-team RT-2026-09-13 findings stay closed",
     "render_commands --check",
