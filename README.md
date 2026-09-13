@@ -53,6 +53,7 @@ The persistence rules for specs are in
 memory/constitution.md          nine binding articles; every plan and analysis is checked against them
 templates/                      spec, plan, research, data-model, quickstart, contracts, tasks, checklist, roadmap, constitution templates
 scripts/bash/                   create-new-feature.sh · check-prerequisites.sh · setup-plan.sh · tasks-to-issues.sh (JSON output for agents) · check-corpus.sh (corpus validation) · adopt.sh (copy a layer into a product repo)
+scripts/python/                 adopter_paths.py · render_commands.py · check_control_matrix.py
 specs/                          system, api, ai, privacy, security (control matrices), compliance, observability, features/
 docs/adr/                       ADR-0001 … ADR-0090 (index in docs/adr/README.md)
 docs/process/                   WORKFLOW (15 phases), RACI, HITL-GOVERNANCE, DoR / DoD / DoR-Release, gates/phase-gates.yaml

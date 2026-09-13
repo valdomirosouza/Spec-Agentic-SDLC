@@ -3,8 +3,9 @@
 #
 # Maps the pinned 2025 GenAI/LLM risk taxonomy to the code that defends each risk, the tests/CI
 # jobs that verify it, and the gate that enforces it. Same schema + validator as the ASVS matrix
-# (schemas/control-matrix.schema.json, scripts/governance/check_control_matrix.py):
-#   - every implemented_by / verified_by path MUST exist (anti-rot);
+# (schemas/control-matrix.schema.json, scripts/python/check_control_matrix.py):
+#   - every implemented_by / verified_by path MUST exist, in this corpus or in the adopting
+#     repository (marked with the `adopter:` prefix — the validator checks corpus paths only);
 #   - every `ci:` job id and gate name MUST be a real CI job (anti-rot);
 #   - every `n/a` entry MUST carry a justification (anti-fabrication, CLAUDE.md §3.6).
 #
@@ -20,11 +21,11 @@ controls:
   - id: LLM01:2025
     control: Prompt injection is detected/blocked before the model call; the guard is never disabled.
     implemented_by:
-      - src/guardrails/prompt_injection_guard.py
+      - adopter:src/guardrails/prompt_injection_guard.py
     verified_by:
-      - tests/unit/guardrails/test_prompt_injection_guard.py
-      - tests/security/test_owasp_llm_top10.py
-      - tests/abuse_cases/test_jailbreak_attempts.py
+      - adopter:tests/unit/guardrails/test_prompt_injection_guard.py
+      - adopter:tests/security/test_owasp_llm_top10.py
+      - adopter:tests/abuse_cases/test_jailbreak_attempts.py
       - "ci:Security Tests"
     gate: ["Security Tests"]
     owner: Security Lead
@@ -33,10 +34,10 @@ controls:
   - id: LLM02:2025
     control: Sensitive data is masked before every LLM call and log write to prevent disclosure.
     implemented_by:
-      - src/guardrails/pii_filter.py
+      - adopter:src/guardrails/pii_filter.py
     verified_by:
-      - tests/security/test_pii_leakage.py
-      - tests/model_contract/test_pii_non_leakage.py
+      - adopter:tests/security/test_pii_leakage.py
+      - adopter:tests/model_contract/test_pii_non_leakage.py
       - "ci:Security Tests"
     gate: ["Security Tests"]
     owner: DPO
@@ -47,13 +48,17 @@ controls:
     implemented_by:
       - docs/dependency-manifest.yaml
     verified_by:
-      - tests/security/test_owasp_llm_top10.py
-      - tests/model_contract/test_pii_non_leakage.py
+      - adopter:tests/security/test_owasp_llm_top10.py
+      - adopter:tests/model_contract/test_pii_non_leakage.py
       - "ci:Generate SBOM"
       - "ci:Security Tests"
     gate: ["Generate SBOM"]
     owner: DevSecOps Lead
     status: partial
+    gap: >-
+      Dependencies and the model version are pinned and an SBOM is produced, but no AI bill of
+      materials covers prompts, retrieval indices and the embedding model (see
+      docs/ai-governance/model-registry.md §2).
     justification: >-
       Model + dependency versions are pinned (ADR-0051) and a CycloneDX SBOM is generated/signed
       per build; full SLSA L3 provenance attestation is a roadmap target, not yet enforced.
@@ -63,13 +68,17 @@ controls:
     implemented_by:
       - docs/dependency-manifest.yaml
     verified_by:
-      - tests/security/test_owasp_llm_top10.py
-      - tests/model_contract/test_pii_non_leakage.py
+      - adopter:tests/security/test_owasp_llm_top10.py
+      - adopter:tests/model_contract/test_pii_non_leakage.py
       - "ci:Model Behavioral Contract (ML1 / ADR-0051)"
       - "ci:Security Tests"
     gate: ["Model Behavioral Contract (ML1 / ADR-0051)"]
     owner: AI Governance Lead
     status: partial
+    gap: >-
+      The behavioural contract catches regression at promotion; nothing detects poisoning of the
+      retrieval corpus or agent memory between promotions, and the memory-governance controls are
+      documented but not implemented.
     justification: >-
       A new model version cannot be promoted without passing the behavioral-contract suite
       (ADR-0051); training-data provenance/integrity is upstream of the template and out of scope.
@@ -77,15 +86,15 @@ controls:
   - id: LLM05:2025
     control: LLM output is sanitized before render/execute; generated actions/code are validated and sandboxed.
     implemented_by:
-      - src/guardrails/output_sanitizer.py
-      - src/agents/action_policy.py
-      - src/agents/code_pre_flight.py
-      - src/agents/sandbox_executor.py
+      - adopter:src/guardrails/output_sanitizer.py
+      - adopter:src/agents/action_policy.py
+      - adopter:src/agents/code_pre_flight.py
+      - adopter:src/agents/sandbox_executor.py
     verified_by:
-      - tests/unit/guardrails/test_output_sanitizer.py
-      - tests/unit/agents/test_action_policy.py
-      - tests/unit/agents/test_sandbox_executor.py
-      - tests/security/test_unregistered_tool_blocked.py
+      - adopter:tests/unit/guardrails/test_output_sanitizer.py
+      - adopter:tests/unit/agents/test_action_policy.py
+      - adopter:tests/unit/agents/test_sandbox_executor.py
+      - adopter:tests/security/test_unregistered_tool_blocked.py
       - "ci:Unit Tests"
     gate: ["Unit Tests", "Security Tests"]
     owner: Security Lead
@@ -94,14 +103,14 @@ controls:
   - id: LLM06:2025
     control: Real-world agent actions route through HITL; autonomy is feature-flag gated; high-risk dev actions are guarded.
     implemented_by:
-      - src/agents/hitl_gateway.py
-      - src/shared/feature_flags.py
-      - src/guardrails/action_limits.py
+      - adopter:src/agents/hitl_gateway.py
+      - adopter:src/shared/feature_flags.py
+      - adopter:src/guardrails/action_limits.py
       - .claude/hooks/high-risk-action-guard.py
     verified_by:
-      - tests/unit/agents/test_hitl_gateway.py
-      - tests/unit/shared/test_feature_flags.py
-      - tests/unit/guardrails/test_action_limits.py
+      - adopter:tests/unit/agents/test_hitl_gateway.py
+      - adopter:tests/unit/shared/test_feature_flags.py
+      - adopter:tests/unit/guardrails/test_action_limits.py
       - "ci:High-risk Action Guard (F7)"
     gate: ["Unit Tests", "High-risk Action Guard (F7)"]
     owner: AI Governance Lead
@@ -110,14 +119,17 @@ controls:
   - id: LLM07:2025
     control: System-prompt leakage is mitigated via the injection guard and output PII masking.
     implemented_by:
-      - src/guardrails/prompt_injection_guard.py
-      - src/guardrails/pii_filter.py
+      - adopter:src/guardrails/prompt_injection_guard.py
+      - adopter:src/guardrails/pii_filter.py
     verified_by:
-      - tests/security/test_owasp_llm_top10.py
+      - adopter:tests/security/test_owasp_llm_top10.py
       - "ci:Security Tests"
     gate: ["Security Tests"]
     owner: Security Lead
     status: partial
+    gap: >-
+      The injection guard and output masking reduce leakage; no test asserts that the system prompt
+      itself cannot be reconstructed, and the red-team programme has never been exercised.
     justification: >-
       The injection guard and output masking reduce system-prompt extraction; a dedicated
       system-prompt-leakage abuse-case suite is not yet present and is tracked for extension.
@@ -125,13 +137,16 @@ controls:
   - id: LLM08:2025
     control: Stored embeddings are encrypted at rest; vector store access is controlled.
     implemented_by:
-      - src/memory/vector_store.py
+      - adopter:src/memory/vector_store.py
     verified_by:
-      - tests/unit/memory/test_vector_store.py
+      - adopter:tests/unit/memory/test_vector_store.py
       - "ci:Unit Tests"
     gate: ["Unit Tests"]
     owner: AI Governance Lead
     status: partial
+    gap: >-
+      Embeddings are encrypted at rest and access is controlled; the corpus is classified L2 and its
+      datasheet is draft, so the dataset is not cleared for model use.
     justification: >-
       Vector store encrypts stored embeddings (ADR-0018); embedding-poisoning detection and
       per-tenant partitioning are adopter-extended for multi-tenant deployments.
@@ -139,11 +154,11 @@ controls:
   - id: LLM09:2025
     control: Generated output is risk-scored and evaluated; high-risk output requires human review.
     implemented_by:
-      - src/agents/risk_scorer.py
-      - src/agents/harness/evaluator.py
+      - adopter:src/agents/risk_scorer.py
+      - adopter:src/agents/harness/evaluator.py
     verified_by:
-      - tests/unit/agents/test_risk_scorer.py
-      - tests/unit/agents/harness/test_evaluator.py
+      - adopter:tests/unit/agents/test_risk_scorer.py
+      - adopter:tests/unit/agents/harness/test_evaluator.py
       - "ci:Unit Tests"
     gate: ["Unit Tests"]
     owner: AI Governance Lead
@@ -152,17 +167,21 @@ controls:
   - id: LLM10:2025
     control: Consumption is bounded by rate limiting, request concurrency caps, and action limits.
     implemented_by:
-      - src/api/rest/_limiter.py
-      - src/guardrails/action_limits.py
+      - adopter:src/api/rest/_limiter.py
+      - adopter:src/guardrails/action_limits.py
     verified_by:
-      - tests/security/test_owasp_llm_top10.py
-      - tests/unit/api/test_requests_semaphore.py
-      - tests/unit/guardrails/test_action_limits.py
+      - adopter:tests/security/test_owasp_llm_top10.py
+      - adopter:tests/unit/api/test_requests_semaphore.py
+      - adopter:tests/unit/guardrails/test_action_limits.py
       - "ci:Unit Tests"
       - "ci:Security Tests"
     gate: ["Unit Tests"]
     owner: SRE Lead
     status: partial
+    gap: >-
+      Rate limits, concurrency caps and action limits bound consumption per request; no budget alert
+      fires on aggregate spend, so a slow drain is not detected (denial of wallet, red-team
+      technique 10).
     justification: >-
       Rate limiting, a request concurrency semaphore, and per-action limits cap consumption; a
       dedicated per-token LLM cost budget is enforced separately (LLM Budget Circuit Breaker

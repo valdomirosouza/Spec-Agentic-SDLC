@@ -23,6 +23,8 @@
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
+#  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
+#      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -182,6 +184,18 @@ assert d['tracked_paths'], 'tracked_paths'
 print(f"{d['repository']} {d['commit']} ({d['release']}), review due {d['next_review_due']}")
 PY3
 ); then result "spec-kit-upstream.json" ok "$out"; else result "spec-kit-upstream.json" fail "$out"; fi
+
+say "C12 control matrices"
+if out=$(python3 scripts/python/check_control_matrix.py --quiet 2>&1); then
+    result "check_control_matrix" ok "ASVS · OWASP GenAI · EU AI Act · ISO 42001"
+    printf '%s\n' "$out" | grep -E '^  note:' | sed 's/^/    /'
+else
+    result "check_control_matrix" fail
+    printf '%s\n' "$out" | grep -E 'ERROR' | head -10 | sed 's/^/      /'
+fi
+if $SMOKE; then
+    if out=$(python3 tests/scripts/test_check_control_matrix.py 2>&1); then result "tests/scripts/test_check_control_matrix.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_control_matrix.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+fi
 
 if $HOOK; then
     say "C11 sdd-gate UserPromptSubmit hook"

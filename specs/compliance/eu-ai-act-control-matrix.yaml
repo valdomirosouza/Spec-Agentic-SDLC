@@ -120,7 +120,7 @@ controls:
     applies_from: "2027-12-02"
     implemented_by:
       - adopter:src/guardrails/audit_logger.py
-      - specs/observability/logging.md
+      - specs/observability/otel-agentic-observability.md
       - docs/ai/ai-observability-naming.md
     verified_by:
       - adopter:tests/unit/guardrails/test_audit_logger.py

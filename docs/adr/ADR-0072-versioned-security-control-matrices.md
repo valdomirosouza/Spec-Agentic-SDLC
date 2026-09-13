@@ -36,7 +36,7 @@ by the control-binding gate.
 3. **Entry schema** (`specs/security/schemas/control-matrix.schema.json`): each entry carries
    `control`, `implemented_by: [paths]`, `verified_by: [test paths + CI job ids]`, `gate:
 [required-check names]`, `owner`, and `status: implemented | partial | n/a`.
-4. **Anti-rot + anti-fabrication validation** (`scripts/governance/check_control_matrix.py`,
+4. **Anti-rot + anti-fabrication validation** (`scripts/python/check_control_matrix.py`,
    extending the `check_control_bindings.py` pattern, wired into the governance gate):
    - a `implemented_by`/`verified_by` path that does not exist **fails CI** (dead-reference rot);
    - an `n/a` entry **without a justification fails CI** (CLAUDE.md §3.6, no fabricated coverage).

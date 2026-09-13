@@ -13,6 +13,11 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/check_control_matrix.py` with 14 tests, wired as `check-corpus.sh` C12 — the
+  validator several documents cited and that did not exist here. Its first run found 83 defects,
+  all fixed: 75 adopter-provided paths in the two OWASP matrices now carry the `adopter:` prefix
+  the header promised, seven partial controls gained a gap statement, and one broken evidence path
+  in the EU AI Act matrix was corrected (#43).
 - `docs/ai-governance/model-registry.md` — the governance layer around the dependency manifest:
   model states with a recorded refusal, a ten-row AI component inventory including prompts and the
   embedding model, the promotion record, and the three GPAI provenance items a deployer must retain
