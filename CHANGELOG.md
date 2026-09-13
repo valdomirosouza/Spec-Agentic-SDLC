@@ -13,6 +13,10 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `specs/privacy/training-data-governance.md` — training as a purpose needing its own basis, the
+  lawful-basis table with special-category data prohibited outright, permitted and refused sources,
+  and an honest three-part answer on erasure: source and derived datasets erased, no future use,
+  and disclosure where a deployed model already carries the value (#34).
 - `templates/datasheet-template.md` (Datasheets for Datasets extended with licence, lawful basis
   and mandatory exclusion criteria) and the first instance,
   `docs/data/datasheets/agent-memory-documents.md`, published as `draft` with six unresolved rows

@@ -79,7 +79,7 @@ controls:
       for bias, and identification of gaps or shortcomings.
     applies_from: "2027-12-02"
     implemented_by:
-      - planned:#34:specs/privacy/training-data-governance.md
+      - specs/privacy/training-data-governance.md
       - templates/datasheet-template.md
       - planned:#28:docs/data/data-governance-charter.md
     verified_by:
