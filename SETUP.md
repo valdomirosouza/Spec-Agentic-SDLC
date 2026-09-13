@@ -72,10 +72,11 @@ file that names one (each such file carries an `adopter-paths` marker; `check-co
 
 - The corpus version is `version.txt`; changes are in `CHANGELOG.md`. Record the version you
   adopted in your own changelog.
-- The spec-kit primitives are pinned to github/spec-kit `d848fb4` (v1.0.6); the adoption
-  decisions are in ADR-0090 and `docs/sdlc/spec-kit-comparison.md`.
-- Other coding agents (Copilot, Cursor, Gemini, Codex) currently receive only `AGENTS.md`; the
-  per-agent command files are tracked in issue #17.
+- The spec-kit primitives are pinned to github/spec-kit `d848fb4` (v1.0.6) in
+  `docs/sdlc/spec-kit-upstream.json`; the adoption decisions are in ADR-0090 and
+  `docs/sdlc/spec-kit-comparison.md`, the sync procedure in `docs/sdlc/spec-kit-sync.md`.
+- Copilot, Cursor, Codex and Gemini CLI receive the rendered `sdd-*` commands (`--integration`,
+  ADR-0091); `AGENTS.md` §1 says what each agent does and does not get.
 
 ## 5. Where things are
 

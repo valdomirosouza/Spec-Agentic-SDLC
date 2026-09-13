@@ -1,0 +1,45 @@
+{
+  "$comment": "Machine-readable pin of the github/spec-kit revision this corpus's /sdd-* primitives were adapted from (ADR-0090, ADR-0091). Procedure: docs/sdlc/spec-kit-sync.md. Diff against upstream: scripts/bash/spec-kit-diff.sh.",
+  "repository": "github/spec-kit",
+  "commit": "d848fb4",
+  "release": "v1.0.6",
+  "release_date": "2026-09-10",
+  "compared_on": "2026-09-12",
+  "next_review_due": "2026-12-12",
+  "tracked_paths": [
+    "templates/spec-template.md",
+    "templates/plan-template.md",
+    "templates/tasks-template.md",
+    "templates/checklist-template.md",
+    "templates/constitution-template.md",
+    "templates/commands/constitution.md",
+    "templates/commands/specify.md",
+    "templates/commands/clarify.md",
+    "templates/commands/plan.md",
+    "templates/commands/checklist.md",
+    "templates/commands/tasks.md",
+    "templates/commands/analyze.md",
+    "templates/commands/implement.md",
+    "templates/commands/converge.md",
+    "templates/commands/taskstoissues.md",
+    "scripts/bash/common.sh",
+    "scripts/bash/create-new-feature.sh",
+    "scripts/bash/check-prerequisites.sh",
+    "scripts/bash/setup-plan.sh",
+    "docs/reference/integrations.md",
+    "spec-driven.md"
+  ],
+  "local_counterparts": {
+    "templates/commands/<name>.md": ".claude/skills/sdd-<name>/SKILL.md",
+    "templates/<name>-template.md": "templates/<name>-template.md",
+    "scripts/bash/<name>.sh": "scripts/bash/<name>.sh",
+    "docs/reference/integrations.md": "scripts/python/render_commands.py"
+  },
+  "deliberately_not_adopted": [
+    "extensions / presets / bundles / workflow engine (ADR-0090 §4)",
+    "optional tests in tasks (Constitution II)",
+    "agent-created git branches (Constitution V)",
+    "numeric-only feature ids 001-slug (ADR-0085)",
+    "specify CLI / PyPI distribution (ADR-0091)"
+  ]
+}

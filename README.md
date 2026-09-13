@@ -84,8 +84,10 @@ CLAUDE.md · AGENTS.md           the detailed operating contract for agents (the
 - Documents still reference source-code paths (`src/…`, `scripts/governance/…`,
   `.github/workflows/…`, `services.yaml`) that live in the source template, not here. They
   describe where a control is implemented in a product repository that adopts this corpus.
-- spec-kit reference: github/spec-kit `d848fb4` (2026-09-11). What was adopted, adapted or
-  deliberately left out is recorded in `docs/sdlc/spec-kit-comparison.md`.
+- spec-kit reference: github/spec-kit `d848fb4` (v1.0.6, 2026-09-10), pinned in
+  `docs/sdlc/spec-kit-upstream.json`. What was adopted, adapted or deliberately left out is
+  recorded in `docs/sdlc/spec-kit-comparison.md`; the quarterly sync procedure is
+  `docs/sdlc/spec-kit-sync.md` (`scripts/bash/spec-kit-diff.sh`).
 
 ## License
 

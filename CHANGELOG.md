@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/sdlc/spec-kit-upstream.json` (machine-readable upstream pin, checked by C10),
+  `docs/sdlc/spec-kit-sync.md` (quarterly adopt/adapt/refuse procedure) and
+  `scripts/bash/spec-kit-diff.sh` (tracked-file diff against upstream via `gh`) (#19).
 - `scripts/python/render_commands.py` / `scripts/bash/render-commands.sh`: the `sdd-*` commands
   rendered for Copilot (`.github/skills/`), Cursor (`.cursor/skills/`), Codex (`.agents/skills/`)
   and Gemini CLI (`.gemini/commands/*.toml`); committed copies checked by `check-corpus.sh` C9 (#17).

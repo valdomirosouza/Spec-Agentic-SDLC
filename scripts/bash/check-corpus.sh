@@ -21,6 +21,7 @@
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
+#  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -168,6 +169,18 @@ grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q '
 
 say "C9 rendered per-agent commands"
 if out=$(python3 scripts/python/render_commands.py --check 2>&1); then result "render_commands --check" ok "$(printf '%s' "$out" | head -1)"; else result "render_commands --check" fail "$(printf '%s' "$out" | head -1)"; printf '%s\n' "$out" | sed -n '2,12p' | sed 's/^/      /'; fi
+
+say "C10 upstream pin"
+if out=$(python3 - <<'PY3'
+import json,re,sys
+d=json.load(open('docs/sdlc/spec-kit-upstream.json'))
+assert re.fullmatch(r'[0-9a-f]{7,40}',d['commit']), 'commit'
+assert re.fullmatch(r'v\d+\.\d+\.\d+',d['release']), 'release'
+for k in ('release_date','compared_on','next_review_due'): assert re.fullmatch(r'\d{4}-\d{2}-\d{2}',d[k]), k
+assert d['tracked_paths'], 'tracked_paths'
+print(f"{d['repository']} {d['commit']} ({d['release']}), review due {d['next_review_due']}")
+PY3
+); then result "spec-kit-upstream.json" ok "$out"; else result "spec-kit-upstream.json" fail "$out"; fi
 
 if $HOOK; then
     say "C5 high-risk-action guard"
