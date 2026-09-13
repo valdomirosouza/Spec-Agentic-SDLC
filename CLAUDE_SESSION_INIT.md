@@ -87,7 +87,6 @@ is resolved from `SDD_FEATURE_DIRECTORY`, `.sdd/feature.json` or the branch name
 
 | ADR      | Decision                                          |
 | -------- | ------------------------------------------------- |
-| ADR-0071 | Repository settings as code (branch protection co… |
 | ADR-0072 | Versioned security control matrices (OWASP ASVS v… |
 | ADR-0073 | SLO-driven canary thresholds (per-service config,… |
 | ADR-0074 | Automated dependency & digest update policy (Reno… |
@@ -107,6 +106,7 @@ is resolved from `SDD_FEATURE_DIRECTORY`, `.sdd/feature.json` or the branch name
 | ADR-0088 | Provider-neutral Terraform layering (partial back… |
 | ADR-0089 | Documented-capability reachability as a tested in… |
 | ADR-0090 | Adopt spec-kit workflow primitives (constitution,… |
+| ADR-0091 | Corpus adoption via adopt.sh and rendered per-age… |
 
 Full index: `docs/adr/README.md`
 

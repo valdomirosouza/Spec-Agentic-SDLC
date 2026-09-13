@@ -126,5 +126,31 @@ assert_contains "refusal cites Constitution I" "$out" 'Constitution I'
 assert_eq "tasks.md untouched by the refused run" "$(grep -c '(#' "$D/tasks.md")" "1"
 rm -rf "$T"
 
+echo "adopt.sh"
+T=$(mktemp -d)
+out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer minimal --json)
+assert_contains "minimal layer copies files" "$out" '"copied":3'
+assert_eq "constitution, templates, scripts, sdd skills, hook present" "$([ -f "$T/memory/constitution.md" ] && [ -f "$T/templates/spec-template.md" ] && [ -f "$T/scripts/bash/create-new-feature.sh" ] && [ -f "$T/.claude/skills/sdd-specify/SKILL.md" ] && [ -f "$T/.claude/settings.json" ] && echo yes)" "yes"
+assert_eq "minimal layer excludes ADRs" "$([ -d "$T/docs/adr" ] && echo yes || echo no)" "no"
+out=$(cd "$T" && bash scripts/bash/create-new-feature.sh --json --dry-run "Feature in adopted repo")
+assert_contains "/sdd-specify script works in the adopted directory (no git)" "$out" '"SPEC_ID":"SPEC-FEAT-001"'
+printf 'mine\n' > "$T/memory/constitution.md"
+out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer minimal --json)
+assert_contains "second run skips existing files" "$out" '"copied":0'
+assert_eq "existing file not overwritten without --force" "$(cat "$T/memory/constitution.md")" "mine"
+out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer minimal --force --json)
+assert_contains "--force overwrites" "$(head -1 "$T/memory/constitution.md")" "# Spec-Agentic-SDLC Constitution"
+out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer governed --dry-run --json)
+assert_contains "dry-run reports without copying" "$out" '"DRY_RUN":true'
+assert_eq "dry-run copied nothing" "$([ -d "$T/docs/adr" ] && echo yes || echo no)" "no"
+out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer governed --json)
+assert_eq "governed layer adds ADRs, harness and CLAUDE.md" "$([ -d "$T/docs/adr" ] && [ -d "$T/harness" ] && [ -f "$T/CLAUDE.md" ] && echo yes)" "yes"
+out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer bogus 2>&1); rc=$?
+assert_exit "unknown layer fails" "$rc" 1
+out=$(bash "$HERE/scripts/bash/adopt.sh" 2>&1); rc=$?
+assert_exit "missing target fails" "$rc" 1
+assert_eq "adopt never creates a git repository or branch" "$([ -d "$T/.git" ] && echo yes || echo no)" "no"
+rm -rf "$T"
+
 echo "---"; echo "scripts tests: $pass passed, $fail failed"
 exit "$fail"

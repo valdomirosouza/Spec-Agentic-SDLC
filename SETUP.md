@@ -30,8 +30,9 @@ appears under `specs/features/<SPEC-ID>-<slug>/`. That is the whole minimal laye
 | **governed** | minimal + `CLAUDE.md`, `AGENTS.md`, `CLAUDE_SESSION_INIT.md`, `skills/`, `.claude/skills/` (all), `.claude/agents/`, `.claude/personas/`, `docs/adr/`, `docs/process/`, `docs/sdlc/`, `docs/governance/`, `specs/security/`, `harness/`, `.github/` templates | The 15-phase lifecycle with nine human gates, delivery agents, `/deliver`, ADRs, control matrices, PR/issue templates, harness gate specs |
 | **full**     | governed + everything else under `docs/` and `specs/` (privacy, compliance, SRE, audit, runbooks, product, GTM)                                                          | The complete compliance and audit evidence corpus (LGPD/GDPR, ISO 27001, SOX, SOC 2, DORA, PRR)           |
 
-Copy with `rsync -a --ignore-existing` (or the future `scripts/bash/adopt.sh`, issue #16) so
-files you already have are never overwritten. Then edit, do not append: `CLAUDE.md` and
+Copy with `scripts/bash/adopt.sh --here --layer <minimal|governed|full> [--integration copilot|cursor|gemini|codex]`
+(run from a clone of this corpus, or `adopt.sh <target-dir>` from here; ADR-0091). It never
+overwrites an existing file without `--force`, never deletes, and runs no git command. Then edit, do not append: `CLAUDE.md` and
 `AGENTS.md` are meant to be **merged** with yours, keeping §3 (inviolable rules) and §14
 (escalation) intact.
 

@@ -162,6 +162,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0088](ADR-0088-provider-neutral-terraform-layering.md)                 | Provider-neutral Terraform layering (partial backend, INTERFACE.md, providers/ next)       | Accepted   | 2026-09-12 |
 | [ADR-0089](ADR-0089-documented-capability-reachability-invariant.md)       | Documented-capability reachability as a tested invariant (lifespan wiring test)          | Accepted   | 2026-09-12 |
 | [ADR-0090](ADR-0090-adopt-spec-kit-workflow-primitives.md)               | Adopt spec-kit workflow primitives (constitution, feature bundle, clarify/analyze/converge)  | Accepted   | 2026-09-12 |
+| [ADR-0091](ADR-0091-corpus-adoption-script-and-per-agent-skill-copies.md) | Corpus adoption via adopt.sh and rendered per-agent skill copies (Copilot, Cursor, Codex, Gemini) | Accepted   | 2026-09-12 |
 
 ### AI Agents Module _(opt-in)_
 

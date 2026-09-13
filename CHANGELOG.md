@@ -13,6 +13,8 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/bash/adopt.sh` — copy the minimal / governed / full layer into a product repository
+  (`--here`, `--integration`, `--force`, `--dry-run`, `--json`); ADR-0091 (#16).
 - `check-corpus.sh` C8: governance invariants asserted (tests-first template, no git side effects
   in scripts, constitution articles and version line, PreToolUse guard, `--require-approved`) (#15).
 - `scripts/python/adopter_paths.py` (check / inventory / mark) and the generated
