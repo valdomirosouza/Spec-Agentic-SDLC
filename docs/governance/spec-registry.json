@@ -463,7 +463,9 @@
       "implemented_by": [
         "src/agents/idempotency_store.py"
       ],
-      "verified_by": [],
+      "verified_by": [
+        "tests/unit/api/test_idempotency.py # named in §Testing of this spec (ADR-0077); frontmatter was empty while the body named it (DQ-REG-006)"
+      ],
       "related_specs": [],
       "requirement_tests": []
     },

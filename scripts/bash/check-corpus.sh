@@ -29,6 +29,8 @@
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
 #  C11 also runs the red-team exercise suite, so a demonstrated bypass cannot reopen (ADR-0050)
+#  C15 the 14 data-quality rules over the corpus's own datasets (spec registry, ADR index,
+#      control matrices, adopter-path inventory); critical blocks, major is reported every run
 #  C14 the corpus has measured itself at least once (docs/sre/corpus-metrics-*.md) and the
 #      measurement script states a method for every number and lists what it cannot measure
 #  C13 docs/governance/spec-registry.{json,md} regenerate byte-identically from the specs on disk
@@ -218,6 +220,24 @@ assert d['tracked_paths'], 'tracked_paths'
 print(f"{d['repository']} {d['commit']} ({d['release']}), review due {d['next_review_due']}")
 PY3
 ); then result "spec-kit-upstream.json" ok "$out"; else result "spec-kit-upstream.json" fail "$out"; fi
+
+say "C15 data quality (corpus datasets)"
+if out=$(python3 scripts/python/check_data_quality.py --run --quiet 2>&1); then
+    result "data-quality rules over the corpus's own datasets" ok "14 rules, no blocking violation"
+else
+    crit=$(printf '%s\n' "$out" | grep -c 'CRITICAL' || true)
+    if [ "${crit:-0}" -gt 0 ]; then
+        result "data-quality rules over the corpus's own datasets" fail
+        printf '%s\n' "$out" | grep 'CRITICAL' | head -5 | sed 's/^/      /'
+    else
+        # A `major` alerts and does not block (specs/data/data-quality.md §4): report it every run.
+        result "data-quality rules over the corpus's own datasets" ok "open finding(s) reported below"
+        printf '%s\n' "$out" | grep -E 'MAJOR|MINOR' | head -5 | sed 's/^/      note: /'
+    fi
+fi
+if $SMOKE; then
+    if out=$(python3 tests/scripts/test_check_data_quality.py 2>&1); then result "tests/scripts/test_check_data_quality.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_data_quality.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+fi
 
 say "C14 corpus measurement"
 if $SMOKE; then

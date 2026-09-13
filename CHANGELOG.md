@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/check_data_quality.py` — 14 executable rules across all six dimensions over the
+  corpus's own datasets (spec registry, ADR index, control matrices, adopter-path inventory), with
+  11 tests, wired as C15: critical blocks, major is reported on every run (#53).
 - `scripts/python/corpus_metrics.py` with 9 tests and the first measurement the corpus has taken
   of itself, `docs/sre/corpus-metrics-2026-09-13.md`: 59 commits over 2 active days, 9.3% CI
   failure rate, 23.2:1 prose-to-code. Every number names its method and §4 lists the five metrics

@@ -48,6 +48,34 @@ organisation replaces them and keeps the columns. Roles are named by role, not b
 | `agent.action.approved` | AI platform     | AI platform eng. | SRE     | L2     | **required**  | none declared  | no                                 |
 | Telemetry and traces   | SRE              | SRE            | SRE       | L4     | `internal`    | none declared  | no — PII redacted (ADR-0043)       |
 
+## This corpus's own datasets
+
+The rows above describe the adopting repository's data. This repository has datasets of its own —
+they have owners, they decay, and until issue #53 nothing measured them. Their rules are
+**executable**, in `scripts/python/check_data_quality.py`, and run as `check-corpus.sh` C15.
+
+| Dataset                  | Owner              | Steward   | Custodian | Class. | Contract   | Quality rules                | Model use |
+| ------------------------ | ------------------ | --------- | --------- | ------ | ---------- | ---------------------------- | --------- |
+| `spec-registry`          | Tech Lead          | Tech Lead | Tech Lead | L4     | `internal` | DQ-REG-001…006 (6 rules)     | no        |
+| `adr-index`              | Tech Lead          | Tech Lead | Tech Lead | L4     | `internal` | DQ-ADR-001…004 (4 rules)     | no        |
+| `control-matrices`       | AI Governance Lead | Security Lead | Tech Lead | L4 | `internal` | DQ-MAT-001…003 (3 rules)     | no        |
+| `adopter-path-inventory` | Tech Lead          | Tech Lead | Tech Lead | L4     | `internal` | DQ-ADP-001 (1 rule)          | no        |
+
+Fourteen rules across all six dimensions. Two of them were wrong when first run and were corrected
+rather than the data: the ADR status rule saw only one of the two valid status formats, and the spec
+uniqueness rule ignored `kind`, so it read SPEC-LGS-001's legitimate spec, feature-spec and
+threat-model as a duplicate. A rule that fires on correct data is a defect in the rule.
+
+### Open finding
+
+| Rule | Severity | Finding | Owner | Resolve by |
+| --- | --- | --- | --- | --- |
+| DQ-REG-006 | major | `specs/api/SPEC-API-003-pagination.md` is marked `implemented` with an empty `verified_by`, so the status is a claim with nothing named behind it. Its companion SPEC-API-002 was corrected from its own body, which named the test; this one names none, and inventing a path would violate Constitution IX. | Tech Lead | Next quarterly cycle |
+
+A `major` alerts and does not block (`specs/data/data-quality.md` §4), so C15 reports it on every
+run until it is closed. That is the intended behaviour: a finding with an owner, visible every
+time, rather than a silent one.
+
 ## What this table says about the current state
 
 Three things, stated plainly rather than left to be inferred:

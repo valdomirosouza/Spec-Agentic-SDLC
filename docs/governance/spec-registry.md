@@ -29,7 +29,7 @@
 | SPEC-AI-016 | spec | approved | Security Lead |  | `specs/ai/tool-registry.md` | ADR-0039 | 1 | 0 |
 | SPEC-AI-020 | policy | approved | Security Lead | 41 | `specs/ai/red-team-program.md` | ADR-0050, ADR-0036, ADR-0048, ADR-0093 | 0 | 0 |
 | SPEC-API-001 | spec | approved | valdomirosouza |  | `specs/api/SPEC-API-001-error-model-and-request-correlation.md` | ADR-0004, ADR-0012, ADR-0024, ADR-0026, ADR-0029 | 3 | 1 |
-| SPEC-API-002 | spec | implemented | valdomirosouza |  | `specs/api/SPEC-API-002-idempotency-keys.md` | ADR-0009, ADR-0019, ADR-0024, ADR-0076 | 1 | 0 |
+| SPEC-API-002 | spec | implemented | valdomirosouza |  | `specs/api/SPEC-API-002-idempotency-keys.md` | ADR-0009, ADR-0019, ADR-0024, ADR-0076 | 1 | 1 |
 | SPEC-API-003 | spec | implemented | valdomirosouza |  | `specs/api/SPEC-API-003-pagination.md` | ADR-0024, ADR-0076 | 2 | 0 |
 | SPEC-API-004 | spec | draft | valdomirosouza |  | `specs/api/SPEC-API-004-runs-trace-and-slo-status.md` | ADR-0076, ADR-0011, ADR-0004 | 2 | 2 |
 | SPEC-API-005 | spec | approved | Tech Lead |  | `specs/api/async-api-design.md` | ADR-0003, ADR-0005, ADR-0012 | 3 | 1 |
