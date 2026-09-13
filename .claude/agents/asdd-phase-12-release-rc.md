@@ -32,7 +32,7 @@ RC readiness verdict + prepared release notes/version bump (summarize in `notes`
 ## Handoff (HUMAN GATE)
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 12 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 12 \
   --agent asdd-phase-12-release-rc --handoff-to asdd-phase-13-production --human-gate \
   --notes "DoR-Release verified; RC prepared; awaiting Release Manager + Security Lead rc-approved"
 ```

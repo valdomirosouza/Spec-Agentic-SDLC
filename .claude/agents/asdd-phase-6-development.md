@@ -35,7 +35,7 @@ Implementation branch with green lint + unit tests.
 ## Handoff
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 6 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 6 \
   --agent asdd-phase-6-development --handoff-to asdd-phase-7-code-review \
   --notes "branch=feature/SPEC-{id}-<slug>; lint+unit green"
 ```

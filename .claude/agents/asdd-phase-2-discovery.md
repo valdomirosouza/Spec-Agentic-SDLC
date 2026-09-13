@@ -35,7 +35,7 @@ Discovery approval is mandatory before Specification begins. Emit `human_gate: t
 and stop — the orchestrator must wait for human approval:
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 2 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 2 \
   --agent asdd-phase-2-discovery \
   --artifacts docs/product/FEAT-{id}/discovery.md docs/product/FEAT-{id}/nfr.md \
   --handoff-to asdd-phase-3-grooming --human-gate \

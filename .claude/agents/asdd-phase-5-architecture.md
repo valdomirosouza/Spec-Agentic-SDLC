@@ -35,7 +35,7 @@ The ADR (when filed) and/or threat-model update.
 Architecture approval is required when an ADR/threat model is filed:
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 5 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 5 \
   --agent asdd-phase-5-architecture --artifacts docs/adr/ADR-{next}-{slug}.md \
   --handoff-to asdd-phase-6-development --human-gate \
   --notes "ADR-{next} Proposed; awaiting Tech Lead acceptance"

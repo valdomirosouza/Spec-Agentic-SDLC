@@ -30,7 +30,7 @@ A test report (summarize pass/fail + coverage in `notes`).
 ## Handoff
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 8 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 8 \
   --agent asdd-phase-8-testing --handoff-to asdd-phase-9-devsecops \
   --notes "unit <cov>% (>=80), integration/security/abuse green"
 ```

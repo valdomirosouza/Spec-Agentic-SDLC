@@ -34,7 +34,7 @@ You draft the spec; a human approves it via Spec-as-PR. **This phase ends at a h
 Specification approval is mandatory before implementation. Emit `human_gate: true` and stop:
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 4 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 4 \
   --agent asdd-phase-4-specification \
   --artifacts specs/features/<SPEC-ID>-<slug>/spec.md \
   --handoff-to asdd-phase-5-architecture --human-gate \

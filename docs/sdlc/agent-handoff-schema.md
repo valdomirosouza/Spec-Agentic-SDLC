@@ -75,11 +75,11 @@ The orchestrator maintains one shared context per feature at
 Helper (called by agents via Bash):
 
 ```bash
-python scripts/python/asdd_state.py init --feature FEAT-42 --title "..." --risk-class "normal feature"
-python scripts/python/asdd_state.py append-handoff --feature FEAT-42 --status done --phase 0 \
+python3 scripts/python/asdd_state.py init --feature FEAT-42 --title "..." --risk-class "normal feature"
+python3 scripts/python/asdd_state.py append-handoff --feature FEAT-42 --status done --phase 0 \
     --agent asdd-phase-0-intake --artifacts intake-form.md \
     --handoff-to asdd-phase-1-conception --notes "..."
-python scripts/python/asdd_state.py show --feature FEAT-42
+python3 scripts/python/asdd_state.py show --feature FEAT-42
 ```
 
 ---

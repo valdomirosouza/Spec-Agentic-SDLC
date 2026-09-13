@@ -36,7 +36,7 @@ AI safety report + completed checklist (summarize in `notes`).
 ## Handoff (HUMAN GATE for AI/agent changes)
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 10 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 10 \
   --agent asdd-phase-10-ai-safety --handoff-to asdd-phase-11-observability --human-gate \
   --notes "injection/leakage green; tool perms reviewed; AI safety checklist complete"
 ```

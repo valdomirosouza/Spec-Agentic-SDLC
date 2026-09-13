@@ -122,6 +122,31 @@ class AsddState(unittest.TestCase):
         for p in range(3): self.append(p)
         self.assertEqual(self.run_cmd("validate", "--feature", "FEAT-42")[0], 0)
 
+    # --- the documented interface, not just the module ---------------------------------------------
+    def test_the_command_the_agents_document_actually_runs(self):
+        """R4-T1. The 12 tests above call sys.executable, so they exercise the MODULE and never the
+        COMMAND the 16 agent files prescribe. That blind spot let `python scripts/python/asdd_state.py`
+        ship in 20 places while `python` exists on neither this machine nor a stock Debian/Ubuntu.
+        This runs the documented line verbatim."""
+        import re
+        import shutil as sh
+        docs = os.path.join(HERE, ".claude", "agents")
+        invocations = set()
+        for name in os.listdir(docs):
+            if not name.endswith(".md"):
+                continue
+            for m in re.finditer(r"(python[0-9.]*) (scripts/[\w./-]*asdd_state\.py)", open(os.path.join(docs, name), encoding="utf-8").read()):
+                invocations.add(m.groups())
+        self.assertTrue(invocations, "no asdd_state invocation found in the agent files")
+        for interpreter, script in sorted(invocations):
+            self.assertIsNotNone(sh.which(interpreter),
+                                 f"the agents document `{interpreter}`, which is not on PATH")
+            self.assertTrue(os.path.isfile(os.path.join(HERE, script)),
+                            f"the agents document `{script}`, which does not exist")
+            r = subprocess.run([interpreter, os.path.join(HERE, script), "--help"],
+                               capture_output=True, text=True, env=self.env, timeout=60)
+            self.assertEqual(r.returncode, 0, f"`{interpreter} {script} --help` failed: {r.stderr}")
+
     # --- Constitution V: this script never touches version control --------------------------------
     def test_script_runs_no_git_or_gh(self):
         src = open(SCRIPT, encoding="utf-8").read()

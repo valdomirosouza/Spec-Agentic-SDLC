@@ -198,6 +198,10 @@ cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testin
 # benchmark. "uv is 10-100x faster than pip" is a tool comparison and stays.
 ratio_bad=$(grep -rnoE '(speedup ratio|human.equiv[^|]*÷|÷ *agent wall.clock)[^|]*[0-9]+(\.[0-9]+)?\s*(×|x)' --include='*.md' . 2>/dev/null | grep -v '^\./\.git/' | grep -viE 'withdrawn|no ratio|not a ratio|forbids|would require' || true)
 [ -z "$ratio_bad" ] && result "no unqualified speedup ratio is published" ok || { result "no unqualified speedup ratio is published" fail "$(printf '%s' "$ratio_bad" | head -3)"; }
+# `python` is not on PATH on macOS or a stock Debian/Ubuntu. The agents shipped 20 invocations of
+# it, so the delivery layer could not start (R4-T1). Only `python3` is portable here.
+bare_py=$(grep -rn '\bpython [a-z_/]*\.py' .claude/agents/*.md docs/sdlc/*.md 2>/dev/null | grep -v 'python3' || true)
+[ -z "$bare_py" ] && result "documented agent commands use python3, not bare python" ok || { result "documented agent commands use python3, not bare python" fail "$(printf '%s' "$bare_py" | head -3)"; }
 n_human=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | wc -l | tr -d " ")
 n_block=$(grep -c "blocking: true" docs/process/gates/phase-gates.yaml | tr -d " ")
 if [ "$n_human" = 9 ] && [ "$n_block" = 13 ]; then
@@ -260,6 +264,7 @@ else
     result "spec registry matches disk" fail; printf '%s\n' "$out" | head -10 | sed 's/^/      /'
 fi
 if $SMOKE; then
+    if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_build_spec_registry.py 2>&1); then result "tests/scripts/test_build_spec_registry.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_build_spec_registry.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 

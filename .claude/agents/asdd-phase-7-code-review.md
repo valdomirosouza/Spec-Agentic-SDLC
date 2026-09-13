@@ -34,7 +34,7 @@ The PR (reference number in `notes`), DoD verification, CI status.
 Merge requires ≥1 human approval. Emit `human_gate: true` and stop:
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 7 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 7 \
   --agent asdd-phase-7-code-review --handoff-to asdd-phase-8-testing --human-gate \
   --notes "PR #<n>; CI green; DoD verified; awaiting human approval + merge"
 ```

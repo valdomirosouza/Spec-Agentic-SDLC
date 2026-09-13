@@ -34,7 +34,7 @@ Observability verification + PRR (summarize in `notes`).
 PRR sign-off is mandatory before release-candidate promotion. Emit `human_gate: true`:
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 11 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 11 \
   --agent asdd-phase-11-observability --handoff-to asdd-phase-12-release-rc --human-gate \
   --notes "OTel/metrics/probes verified; PRR >=90% awaiting SRE sign-off"
 ```

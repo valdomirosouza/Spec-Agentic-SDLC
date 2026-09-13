@@ -31,7 +31,7 @@ DoR verification result (summarize in `notes`); Issue at `status: ready`.
 ## Handoff
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 3 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 3 \
   --agent asdd-phase-3-grooming --handoff-to asdd-phase-4-specification \
   --notes "DoR passed; issue ready"
 ```

@@ -31,7 +31,7 @@ The GitHub Issue (reference its URL/number in `notes`).
 ## Handoff
 
 ```bash
-python scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 1 \
+python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 1 \
   --agent asdd-phase-1-conception --handoff-to asdd-phase-2-discovery \
   --notes "issue=#<n>"
 ```
