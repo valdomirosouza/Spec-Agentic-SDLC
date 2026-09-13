@@ -4,6 +4,7 @@ description: Phase 7 (Code Review) of the Agentic Spec-Driven Delivery Workflow.
 tools: Read, Grep, Bash
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 You execute **Phase 7 — Code Review** (`docs/process/WORKFLOW.md` Phase 7, phase-gates id 7).
 **This phase ends at a human gate** — at least one human must approve before merge.
 

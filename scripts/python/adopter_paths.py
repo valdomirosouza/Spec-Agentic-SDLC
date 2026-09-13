@@ -27,13 +27,18 @@ PATTERNS = collections.OrderedDict([
     (".github/workflows/",   (re.compile(r"\.github/workflows/"),                       "CI/CD pipelines")),
 ])
 
+EXCLUDE_DIRS = {".git", ".serena", ".sdd", "node_modules"}
+
 def files():
+    """Every .md/.yaml/.yml file, including those under dot-directories (.claude/, .github/, …)."""
     out = []
-    for pat in ("**/*.md", "**/*.yaml", "**/*.yml"):
-        for p in glob.glob(pat, recursive=True):
-            if p.startswith((".git/", ".serena/", ".sdd/", "node_modules/")) or p in SKIP:
-                continue
-            out.append(p)
+    for dirpath, dirnames, filenames in os.walk("."):
+        dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
+        for f in filenames:
+            if f.endswith((".md", ".yaml", ".yml")):
+                p = os.path.normpath(os.path.join(dirpath, f))
+                if p not in SKIP:
+                    out.append(p)
     return sorted(set(out))
 
 def hits(text):

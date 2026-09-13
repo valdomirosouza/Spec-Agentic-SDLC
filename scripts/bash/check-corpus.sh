@@ -19,6 +19,8 @@
 #   C8 governance invariants that must never regress: tests-first and mandatory tests in the
 #      tasks template; scripts never create/switch branches, push, merge or commit; constitution
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept
+#   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
+#      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -40,7 +42,11 @@ ADOPTER=('src/','tests/','services/','frontend/','infrastructure/','scaffold/','
          'Makefile','pyproject.toml','version.txt.bak','.github/workflows/','scripts/governance/','docs/api/grpc/','reports/')
 SKIP_FILES=('docs/reference/repository-template-v2-README.md','docs/reference/repository-template-v2-SETUP.md')
 link=re.compile(r'\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
-md=[p for p in glob.glob('**/*.md',recursive=True) if not p.startswith(('.git/','.serena/','.sdd/')) and p not in SKIP_FILES]
+md=[]
+for d,dn,fn in os.walk('.'):
+    dn[:]=[x for x in dn if x not in ('.git','.serena','.sdd','node_modules')]
+    md+=[os.path.normpath(os.path.join(d,f)) for f in fn if f.endswith('.md')]
+md=[p for p in md if p not in SKIP_FILES]
 bad=[]
 for p in md:
     s=open(p,encoding='utf-8',errors='replace').read()
@@ -159,6 +165,9 @@ sys.exit(0 if ok else 1)
 PY2
 grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
     && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved" fail
+
+say "C9 rendered per-agent commands"
+if out=$(python3 scripts/python/render_commands.py --check 2>&1); then result "render_commands --check" ok "$(printf '%s' "$out" | head -1)"; else result "render_commands --check" fail "$(printf '%s' "$out" | head -1)"; printf '%s\n' "$out" | sed -n '2,12p' | sed 's/^/      /'; fi
 
 if $HOOK; then
     say "C5 high-risk-action guard"

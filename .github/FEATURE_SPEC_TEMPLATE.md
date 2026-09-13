@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 <!-- LEGACY TEMPLATE (2026-09-12, ADR-0090, #6).
      New feature specs use templates/spec-template.md inside the bundle
      specs/features/<SPEC-ID>-<slug>/spec.md, created by scripts/bash/create-new-feature.sh

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Persona — Ops Analyst
 
 **Role:** Operations analyst, SRE on-call, or data analyst using Claude Code for

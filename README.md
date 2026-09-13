@@ -41,7 +41,8 @@
         ▼  human gates: code review (Phase 7) → testing, DevSecOps, AI safety, PRR, release, post-deploy (Phases 8–14, driven by /deliver)
 ```
 
-Each command is a Claude Code skill under `.claude/skills/sdd-*/SKILL.md`; the phase and gate
+Each command is a Claude Code skill under `.claude/skills/sdd-*/SKILL.md` (rendered for Copilot,
+Cursor, Codex and Gemini CLI by `scripts/bash/render-commands.sh`, ADR-0091); the phase and gate
 mapping is in [`docs/sdlc/spec-kit-comparison.md`](docs/sdlc/spec-kit-comparison.md) §5.
 The persistence rules for specs are in
 [`docs/sdlc/spec-persistence-model.md`](docs/sdlc/spec-persistence-model.md).

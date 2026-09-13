@@ -3,6 +3,7 @@ name: sdd-implement
 description: Execute tasks.md for the active feature (Phase 6 — Development) phase by phase, tests first, marking tasks [X], respecting [P] markers, checklist gates and every human gate of ADR-0058; scope a run to a phase, a story or a task range to stay inside the context window. Trigger on "implement", "execute the tasks", "build the feature". Usage — /sdd-implement [only phase N | only US1 | T001-T010 | delegate [P] tasks to sub-agents].
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # /sdd-implement — execute the task list
 
 Adapted from spec-kit `/speckit.implement`. In this repository implementation is Phase 6 of

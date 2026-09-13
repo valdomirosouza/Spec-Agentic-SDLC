@@ -3,6 +3,7 @@ title: "[RFC] "
 labels: rfc
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 > **⚡ Agent-Generated:** _(delete this block if written by a human)_ This RFC was drafted by Claude Code on {date}.
 > **Human Review Required:** Product Owner + Tech Lead must review before this RFC is actioned.
 > **Review Status:** Draft

@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # Claude Code hooks
 
 Project-wide harness hooks, wired in [`.claude/settings.json`](../settings.json) and shared

@@ -5,6 +5,7 @@ labels: ["type: feature", "status: discovery"]
 assignees: []
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 ## Summary
 
 <!-- One paragraph: what the feature does and why it is needed -->

@@ -1,0 +1,47 @@
+# generated from .claude/skills/sdd-constitution/SKILL.md by scripts/python/render_commands.py — edit the source, then re-render (ADR-0091)
+description = "Create or amend memory/constitution.md, the root of authority every spec, plan, task and analysis is checked against. Trigger on \"constitution\", \"project principles\", \"amend the constitution\". Usage — /sdd-constitution <principles or amendment text>."
+
+prompt = """
+# /sdd-constitution — create or amend the constitution
+
+Adapted from spec-kit `/speckit.constitution`. The constitution is `memory/constitution.md`;
+the scaffold is `templates/constitution-template.md`.
+
+## User input
+
+```text
+{{args}}
+```
+
+## Scope guard
+
+- This command edits **only** `memory/constitution.md`. Feature, code, refactor or deploy
+  requests in the input are **not** executed: list them under `Next Actions` with the
+  follow-up command (`/sdd-specify`, …).
+- Articles I, II, V, VII and IX (Specification First, Test-Backed Change, Human Oversight,
+  Traceability, Grounding) may be strengthened, never weakened or removed. Weakening any of
+  them is an `[HITL-ESCALATE]` (CLAUDE.md §14), not an edit.
+
+## Procedure
+
+1. Load `memory/constitution.md` (or the template if absent) and `CLAUDE.md` §3 for the
+   detailed rules each article condenses.
+2. Apply the user's input: fill placeholders, add/rename/expand articles. Every article keeps
+   the shape _name → normative bullets (MUST/SHOULD) → rationale_.
+3. Decide the version bump: MAJOR (article removed/redefined), MINOR (article or section added
+   or materially expanded), PATCH (wording). Set `Last Amended` to today (ISO date).
+4. Prepend a temporary `<!-- SYNC IMPACT REPORT … -->` comment listing: version change,
+   modified/added/removed articles, and every dependent file that cites the amended article
+   (`templates/plan-template.md` Constitution Check rows, `templates/checklist-template.md`,
+   `.claude/skills/sdd-*/SKILL.md`, `CLAUDE.md` §3). Update those files in the same change.
+5. Validate: no unexplained `[PLACEHOLDER]`, dates ISO, principles declarative and testable,
+   version line matches the report.
+6. Write the file. Report: new version + rationale, files that need propagation, suggested
+   commit message `docs(governance): amend constitution to vX.Y.Z (…)`, and `Next Actions`.
+
+## Done when
+
+- [ ] `memory/constitution.md` written with a valid version line and Sync Impact Report
+- [ ] Dependent templates/skills updated or listed as follow-ups
+- [ ] No protected article weakened
+"""

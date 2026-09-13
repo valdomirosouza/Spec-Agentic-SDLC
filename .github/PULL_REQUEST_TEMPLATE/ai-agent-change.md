@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 <!-- AI/agent change (src/agents, src/guardrails, action types, autonomy). ?template=ai-agent-change.md -->
 
 ## Summary

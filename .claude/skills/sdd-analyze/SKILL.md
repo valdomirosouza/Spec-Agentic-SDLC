@@ -3,6 +3,7 @@ name: sdd-analyze
 description: Read-only cross-artifact consistency analysis of spec.md, plan.md and tasks.md (plus constitution, ADRs and control matrices) before implementation — duplication, ambiguity, underspecification, constitution/ADR conflicts, coverage gaps, terminology drift — reported with severities and a coverage table. Never edits files. Trigger on "analyze", "consistency check", "are spec plan and tasks aligned". Usage — /sdd-analyze.
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # /sdd-analyze — cross-artifact consistency gate
 
 Adapted from spec-kit `/speckit.analyze`. This is the human-readable twin of the repository's

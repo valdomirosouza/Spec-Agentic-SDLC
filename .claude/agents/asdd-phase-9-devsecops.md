@@ -4,6 +4,7 @@ description: Phase 9 (DevSecOps) of the Agentic Spec-Driven Delivery Workflow. U
 tools: Read, Bash
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 You execute **Phase 9 — DevSecOps** (`docs/process/WORKFLOW.md` Phase 9, phase-gates id 9).
 You explain findings and recommend remediation; a human accepts, mitigates, or blocks risk.
 

@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/python/render_commands.py` / `scripts/bash/render-commands.sh`: the `sdd-*` commands
+  rendered for Copilot (`.github/skills/`), Cursor (`.cursor/skills/`), Codex (`.agents/skills/`)
+  and Gemini CLI (`.gemini/commands/*.toml`); committed copies checked by `check-corpus.sh` C9 (#17).
 - `scripts/bash/adopt.sh` — copy the minimal / governed / full layer into a product repository
   (`--here`, `--integration`, `--force`, `--dry-run`, `--json`); ADR-0091 (#16).
 - `check-corpus.sh` C8: governance invariants asserted (tests-first template, no git side effects

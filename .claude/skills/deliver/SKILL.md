@@ -18,6 +18,7 @@ description: >-
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, Task
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 # /deliver — Agentic Spec-Driven Delivery orchestrator (DRY-RUN | CODE)
 
 You orchestrate one feature spec through the repo's **15-phase Agentic Spec-Driven

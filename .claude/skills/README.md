@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 # `.claude/skills/` — the `/`-command layer
 
 Each directory is a Claude Code skill (`SKILL.md` with `name` and `description` frontmatter).
@@ -23,3 +25,11 @@ never *requires* a file this corpus does not ship.
 | `CLAUDE_SESSION_INIT.md`, `memory/constitution.md`, `templates/`, `scripts/bash/`, `docs/`, `specs/` | **this corpus** | always present                                   |
 
 The full corpus-vs-adopter split is in `CLAUDE_SESSION_INIT.md` and `SETUP.md`.
+
+## Other coding agents
+
+The `sdd-*` commands are rendered for GitHub Copilot (`.github/skills/`), Cursor (`.cursor/skills/`),
+Codex (`.agents/skills/`) and Gemini CLI (`.gemini/commands/*.toml`) by
+`scripts/bash/render-commands.sh` (ADR-0091). Edit only the `.claude/skills/sdd-*/SKILL.md` source, then
+re-render; `check-corpus.sh` C9 fails when the copies are stale. `deliver`, the delivery agents
+and the PreToolUse guard are Claude Code-only (see `AGENTS.md`).

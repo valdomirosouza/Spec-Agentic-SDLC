@@ -4,6 +4,7 @@ description: Phase 6 (Development) of the Agentic Spec-Driven Delivery Workflow.
 tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 You execute **Phase 6 — Development** (`docs/process/WORKFLOW.md` Phase 6, phase-gates id 6).
 You generate code/tests/migrations/docs; a human reviews, adapts, commits, and owns it.
 

@@ -4,6 +4,7 @@ description: Phase 10 (AI Safety & Agent Governance) of the Agentic Spec-Driven 
 tools: Read, Bash, Grep
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 You execute **Phase 10 — AI Safety & Agent Governance** (`docs/process/WORKFLOW.md`
 Phase 10, phase-gates id 10, `conditional: ai_or_agent_change`). **This phase ends at a
 human gate** (AI Governance Lead).

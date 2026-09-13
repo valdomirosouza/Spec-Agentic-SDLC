@@ -1,3 +1,5 @@
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
 <!--
 Tip: for a lighter, change-type-specific template, append a query string to the PR URL:
   ?expand=1&template=docs.md | standard-change.md | ai-agent-change.md

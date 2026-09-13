@@ -4,6 +4,7 @@ description: Phase 8 (Testing) of the Agentic Spec-Driven Delivery Workflow. Use
 tools: Read, Bash
 ---
 
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 You execute **Phase 8 — Testing** (`docs/process/WORKFLOW.md` Phase 8, phase-gates id 8).
 
 ## Skills — load before executing (CLAUDE.md §4, §13.2 — ≤ 2 per task)

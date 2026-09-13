@@ -129,7 +129,7 @@ rm -rf "$T"
 echo "adopt.sh"
 T=$(mktemp -d)
 out=$(bash "$HERE/scripts/bash/adopt.sh" "$T" --layer minimal --json)
-assert_contains "minimal layer copies files" "$out" '"copied":3'
+assert_eq "minimal layer copies every file it lists" "$(printf '%s' "$out" | sed -E 's/.*"total":([0-9]+),"copied":([0-9]+).*/\1=\2/' | awk -F= '{print ($1==$2 && $1>30) ? "yes" : "no:"$0}')" "yes"
 assert_eq "constitution, templates, scripts, sdd skills, hook present" "$([ -f "$T/memory/constitution.md" ] && [ -f "$T/templates/spec-template.md" ] && [ -f "$T/scripts/bash/create-new-feature.sh" ] && [ -f "$T/.claude/skills/sdd-specify/SKILL.md" ] && [ -f "$T/.claude/settings.json" ] && echo yes)" "yes"
 assert_eq "minimal layer excludes ADRs" "$([ -d "$T/docs/adr" ] && echo yes || echo no)" "no"
 out=$(cd "$T" && bash scripts/bash/create-new-feature.sh --json --dry-run "Feature in adopted repo")
@@ -150,6 +150,16 @@ assert_exit "unknown layer fails" "$rc" 1
 out=$(bash "$HERE/scripts/bash/adopt.sh" 2>&1); rc=$?
 assert_exit "missing target fails" "$rc" 1
 assert_eq "adopt never creates a git repository or branch" "$([ -d "$T/.git" ] && echo yes || echo no)" "no"
+rm -rf "$T"
+
+echo "render-commands"
+T=$(mktemp -d)
+out=$(python3 "$HERE/scripts/python/render_commands.py" --render --out "$T")
+assert_contains "renders 4 files per sdd-* skill" "$out" "rendered $(( $(ls -d "$HERE"/.claude/skills/sdd-* | wc -l) * 4 )) file(s)"
+assert_eq "gemini toml has description and prompt" "$(grep -c '^description = \|^prompt = """' "$T/.gemini/commands/sdd-specify.toml")" "2"
+assert_eq "gemini toml uses {{args}}, not \$ARGUMENTS" "$(grep -c '{{args}}' "$T/.gemini/commands/sdd-specify.toml"):$(grep -c 'ARGUMENTS' "$T/.gemini/commands/sdd-specify.toml")" "1:0"
+assert_eq "copilot/cursor/codex copies keep frontmatter and \$ARGUMENTS" "$(head -1 "$T/.github/skills/sdd-specify/SKILL.md"):$(grep -c 'ARGUMENTS' "$T/.cursor/skills/sdd-specify/SKILL.md"):$(grep -c '^name: sdd-specify' "$T/.agents/skills/sdd-specify/SKILL.md")" "---:1:1"
+assert_exit "--check passes on the committed copies" "$(cd "$HERE" && python3 scripts/python/render_commands.py --check >/dev/null 2>&1; echo $?)" 0
 rm -rf "$T"
 
 echo "---"; echo "scripts tests: $pass passed, $fail failed"
