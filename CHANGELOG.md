@@ -17,6 +17,9 @@ authorises them.
 
 ### Changed
 
+- `templates/research-template.md`, `data-model-template.md`, `quickstart-template.md`,
+  `contracts-README-template.md` added; `setup-plan.sh` copies all five plan artefacts and
+  `/sdd-plan` cites them (#7).
 - `specs/features/` uses one convention: `<SPEC-ID>-<slug>/spec.md` bundles. SPEC-FEAT-001 moved
   from `FEAT-001/feature-spec.md`; README, process docs, gates, agents, issue templates and the
   `feature-spec-lint` harness gate updated; `.github/FEATURE_SPEC_TEMPLATE.md` marked legacy (#6).
