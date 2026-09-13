@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/privacy/sub-processor-register.md` — six rows with the personal data each can access, its
+  class, processing region, transfer instrument, contract and assessment state (all `pending`, the
+  true state), the seven-step addition path and a retirement rule that keeps the row (#37).
 - ADR-0094 — data residency per data class (L1 never leaves the primary region), the rule that a
   prompt is a transfer and a model's processing region is a governed fact, sovereignty separated
   from residency, and backups, logs and telemetry following the data; answers the three open

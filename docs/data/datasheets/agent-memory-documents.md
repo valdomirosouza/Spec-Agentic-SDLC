@@ -109,7 +109,7 @@ measurements, and are labelled as such.
 | -------- | ------ |
 | Shared externally? | No |
 | Export controls or residency | Governed by the residency ADR (#36) |
-| Sub-processor copy? | The vector store provider, if managed. See `docs/privacy/sub-processor-register.md` |
+| Sub-processor copy? | The vector store provider, if managed. See [`../../privacy/sub-processor-register.md`](../../privacy/sub-processor-register.md), row 6 |
 
 ## 10. Maintenance
 

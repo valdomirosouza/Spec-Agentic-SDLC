@@ -117,6 +117,6 @@ This register must be updated **before** any production release that:
 
 - Introduces a new processing activity
 - Changes the purpose, data categories, or recipients of an existing activity
-- Adds a new third-party processor
+- Adds a new third-party processor (register it in [`sub-processor-register.md`](sub-processor-register.md) first)
 
 The DPO signs off on every update to this register.
