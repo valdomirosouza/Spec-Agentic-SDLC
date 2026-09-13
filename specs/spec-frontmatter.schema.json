@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/valdomirosouza/Repository-Template-v2/specs/spec-frontmatter.schema.json",
   "title": "Spec frontmatter (ADR-0085)",
-  "description": "YAML frontmatter every specs/**/*.md carries. Validated by scripts/governance/build_spec_registry.py (rules S1-S7).",
+  "description": "YAML frontmatter every specs/**/*.md carries. Validated by scripts/python/build_spec_registry.py (rules S1-S7).",
   "type": "object",
   "required": [
     "id",

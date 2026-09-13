@@ -202,7 +202,7 @@ Remove the `continue-on-error: true` line from the _Doc-consistency gate_ step i
 <!-- BURN-IN-START: 2026-09-12 -->
 <!-- BURN-IN-TARGET: spec-registry-gate -->
 
-`scripts/governance/build_spec_registry.py` runs in **report mode** in `ci.yml`. Progress:
+`scripts/python/build_spec_registry.py` runs in **report mode** in `ci.yml`. Progress:
 `make burn-in-status GATE=spec-registry-gate`.
 
 | Date (UTC) | PR  | Verdict | False positive? | Notes                                             |

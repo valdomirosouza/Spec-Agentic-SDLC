@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- Three authority conflicts resolved and pinned as invariants: the arbiter for phase-gate data
+  (#48), the distinction between 13 blocking and 9 human gates (#49), and one coverage floor
+  declared in ADR-0022 and referenced rather than restated (#50).
 - `scripts/python/build_spec_registry.py` with 10 tests, wired as `check-corpus.sh` C13 — the spec
   registry had drifted to 50 of 58 entries because its generator lived in the product repository
   and no check compared it to disk; it is now regenerated here and byte-compared on every push (#47).

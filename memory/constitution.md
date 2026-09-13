@@ -22,9 +22,12 @@ emits `[HITL-ESCALATE]` instead of inventing one.
 ### II. Test-Backed Change
 
 Every behavioural change ships with automated tests that reference the requirement they prove
-(`@pytest.mark.requirement("SPEC-…/FR-NN")` or the language equivalent). Unit coverage ≥ 80%
-overall and never below the per-package floors; the abuse-case count never decreases; a test is
-never weakened, skipped or deleted to make a gate pass (ADR-0050, ADR-0065). Tests are written
+(`@pytest.mark.requirement("SPEC-…/FR-NN")` or the language equivalent). Unit coverage stays at or
+above **the declared floor** and never below the per-package floors; **the floor never decreases**;
+the abuse-case count never decreases; a test is never weakened, skipped or deleted to make a gate
+pass (ADR-0050, ADR-0065). The floor is a single number declared in ADR-0022 — currently **85%**,
+ratcheted from 80% by RFC-0020 — and is not restated here, so raising it needs no amendment to this
+article and cannot leave a stale copy behind. Tests are written
 so that they **fail before** the implementation exists.
 
 ### III. Privacy by Design

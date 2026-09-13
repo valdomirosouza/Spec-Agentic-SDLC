@@ -20,7 +20,8 @@
 #      tasks template; scripts never create/switch branches, push, merge or commit; constitution
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept;
 #      vcs.sh keeps its refusal list; asdd_state.py touches no version control; the gate counts
-#      (13 blocking, 9 human) still match the agents and phase-gates.yaml
+#      (13 blocking, 9 human) still match the agents and phase-gates.yaml; the coverage floor is
+#      referenced, not restated, in the constitution and CLAUDE.md
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
@@ -178,6 +179,13 @@ sys.exit(0 if ok else 1)
 PY2
 grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
     && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved" fail
+# The coverage floor is one number in one place. A bare number in a normative text is how it
+# came to be stated three ways (80 in the constitution, 85 in ADR-0022, 75 as the escalation
+# trigger, with nothing reconciling them).
+cov_bad=$(grep -nE 'coverage (MUST be|≥|>=) *(7[0-9]|8[0-9]|9[0-9])%' memory/constitution.md CLAUDE.md 2>/dev/null || true)
+[ -z "$cov_bad" ] && result "constitution and CLAUDE.md reference the floor, not a bare number" ok || result "constitution and CLAUDE.md reference the floor, not a bare number" fail "$cov_bad"
+cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testing-strategy.md | grep -oE '[0-9]{2}%' | sort -u)
+[ "$(printf '%s' "$cov_n" | wc -w | tr -d ' ')" = 1 ] && result "ADR-0022 declares exactly one floor" ok "$cov_n" || result "ADR-0022 declares exactly one floor" fail "found: ${cov_n:-none}"
 n_human=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | wc -l | tr -d " ")
 n_block=$(grep -c "blocking: true" docs/process/gates/phase-gates.yaml | tr -d " ")
 if [ "$n_human" = 9 ] && [ "$n_block" = 13 ]; then

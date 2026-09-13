@@ -52,7 +52,7 @@ The six triggers are:
 | > 3 ADRs modified simultaneously                        | Architectural scope requires human judgment      |
 | Touch `src/guardrails/` or `src/agents/hitl_gateway.py` | Dual-approval paths required                     |
 | Spec not found after two searches                       | SDD invariant: no code without a spec            |
-| Test coverage would drop below 75%                      | Quality gate                                     |
+| Test coverage would fall below the declared floor (ADR-0022)                      | Quality gate                                     |
 | Feature flag enable/disable/modify                      | Autonomy level changes require ADR-0015 sign-off |
 | Escalation already emitted and unresolved in session    | Cascading escalations cannot self-resolve        |
 

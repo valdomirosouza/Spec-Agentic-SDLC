@@ -257,7 +257,8 @@ Full 15-phase (0–14) lifecycle: `docs/process/WORKFLOW.md` (ADR-0052, ADR-0058
 
 ### 3.5 Quality
 
-- Unit coverage **MUST** be ≥ 80% before merge.
+- Unit coverage **MUST** be at or above the floor declared in ADR-0022 before merge (**85%**,
+  ratcheted from 80% by RFC-0020). One number, one place: a ratchet updates ADR-0022, not this line.
 - **NEVER** merge with failing tests or linter violations.
 - **ALWAYS** update `CHANGELOG.md` with every production change.
 
@@ -378,7 +379,7 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `security`, `privacy`
 - [ ] References a GitHub Issue with linked spec
 - [ ] ADRs updated if architectural decisions changed
 - [ ] CHANGELOG.md updated
-- [ ] Unit tests present, coverage ≥ 80%
+- [ ] Unit tests present, coverage at or above the floor declared in ADR-0022
 - [ ] No secrets, no real PII in any file
 - [ ] PII masking applied if new data fields introduced
 - [ ] DPIA/RIPD review flagged if new PII processing added
@@ -525,7 +526,7 @@ Emit `[HITL-ESCALATE]` and **stop all file writes** when ANY is true:
 | Task requires modifying > 3 ADRs simultaneously                 | Architectural impact needs human judgment   |
 | Touches `src/guardrails/` or `src/agents/hitl_gateway.py`       | Dual-approval — Security + AI Governance    |
 | A spec reference can't be found after two distinct searches     | SDD invariant: no code without a spec       |
-| Coverage would drop below 75%                                   | Quality gate — exception needs approval     |
+| Coverage would fall below the declared floor (ADR-0022)          | Quality gate — exception needs approval; the trigger tracks the floor rather than a separate number, which previously sat at 75% and so never fired between 85% and 75% |
 | Enabling/disabling/modifying any feature flag                   | Autonomy changes need governance (ADR-0015) |
 | A requirement conflicts with a binding ADR or another `approved` spec | Contradictory requirements are resolved by humans, never silently by the agent (W13-T9) |
 | A `[HITL-ESCALATE]` already emitted this session and unresolved | Cascading escalations must not auto-resolve |

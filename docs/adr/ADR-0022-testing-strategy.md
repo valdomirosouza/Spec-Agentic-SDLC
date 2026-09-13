@@ -8,9 +8,16 @@
 **Spec:** `specs/sdlc/development-lifecycle.md`
 **Supersedes:** None | **Superseded by:** None
 
-> **⚠️ Correction (2026-06-18, audit):** The body states the line-coverage floor is **≥ 80%**, but the
-> live gate is **85%** — `pyproject.toml` `fail_under = 85` and `ci.yml --cov-fail-under=85` (ratcheted
-> per RFC-0020). Read the floor as 85% (the "why 80%" rationale is superseded by the RFC-0020 ratchet).
+> ## The declared coverage floor is 85%
+>
+> **This ADR is where the number lives.** The constitution (Article II), `CLAUDE.md` §3.5 and §7, and
+> the escalation trigger in `CLAUDE.md` §14.1 all reference this floor rather than restating it, so a
+> ratchet changes one line here and nothing else (issue #50). `check-corpus.sh` C8 asserts that they
+> carry no bare number of their own.
+>
+> **⚠️ Correction (2026-06-18, audit):** the body below argues for **80%**; the live gate is **85%**
+> (`pyproject.toml` `fail_under = 85`, `ci.yml --cov-fail-under=85`), ratcheted by RFC-0020. The
+> "why 80%" rationale is superseded; the reasoning is kept for the record, the number is not.
 
 ---
 
