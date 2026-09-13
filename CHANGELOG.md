@@ -11,6 +11,8 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `tests/scripts/test_scripts.sh`: 43 behavioural tests of the bash scripts (numbering, slugs,
+  feature resolution, approval gate, plan setup, tasks-to-issues), run by `check-corpus.sh` (#13).
 - `.github/workflows/corpus-check.yml` (check-corpus.sh, markdownlint-cli2, guard self-test on
   every push and PR), `.markdownlint-cli2.jsonc`, `.github/CODEOWNERS` (#12).
 - `scripts/bash/check-corpus.sh`: internal links, spec frontmatter against the schema, ADR index

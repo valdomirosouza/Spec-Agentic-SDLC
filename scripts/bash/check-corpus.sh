@@ -13,6 +13,7 @@
 #   C4 bash -n on scripts/bash/*.sh; smoke: create-new-feature --dry-run, check-prerequisites and
 #      tasks-to-issues --dry-run on the worked example bundle
 #   C5 high-risk-action guard self-test (.claude/hooks/verify-high-risk-guard.py)
+#   C6 tests/scripts/test_scripts.sh (behavioural tests of the scripts in a scratch repository)
 # Exit code = number of failing checks (0 = green).
 set -u
 QUIET=false; SMOKE=true; HOOK=true
@@ -121,6 +122,11 @@ if $SMOKE; then
     else
         result "example bundle present" fail "$EXAMPLE missing"
     fi
+fi
+
+if $SMOKE; then
+    say "C6 script tests"
+    if out=$(bash tests/scripts/test_scripts.sh 2>&1); then result "tests/scripts/test_scripts.sh" ok "$(printf '%s' "$out" | tail -1 | sed 's/scripts tests: //')"; else result "tests/scripts/test_scripts.sh" fail; printf '%s\n' "$out" | grep '✗' | sed 's/^/      /'; fi
 fi
 
 if $HOOK; then
