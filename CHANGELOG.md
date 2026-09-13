@@ -11,6 +11,8 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `scripts/bash/check-corpus.sh`: internal links, spec frontmatter against the schema, ADR index
+  and numbering, script syntax and smoke runs on the example bundle, high-risk-guard self-test (#11).
 - `/sdd-taskstoissues` skill and `scripts/bash/tasks-to-issues.sh` (gh CLI; approved spec only;
   dedup by task id; issue number written back to tasks.md) (#10).
 - Worked example of the feature bundle: `specs/features/SPEC-LGS-001-log-based-golden-signals/`
@@ -19,6 +21,8 @@ authorises them.
 
 ### Changed
 
+- `specs/spec-frontmatter.schema.json` id pattern now admits digits in the domain code
+  (`SPEC-K8S-001`, listed in ADR-0085); the `feature-spec-lint` gate uses the same pattern (#11).
 - `SETUP.md` is now the corpus adoption guide (layers minimal/governed/full, adopter-provided
   paths, Claude Code wiring); the product template's SETUP is archived under
   `docs/reference/repository-template-v2-SETUP.md` (#9).

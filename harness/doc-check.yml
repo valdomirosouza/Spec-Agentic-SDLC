@@ -91,7 +91,7 @@ gates:
       bash -c "
         if [ -n \"${PR_BODY_FILE:-}\" ] && [ -f \"${PR_BODY_FILE}\" ]; then
           # Extract the SPEC-ID from the PR body (e.g. SPEC-FEAT-042 or specs/features/SPEC-FEAT-042-slug/)
-          SPEC_ID=\$(grep -oE 'SPEC-[A-Z]{2,6}-[0-9]{3}' \"${PR_BODY_FILE}\" | head -1);
+          SPEC_ID=\$(grep -oE 'SPEC-[A-Z][A-Z0-9]{1,5}-[0-9]{3}' \"${PR_BODY_FILE}\" | head -1);
           if [ -z \"\$SPEC_ID\" ]; then
             echo 'No SPEC-ID found in PR body — spec lint skipped (not a feature PR).';
             exit 0;

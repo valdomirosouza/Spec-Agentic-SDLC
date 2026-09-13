@@ -5,7 +5,7 @@
 **Authors:** Tech Lead (drafted with Claude Code while creating the Spec-Agentic-SDLC corpus)
 **Spec:** specs/sdlc/development-lifecycle.md · docs/sdlc/spec-kit-comparison.md
 **Supersedes:** None | **Superseded by:** None
-**Relates to:** [ADR-0034](ADR-0034-agentic-escalation-protocol.md), [ADR-0058](ADR-0058-agentic-spec-driven-delivery-workflow.md), [ADR-0060](ADR-0060-task-atomicity-and-skill-budget.md), [ADR-0085](ADR-0085-unified-spec-identifier-and-status-grammar.md)
+**Relates to:** [ADR-0034](ADR-0034-agentic-escalation-protocol.md), [ADR-0058](ADR-0058-agentic-spec-driven-delivery-workflow.md), [ADR-0060](ADR-0060-task-atomicity-skill-budget.md), [ADR-0085](ADR-0085-unified-spec-identifier-and-status-grammar.md)
 
 ---
 

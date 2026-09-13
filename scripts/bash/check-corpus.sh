@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Deterministic validation of the Spec-Agentic-SDLC corpus (issue #11). Runs locally and in CI.
+#
+# Usage: check-corpus.sh [--quiet] [--no-smoke] [--no-hook]
+#
+# Checks
+#   C1 internal Markdown links resolve (adopter-provided paths, placeholders and archived
+#      reference copies are skipped — see ADOPTER_PREFIXES below)
+#   C2 spec frontmatter: every specs/**/spec-like file has id/kind/status; id matches
+#      ^SPEC-[A-Z][A-Z0-9]{1,5}-[0-9]{3}$ (ADR-0085 domain codes include K8S); kind and status in the schema enums; superseded needs superseded_by
+#   C3 ADR index: every docs/adr/ADR-NNNN-*.md is linked from docs/adr/README.md, every link
+#      resolves, numbering is contiguous from 0001
+#   C4 bash -n on scripts/bash/*.sh; smoke: create-new-feature --dry-run, check-prerequisites and
+#      tasks-to-issues --dry-run on the worked example bundle
+#   C5 high-risk-action guard self-test (.claude/hooks/verify-high-risk-guard.py)
+# Exit code = number of failing checks (0 = green).
+set -u
+QUIET=false; SMOKE=true; HOOK=true
+for a in "$@"; do case "$a" in --quiet) QUIET=true ;; --no-smoke) SMOKE=false ;; --no-hook) HOOK=false ;; --help|-h) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; esac; done
+SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$SCRIPT_DIR/common.sh"
+ROOT=$(get_repo_root); cd "$ROOT"
+EXAMPLE="specs/features/SPEC-LGS-001-log-based-golden-signals"
+fails=0
+say() { $QUIET || echo "$@"; }
+result() { # name status detail
+    if [ "$2" = ok ]; then say "  ✓ $1${3:+ — $3}"; else echo "  ✗ $1${3:+ — $3}"; fails=$((fails+1)); fi
+}
+
+say "C1 internal links"
+C1=$(python3 - <<'PY'
+import re,os,glob,sys
+ADOPTER=('src/','tests/','services/','frontend/','infrastructure/','scaffold/','deprecated/','services.yaml','.env.example',
+         'Makefile','pyproject.toml','version.txt.bak','.github/workflows/','scripts/governance/','docs/api/grpc/','reports/')
+SKIP_FILES=('docs/reference/repository-template-v2-README.md','docs/reference/repository-template-v2-SETUP.md')
+link=re.compile(r'\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
+md=[p for p in glob.glob('**/*.md',recursive=True) if not p.startswith(('.git/','.serena/','.sdd/')) and p not in SKIP_FILES]
+bad=[]
+for p in md:
+    s=open(p,encoding='utf-8',errors='replace').read()
+    for m in link.finditer(s):
+        t=m.group(1)
+        if t.startswith(('http://','https://','#','mailto:','<')): continue
+        t=t.split('#')[0]
+        if not t or '...' in t or 'XXX' in t or '{' in t or '<' in t: continue
+        tgt=os.path.normpath(os.path.join(os.path.dirname(p),t))
+        if tgt.startswith(ADOPTER) or ('/'+tgt).endswith(tuple('/'+a for a in ADOPTER if not a.endswith('/'))): continue
+        if not os.path.exists(tgt): bad.append(f"{p} → {t}")
+print(len(md)); print(len(bad)); print("\n".join(bad))
+PY
+)
+c1_files=$(printf '%s\n' "$C1" | sed -n 1p); c1_bad=$(printf '%s\n' "$C1" | sed -n 2p)
+if [ "$c1_bad" = 0 ]; then result "links" ok "$c1_files Markdown files, 0 broken"; else result "links" fail "$c1_bad broken"; printf '%s\n' "$C1" | sed -n '3,$p' | sed 's/^/      /'; fi
+
+say "C2 spec frontmatter"
+C2=$(python3 - <<'PY'
+import re,glob,os
+KINDS={'spec','policy','feature-spec','threat-model'}; STATUS={'draft','in-review','approved','implemented','superseded'}
+BUNDLE_NON_SPEC={'plan.md','tasks.md','research.md','data-model.md','quickstart.md'}
+bad=[]; n=0
+for p in sorted(glob.glob('specs/**/*.md',recursive=True)):
+    b=os.path.basename(p)
+    if b=='README.md' or 'template' in b.lower() or 'TEMPLATE' in b: continue
+    if p.startswith('specs/features/') and (b in BUNDLE_NON_SPEC or '/checklists/' in p or '/contracts/' in p): continue
+    n+=1
+    s=open(p,encoding='utf-8',errors='replace').read()
+    if not s.startswith('---\n'): bad.append(f"{p}: no frontmatter"); continue
+    fm=s.split('\n---',1)[0]
+    def f(k):
+        m=re.search(r'^'+k+r':[ \t]*([^\n#]*)',fm,re.M); return m.group(1).strip().strip(chr(34)).strip(chr(39)) if m else None
+    i,k,st=f('id'),f('kind'),f('status')
+    if not i or not re.fullmatch(r'SPEC-[A-Z][A-Z0-9]{1,5}-[0-9]{3}',i): bad.append(f"{p}: bad id {i!r}")
+    if k not in KINDS: bad.append(f"{p}: bad kind {k!r}")
+    if st not in STATUS: bad.append(f"{p}: bad status {st!r}")
+    if st=='superseded' and not f('superseded_by'): bad.append(f"{p}: superseded without superseded_by")
+    lu=f('last_updated')
+    if lu and not re.fullmatch(r'\d{4}-\d{2}-\d{2}',lu): bad.append(f"{p}: bad last_updated {lu!r}")
+print(n); print(len(bad)); print("\n".join(bad))
+PY
+)
+c2_n=$(printf '%s\n' "$C2" | sed -n 1p); c2_bad=$(printf '%s\n' "$C2" | sed -n 2p)
+if [ "$c2_bad" = 0 ]; then result "frontmatter" ok "$c2_n specs valid"; else result "frontmatter" fail "$c2_bad invalid"; printf '%s\n' "$C2" | sed -n '3,$p' | sed 's/^/      /'; fi
+
+say "C3 ADR index"
+C3=$(python3 - <<'PY'
+import re,glob,os
+files=sorted(glob.glob('docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md'))
+nums=sorted(int(os.path.basename(f)[4:8]) for f in files)
+bad=[]
+if nums!=list(range(1,len(nums)+1)): bad.append(f"numbering not contiguous: {[n for n in range(1,max(nums)+1) if n not in nums]} missing, duplicates {[n for n in set(nums) if nums.count(n)>1]}")
+idx=open('docs/adr/README.md',encoding='utf-8').read()
+linked=set(re.findall(r'\]\((ADR-[0-9]{4}-[^)]+\.md)\)',idx))
+for f in files:
+    b=os.path.basename(f)
+    if b not in linked: bad.append(f"not in docs/adr/README.md: {b}")
+for l in sorted(linked):
+    if not os.path.exists('docs/adr/'+l): bad.append(f"index links a missing file: {l}")
+print(len(files)); print(len(bad)); print("\n".join(bad))
+PY
+)
+c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p)
+if [ "$c3_bad" = 0 ]; then result "adr-index" ok "$c3_n ADRs, contiguous, all indexed"; else result "adr-index" fail "$c3_bad problems"; printf '%s\n' "$C3" | sed -n '3,$p' | sed 's/^/      /'; fi
+
+say "C4 scripts"
+syn_bad=0
+for f in scripts/bash/*.sh; do bash -n "$f" 2>/dev/null || { echo "      syntax error: $f"; syn_bad=$((syn_bad+1)); }; done
+[ "$syn_bad" = 0 ] && result "bash -n" ok "$(ls scripts/bash/*.sh | wc -l | tr -d ' ') scripts" || result "bash -n" fail "$syn_bad scripts"
+if $SMOKE; then
+    out=$(scripts/bash/create-new-feature.sh --json --dry-run "Corpus check smoke feature" 2>&1) && printf '%s' "$out" | grep -q '"DRY_RUN":true' \
+        && result "create-new-feature --dry-run" ok || result "create-new-feature --dry-run" fail "$out"
+    if [ -d "$EXAMPLE" ]; then
+        out=$(SDD_FEATURE_DIRECTORY="$EXAMPLE" scripts/bash/check-prerequisites.sh --json --require-spec --require-plan --require-tasks --include-tasks 2>&1) \
+            && printf '%s' "$out" | grep -q '"tasks.md"' && result "check-prerequisites (example)" ok || result "check-prerequisites (example)" fail "$out"
+        out=$(SDD_FEATURE_DIRECTORY="$EXAMPLE" scripts/bash/tasks-to-issues.sh --dry-run --json 2>&1) \
+            && printf '%s' "$out" | grep -q '"planned":[1-9]' && result "tasks-to-issues --dry-run (example)" ok || result "tasks-to-issues --dry-run (example)" fail "$out"
+        T=$(mktemp -d); mkdir -p "$T/specs/features/SPEC-ZZ-001-smoke" "$T/memory" "$T/templates"; cp templates/*.md "$T/templates/"; cp memory/constitution.md "$T/memory/"
+        printf -- '---\nid: SPEC-ZZ-001\nkind: feature-spec\nstatus: draft\n---\n' > "$T/specs/features/SPEC-ZZ-001-smoke/spec.md"; cp scripts/bash/*.sh "$T/"
+        out=$(cd "$T" && SDD_FEATURE_DIRECTORY=specs/features/SPEC-ZZ-001-smoke bash ./setup-plan.sh --json 2>&1) \
+            && [ -f "$T/specs/features/SPEC-ZZ-001-smoke/quickstart.md" ] && result "setup-plan (scratch)" ok || result "setup-plan (scratch)" fail "$out"
+        rm -rf "$T"
+    else
+        result "example bundle present" fail "$EXAMPLE missing"
+    fi
+fi
+
+if $HOOK; then
+    say "C5 high-risk-action guard"
+    if out=$(python3 .claude/hooks/verify-high-risk-guard.py 2>&1); then result "verify-high-risk-guard" ok; else result "verify-high-risk-guard" fail; printf '%s\n' "$out" | tail -5 | sed 's/^/      /'; fi
+fi
+
+if [ "$fails" = 0 ]; then say "check-corpus: all checks green"; else echo "check-corpus: $fails check(s) failed"; fi
+exit "$fails"
