@@ -65,7 +65,7 @@ class AsddState(unittest.TestCase):
         s = self.state()
         self.assertEqual(len(s["handoffs"]), 15)
         self.assertEqual(s["current_phase"], 14)
-        self.assertEqual(len(s["artifacts"]), 15)
+        self.assertEqual(len(s["artifacts"]), 15)  # keyed by path, one per phase
         self.assertEqual({h["phase"] for h in s["handoffs"] if h["human_gate"]}, HUMAN_GATES)
 
     def test_blocked_halts_and_exits_two(self):
@@ -76,6 +76,32 @@ class AsddState(unittest.TestCase):
         rc, _, err = self.append(2)                      # pipeline must not advance
         self.assertEqual(rc, 1); self.assertIn("blocked", err)
         self.assertEqual(self.append(2, force=True)[0], 0)
+
+    def test_a_phase_cannot_go_backwards(self):
+        """R4-T3. The state accepted any phase in any order, so it could record a sequence the
+        lifecycle does not permit and the FINAL-REPORT would read it as fact."""
+        self.init(); self.append(5)
+        rc, _, err = self.append(3)
+        self.assertEqual(rc, 1); self.assertIn("runs forward", err)
+        self.assertEqual(self.append(5)[0], 1, "re-running the same phase also needs --force")
+        self.assertEqual(self.append(3, force=True)[0], 0)
+
+    def test_a_forward_jump_is_allowed_because_tiers_skip_phases(self):
+        """Right-sizing (ADR-0064) legitimately skips phases, so 0 → 14 must stay possible.
+        Only going backwards is the error."""
+        self.init()
+        self.assertEqual(self.append(0)[0], 0)
+        self.assertEqual(self.append(14, to="none (terminal)")[0], 0)
+
+    def test_artifacts_from_different_phases_do_not_collide(self):
+        """R4-T3. Keyed by basename, two phases each producing a `spec.md` left only the later
+        one — the state silently lost an artefact it exists to track."""
+        self.init()
+        self.append(4, artifacts=["specs/x/spec.md"])
+        self.append(5, artifacts=["specs/y/spec.md"])
+        arts = self.state()["artifacts"]
+        self.assertEqual(set(arts), {"specs/x/spec.md", "specs/y/spec.md"})
+        self.assertEqual(arts["specs/x/spec.md"], 4)
 
     # --- validation rules from the schema ---------------------------------------------------------
     def test_blocked_without_reason_is_refused(self):

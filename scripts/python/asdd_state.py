@@ -92,7 +92,7 @@ def validate_state(s):
     if not isinstance(s.get("blocked"), bool):
         raise SchemaError("blocked must be a boolean")
     if not isinstance(s.get("artifacts"), dict):
-        raise SchemaError("artifacts must be an object")
+        raise SchemaError("artifacts must be an object keyed by path")
     if not isinstance(s.get("handoffs"), list):
         raise SchemaError("handoffs must be a list")
     for h in s["handoffs"]:
@@ -151,6 +151,11 @@ def cmd_append(a):
         print(f"pipeline is blocked at phase {last.get('phase')}: {last.get('reason')}\n"
               f"resolve it and re-run, or pass --force to override deliberately", file=sys.stderr)
         return 1
+    last = s["handoffs"][-1]["phase"] if s["handoffs"] else None
+    if last is not None and a.phase <= last and not a.force:
+        print(f"phase {a.phase} would follow phase {last}: the 15-phase lifecycle runs forward. "
+              f"A re-run of the same phase, or a deliberate jump, needs --force.", file=sys.stderr)
+        return 1
     h = validate_handoff({
         "status": a.status,
         "phase": a.phase,
@@ -165,8 +170,10 @@ def cmd_append(a):
     s["handoffs"].append(h)
     s["current_phase"] = h["phase"]
     s["blocked"] = h["status"] == "blocked"
+    # Keyed by PATH. Keying by basename silently dropped artefacts: two phases each producing a
+    # `spec.md` left only the later one, and the state is what the FINAL-REPORT reads.
     for art in h["artifacts"]:
-        s["artifacts"][os.path.basename(art)] = art
+        s["artifacts"][art] = h["phase"]
     save(s)
     gate = " [HUMAN GATE]" if h["human_gate"] else ""
     print(f"phase {h['phase']} {h['status']} — {h['agent']} → {h['handoff_to']}{gate}")
@@ -196,8 +203,8 @@ def cmd_show(a):
             print(f"        reason: {h['reason']}")
     if s["artifacts"]:
         print("  artifacts:")
-        for k, v in sorted(s["artifacts"].items()):
-            print(f"    {k}: {v}")
+        for path, phase in sorted(s["artifacts"].items()):
+            print(f"    phase {phase}: {path}")
     return 0
 
 
