@@ -13,6 +13,9 @@ authorises them.
 
 - `LICENSE` (MIT), `CITATION.cff` and a README license section (#2).
 - `version.txt` (1.0.0) and this changelog (#3).
+- `docs/ai-governance/nist-ai-rmf.md` rewritten by category identifier (GOVERN 1–6, MAP 1–5,
+  MEASURE 1–4, MANAGE 1–4; 19 categories, 72 subcategories), with a declared use-case profile,
+  coverage and gap per category, and only verified subcategory ids cited; REM-019 opened (#26).
 - `docs/compliance/iso42001-scope-and-soa.md` (scope, interested parties, clauses 4–10, Statement
   of Applicability over the nine Annex A objectives, certification posture) and
   `iso42001-annex-a-control-matrix.md`; REM-015 to REM-018 opened for the clause 6, 9, 10 and A.2

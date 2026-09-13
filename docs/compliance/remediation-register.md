@@ -29,6 +29,7 @@
 | **REM-016** | P2 | **No single AI risk register** (ISO/IEC 42001 clause 6.1; EU AI Act Art. 9). Risks are documented across DPIAs, threat models and ADR consequence sections, so top AI risks and residual-risk acceptance cannot be read from one place. | ISO/IEC 42001 cl. 6.1, EU AI Act Art. 9 (`ART-9` gap in the control matrix). | AI Governance Lead | Next quarterly review |
 | **REM-017** | P3 | **The AI policy is not named as a policy** (ISO/IEC 42001 A.2). `memory/constitution.md` is stronger than most AI policies but an auditor searching for "the AI policy" does not find it. | ISO/IEC 42001 A.2. Presentation gap, not a control gap. | AI Governance Lead | With the next constitution amendment |
 | **REM-018** | P3 | **No nonconformity register for the management system itself** (ISO/IEC 42001 clause 10). Corrective action exists for incidents; management-system nonconformities have no home. | ISO/IEC 42001 cl. 10.2. | AI Governance Lead | Before pursuing certification |
+| **REM-019** | P3 | **NIST AI RMF mapped at category level only.** The 19 categories are assessed; the 72 subcategories are not mapped individually because their titles require the NIST Playbook export rather than recall. | Prevents comparison against a sector profile or another organisation's assessment. NIST AI 100-1. | AI Governance Lead | Next quarterly review |
 
 ---
 
