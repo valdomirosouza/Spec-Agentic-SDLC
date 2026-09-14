@@ -36,6 +36,10 @@ ELEVATED = (
     re.compile(r'\bgh\s+label\s+create\b'),
     re.compile(r'\bgh\s+release\s+create\b'),
     re.compile(r'\bgit\s+push\b'),
+    # `gh api` does whatever the others do and more: `gh api -X POST …/issues` creates an issue
+    # without naming the verb. No workflow uses it today; the door was simply never closed, and
+    # round 12 showed what it costs to learn of a missing grant on the first run (R13-T2).
+    re.compile(r'\bgh\s+api\b'),
 )
 
 

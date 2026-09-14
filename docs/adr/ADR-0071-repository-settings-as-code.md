@@ -67,6 +67,7 @@ later. The scope is widened here rather than a second ADR being opened.
 | `git push` (topic branch) | `contents: write` | workflow `permissions:` | granted |
 | `gh issue create`, `gh issue comment` | `issues: write` | workflow `permissions:` | granted |
 | `gh label create` | `issues: write` | workflow `permissions:` | granted |
+| `gh api` | whatever the called method needs — it is a general client, so the row must name the method | workflow `permissions:` and/or repository settings | **unused; declare the method before using it** |
 | `gh pr create` | Settings → Actions → **Allow GitHub Actions to create and approve pull requests** | repository settings, outside this repo | **not granted — no longer used** |
 
 `scripts/python/check_workflow_grants.py` fails when a workflow uses an elevated verb this table

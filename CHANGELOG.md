@@ -259,6 +259,18 @@ authorises them.
 
 ### Fixed
 
+- **Eighteen gaps declared in the control matrices carried no deadline, and the checker could not
+  see them.** It globbed `**/*.md`, so the mechanism built to end undated deferrals had file-format
+  scope rather than conceptual scope; the matrices are YAML. Two of the gaps are EU AI Act
+  conformity obligations. All eighteen now carry an ISO date or a declared `on-event:`, staggered by
+  the reviewer who owns each matrix, and an unmarked item fails instead of alerting — a ratchet on a
+  number that reached zero (#104).
+- One matrix gap was stale: it said no monitoring cycle had been executed, and the first cycle is
+  recorded in `docs/sre/monitoring/2026-09-13-first-cycle.md`. A compliance matrix that overstates
+  its gaps is inaccurate in the other direction (#104).
+- `gh api` joins the closed list of elevated workflow verbs. It does whatever the others do and
+  more, and was never declared; no workflow uses it, so the door was simply open (#105).
+
 - `--no-suites` gates every block that only runs a test suite, not just one. It gated one when
   introduced, so `test_corpus_metrics.py` still ran under it and that suite calls `--report`,
   rewriting the measurement in the middle of a harness run. The new leak guard is what surfaced it,

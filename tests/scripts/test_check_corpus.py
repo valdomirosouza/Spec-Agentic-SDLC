@@ -541,6 +541,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      "| `gh label create` |", "| `gh label made` |"),
             "elevated workflow verbs are declared")
 
+    def test_a_yaml_gap_without_a_deadline_is_caught(self):
+        """R13-T1. The deadline mechanism had file-format scope, not conceptual scope: it watched
+        Markdown tables under an `Open items` heading and never saw the eighteen gaps declared in
+        the control matrices, two of them EU AI Act conformity obligations."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/security/asvs-control-matrix.yaml",
+                     r'^(\s*)resolve_by: "2026-\d\d-\d\d"\n', "", regex=True),
+            "open items carry a date")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

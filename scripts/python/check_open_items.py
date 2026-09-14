@@ -41,6 +41,11 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 # which the floors below caught immediately.
 HEADING = re.compile(r"^#+\s+.*\bopen\s+(items?|findings?)\b", re.I)
 ISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
+# Deferred work declared in YAML. The mechanism had file-format scope rather than conceptual scope:
+# it watched Markdown tables under an "Open items" heading and never saw the eighteen gaps declared
+# in the control matrices, two of which are EU AI Act conformity obligations (R13-T1).
+GAP_FIELD = re.compile(r'^(\s*)gap:\s*(?:>-\s*)?(.*)$', re.M)
+RESOLVE_BY = re.compile(r'^\s*resolve_by:\s*(.+?)\s*$', re.M)
 ON_EVENT = re.compile(r"^on-event:\s*\S")
 # Rows that are the table's own furniture, not items.
 FURNITURE = {"", "-", "—", "resolve by", "prazo", "when", "due", "suggested target",
@@ -94,6 +99,37 @@ def rows():
     return out
 
 
+def yaml_gaps():
+    """(path, line, resolve_by) for every `gap:` declared in a YAML file under specs/.
+
+    A gap is deferred work by any reasonable reading, so it owes what every other deferral owes: a
+    date or a named trigger. The value is read from the sibling `resolve_by:` field rather than from
+    the prose, because prose is where "next quarterly review" lived before round 9."""
+    out = []
+    for path in sorted(glob.glob(os.path.join(ROOT, "specs", "**", "*.yaml"), recursive=True)):
+        rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+        try:
+            with open(path, encoding="utf-8") as fh:
+                text = fh.read()
+        except (OSError, UnicodeDecodeError):
+            continue
+        lines = text.split("\n")
+        for m in GAP_FIELD.finditer(text):
+            n = text[:m.start()].count("\n") + 1
+            indent = len(m.group(1))
+            # The sibling resolve_by is the next key at the same indent, before the next list item.
+            resolve = ""
+            for line in lines[n:]:
+                if line.strip().startswith("- ") and (len(line) - len(line.lstrip())) <= indent:
+                    break
+                mm = RESOLVE_BY.match(line)
+                if mm and (len(line) - len(line.lstrip())) == indent:
+                    resolve = mm.group(1).strip().strip('"\'')
+                    break
+            out.append((rel, n, resolve))
+    return out
+
+
 def classify(cell):
     low = cell.strip().lower()
     if low in FURNITURE:
@@ -112,6 +148,13 @@ def audit(today=None):
     today = today or datetime.date.today()
     buckets = {"dated": [], "on-event": [], "unmarked": [], "done": [], "furniture": []}
     overdue = []
+    for rel, n, cell in yaml_gaps():
+        kind, due = classify(cell)
+        if kind == "furniture":          # an empty resolve_by is unmarked, not furniture
+            kind = "unmarked"
+        buckets[kind].append((rel, n, cell))
+        if kind == "dated" and due < today:
+            overdue.append((rel, n, cell, (today - due).days))
     for rel, n, cell, _cells in rows():
         kind, due = classify(cell)
         buckets[kind].append((rel, n, cell))
@@ -196,11 +239,15 @@ def main(argv=None):
                   "`on-event: <trigger>`", file=sys.stderr)
             return 1
         if unmarked:
+            # A failure now, not a note. It alerted while 31 items were unmarked, because failing
+            # then would have blocked every commit on a backlog nobody had had a chance to clear.
+            # The backlog is clear, so the alert becomes a gate — a ratchet on a number that reached
+            # zero, not a rule quietly tightened (R13-T1).
             print(f"{len(unmarked)} open item(s) carry neither a date nor `on-event:` — "
-                  f"they cannot become overdue, so nothing will ever surface them")
+                  f"they cannot become overdue, so nothing will ever surface them:", file=sys.stderr)
             for rel, n, cell in unmarked[:10]:
-                print(f"  {rel}:{n}  {cell[:60]}")
-            return 0
+                print(f"  {rel}:{n}  {cell[:60]}", file=sys.stderr)
+            return 1
         if not a.quiet:
             print(f"open items: {len(dated)} dated, {len(evented)} on-event, none overdue, "
                   f"across {len(_TABLES)} table(s)")
