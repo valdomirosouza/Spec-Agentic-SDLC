@@ -39,9 +39,27 @@ class Parsing(unittest.TestCase):
 class Categories(unittest.TestCase):
     """R9-T2. One number over all checks protects an average and orients nothing."""
 
-    def test_a_runner_line_is_not_logic(self):
-        self.assertEqual(mc.category("tests/scripts/test_x.py"), "runner")
+    def test_a_real_runner_line_is_not_logic(self):
+        """Derived from the body: the call site runs the very file the check is named after."""
         self.assertEqual(mc.category("verify-high-risk-guard"), "runner")
+        self.assertEqual(mc.category("tests/scripts/test_check_changelog.py"), "runner")
+
+    def test_a_name_that_looks_like_a_runner_but_runs_nothing_is_logic(self):
+        """R10-T1. Classifying by name prefix let a check carrying real logic exempt itself by
+        calling itself `tests/scripts/pretend_runner.py` — round 8's finding, that a gate counts
+        names instead of behaviour, reproduced inside the fix written for it.
+
+        The threat closed here is drift: a line that starts as a genuine runner and later grows an
+        assertion inline while keeping its name."""
+        self.assertEqual(mc.category("tests/scripts/never-mentioned-anywhere.py"), "logic")
+
+    def test_the_declared_exceptions_still_name_files_that_exist(self):
+        """Two runner lines cannot be derived — one has a suffix in its name, the other is a
+        make-style target. Declared by name, so a stale declaration is visible."""
+        for name, target in mc.RUNNER_BY_DECLARATION.items():
+            self.assertIn(name, mc.named_checks(), name)
+            self.assertTrue(os.path.isfile(os.path.join(HERE, target)), target)
+            self.assertEqual(mc.category(name), "runner", name)
 
     def test_a_smoke_only_check_is_exempt_by_name_not_by_accident(self):
         for name in mc.EXEMPT_SMOKE_ONLY:
@@ -67,13 +85,15 @@ class Categories(unittest.TestCase):
         finally:
             mc.named_checks = real
 
-    def test_an_unproved_runner_line_does_not(self):
-        real = mc.named_checks
-        mc.named_checks = lambda: sorted(real() + ["tests/scripts/test_brand_new.py"])
-        try:
-            self.assertEqual(mc.coverage()["logic_unproved"], [])
-        finally:
-            mc.named_checks = real
+    def test_a_genuine_unproved_runner_line_is_not_demanded(self):
+        """Rewritten for the body-derived classifier. The previous version added a NAME with no
+        call site, which the derivation correctly reads as logic — the test was specified against
+        the classifier it replaced."""
+        c = mc.coverage()
+        self.assertTrue(c["runner_unproved"], "the corpus has unproved runner lines to check")
+        for name in c["runner_unproved"]:
+            self.assertEqual(mc.category(name), "runner", name)
+            self.assertNotIn(name, c["logic_unproved"])
 
 
 class Vacuity(unittest.TestCase):

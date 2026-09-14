@@ -389,6 +389,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             MovedAway("docs/sre/corpus-metrics-*.md"),
             "the corpus carries at least one measurement")
 
+    def test_a_runner_line_that_grows_logic_is_caught(self):
+        """R10-T1. Drift, not forgery: a line that genuinely runs a suite later gains an assertion
+        inline and keeps its name, which used to exempt it from ever needing a proof."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/check-corpus.sh",
+                     'if out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then',
+                     'if [ -f README.md ] && out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then'),
+            "mutation coverage has not fallen")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

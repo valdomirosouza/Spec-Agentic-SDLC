@@ -63,6 +63,11 @@ authorises them.
   contract. It is machine-readable data an adopter can consume and it gained a field this session
   with nothing to record the change; the gate is armed and cannot fire until a release ships the
   contract, which is stated rather than left to be discovered (#91).
+- The runner category is derived from the check's **body**, not its name: a call site whose whole
+  condition is running the test file it is named after. Classifying by name prefix let a check
+  carrying real logic exempt itself by being called `tests/scripts/pretend_runner.py` — round 8's
+  finding, that a gate counts names instead of behaviour, reproduced inside the fix written for it
+  (#92).
 - Coverage is counted in three categories instead of one, and the rule is categorical: **every
   check carrying its own logic must be proved**, 35 of 35 today. Runner lines are not required,
   because a mutation for them would prove that breaking a suite breaks the build. Five smoke-only

@@ -40,7 +40,14 @@ BASELINE = os.path.join(ROOT, "tests", ".mutation-coverage-baseline.json")
 # costs 60 seconds against 7, so proving all five would add 300 seconds to a 242-second harness for
 # the checks that guard tooling rather than governance. `--no-suites` exists so that decision can be
 # revisited without recursing into the harness (R9-T2).
-RUNNER_PREFIXES = ("tests/", "verify-")
+# Two runner lines whose body does not run the file they are named after. Declared by name with
+# the reason, which is the only honest way to carry an exception a derivation cannot express.
+RUNNER_BY_DECLARATION = {
+    # Its name carries a suffix, so the path is not the name.
+    "tests/scripts/test_check_corpus.py (mutation)": "tests/scripts/test_check_corpus.py",
+    # A make-style target name over the hook's own regression suite.
+    "verify-high-risk-guard": ".claude/hooks/verify-high-risk-guard.py",
+}
 EXEMPT_SMOKE_ONLY = (
     "check-prerequisites (example)",
     "create-new-feature --dry-run",
@@ -50,8 +57,40 @@ EXEMPT_SMOKE_ONLY = (
 )
 
 
+_PURE_RUNNER = re.compile(r'^\s*if\s+out=\$\(\s*(?:python3|bash)\s+(\S+)[^)]*\)\s*;\s*then\b')
+
+
+def _runner_bodies():
+    """Check names whose call site does nothing but run the test file they are named after.
+
+    Derived from the BODY, not the name. Classifying by name prefix let a check carrying real logic
+    exempt itself by being called `tests/scripts/pretend_runner.py` — the round-8 finding, that a
+    gate counts names instead of behaviour, reproduced inside the fix written for it (R10-T1).
+
+    The threat this closes is drift, not forgery: a line that starts as a genuine suite runner and
+    later grows an assertion inline while keeping its name. Nobody names a rule `tests/…` by
+    accident, and deliberate subversion sits outside this suite's declared boundary either way."""
+    with open(VERIFIER, encoding="utf-8") as fh:
+        text = fh.read()
+    runners = set()
+    for name in named_checks():
+        target = RUNNER_BY_DECLARATION.get(name, name)
+        for line in text.split("\n"):
+            if f'result "{name}"' not in line:
+                continue
+            # The WHOLE condition must be the run, not merely contain it. A first version searched
+            # anywhere in the line, so prefixing `[ -f README.md ] &&` to a runner left it classified
+            # as a runner — the drift case this exists to catch, sailing past it. The mutation
+            # written for this check is what surfaced that.
+            m = _PURE_RUNNER.match(line)
+            if m and m.group(1) == target:
+                runners.add(name)
+            break
+    return runners
+
+
 def category(name):
-    if name.startswith(RUNNER_PREFIXES):
+    if name in _runner_bodies():
         return "runner"
     if name in EXEMPT_SMOKE_ONLY:
         return "exempt"
