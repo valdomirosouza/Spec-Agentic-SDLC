@@ -259,6 +259,8 @@ authorises them.
 
 ### Fixed
 
+- The cadence check and its proof follow the mechanism that now carries the report back: the branch
+  push and the compare link, not `gh pr create` (#99).
 - **The scheduled measurement ran for the first time and could not finish.** It measured, pushed
   its branch, then died on `gh pr create`: Actions may not create pull requests here, and that
   grant lives in repository settings rather than in the workflow — the thesis of ADR-0071 happening

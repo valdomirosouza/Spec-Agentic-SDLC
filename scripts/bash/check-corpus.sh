@@ -340,7 +340,16 @@ if [ -z "$sched_bad" ]; then
     grep -qE '^    - cron:' "$sched" || sched_bad="$sched_bad [no cron entry]"
     grep -q 'corpus_metrics.py --drift' "$sched" || sched_bad="$sched_bad [does not measure]"
     grep -q 'gh issue create' "$sched" || sched_bad="$sched_bad [movement is not reported anywhere]"
-    grep -q 'gh pr create' "$sched" || sched_bad="$sched_bad [report never returns to the repo, so no series forms]"
+    # The report has to get back to the repository AND someone has to be told how to land it.
+    # This asserted `gh pr create` until the first scheduled run died on exactly that: Actions may
+    # not create pull requests here. The property is unchanged; the mechanism that carries it is
+    # the branch push plus a compare link in the issue (#99).
+    # Matched on the flag, not on the verb: writing the verb here would make this very line trip
+    # the C8 invariant that no script performs an outward version-control action — which it did,
+    # and correctly, since that guard cannot tell a grep pattern from an invocation. Narrowing the
+    # pattern is the right answer; widening the guard's exclusions is the round-5 mistake.
+    grep -q -- '--force-with-lease origin' "$sched" || sched_bad="$sched_bad [report never returns to the repo, so no series forms]"
+    grep -q '/compare/main\.\.\.' "$sched" || sched_bad="$sched_bad [nobody is told how to land the branch]"
     awk '/^    steps:/{exit} /GH_TOKEN/{found=1} END{exit !found}' "$sched" || sched_bad="$sched_bad [token not declared at job level: the measurement step loses its CI rows]"
 fi
 [ -z "$sched_bad" ] \

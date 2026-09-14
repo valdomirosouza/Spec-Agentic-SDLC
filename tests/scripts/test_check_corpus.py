@@ -253,11 +253,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      r"^      GH_TOKEN:[^\n]*\n", "", regex=True),
             "measurement is scheduled")
 
-    def test_dropping_the_pull_request_that_forms_the_series_is_caught(self):
+    def test_dropping_the_way_the_report_gets_back_is_caught(self):
         """Without it the report is archived and never lands, so next week there is still exactly
-        one dated report and the comparison has nothing to compare against."""
+        one dated report and the comparison has nothing to compare against.
+
+        Retargeted from `gh pr create`, which the first scheduled run proved this repository will
+        not allow. The branch push is what carries the report back now (#99)."""
         self.assert_mutation_is_caught(
-            Mutation(".github/workflows/corpus-measure.yml", "gh pr create", "gh pr view"),
+            Mutation(".github/workflows/corpus-measure.yml",
+                     "git push --force-with-lease origin", "git ls-remote origin"),
             "measurement is scheduled")
 
     def test_removing_a_proof_from_this_file_is_caught(self):
