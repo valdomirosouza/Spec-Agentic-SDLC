@@ -19,6 +19,7 @@ vocabulary is explicit:
 """
 import argparse
 import datetime
+import json
 import glob
 import os
 import re
@@ -50,8 +51,12 @@ _TABLES = set()
 
 # Floors, raised deliberately. Renaming a covered heading makes its rows vanish from the count and
 # every remaining item still passes, so a silent scope collapse would look exactly like success.
-MIN_TABLES = 11
-MIN_ITEMS = 30
+# The floors used to be these two constants, written once and never raised, so every item added
+# widened the slack and nothing gave it back — the trajectory mutation coverage was on before it
+# got a baseline file. They live in a versioned baseline now, moved by a deliberate `--update`
+# that has to be justified in a commit (R8-T3). The baseline records the table PATHS, not just a
+# count, because a count cannot say which table went missing (the lesson of #79).
+BASELINE = os.path.join(ROOT, "tests", ".open-items-baseline.json")
 
 # A deadline loses its teeth when it arrives as a wall. Converting eleven "next quarterly review"
 # rows to the real quarterly date put every one of them on 2026-12-13: one morning the build turns
@@ -115,27 +120,66 @@ def audit(today=None):
     return buckets, overdue
 
 
+def read_baseline():
+    if not os.path.isfile(BASELINE):
+        return None
+    with open(BASELINE, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def write_baseline(buckets):
+    payload = {
+        "_comment": "Open-item scope ratchet (#78, #80, #86). Raising it is a deliberate act that "
+                    "belongs in a commit message; a table or item count that falls silently is a "
+                    "scope collapse, and a scope collapse looks exactly like success.",
+        "tables": sorted(_TABLES),
+        "items": sum(len(buckets[k]) for k in ("dated", "on-event", "unmarked")),
+    }
+    with open(BASELINE, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, indent=2)
+        fh.write("\n")
+    return payload
+
+
+def scope_problems(buckets):
+    base = read_baseline()
+    if base is None:
+        return [f"no open-items baseline at {os.path.relpath(BASELINE, ROOT)} — "
+                f"run: check_open_items.py --update"]
+    problems = []
+    gone = sorted(set(base.get("tables", [])) - _TABLES)
+    if gone:
+        problems.append(f"{len(gone)} open-item table(s) the baseline knows about are gone:")
+        problems.extend(f"    {g}" for g in gone)
+    items = sum(len(buckets[k]) for k in ("dated", "on-event", "unmarked"))
+    if items < base.get("items", 0):
+        problems.append(f"open items fell from {base['items']} to {items}")
+    return problems
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true")
+    ap.add_argument("--update", action="store_true",
+                    help="record the current tables and item count as the baseline")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
     buckets, overdue = audit()
     dated, evented, unmarked = buckets["dated"], buckets["on-event"], buckets["unmarked"]
 
+    if a.update:
+        p = write_baseline(buckets)
+        print(f"baseline set: {len(p['tables'])} table(s), {p['items']} item(s)")
+        return 0
+
     if a.check:
-        scope = []
-        if len(_TABLES) < MIN_TABLES:
-            scope.append(f"only {len(_TABLES)} open-item table(s) found, floor is {MIN_TABLES} — "
-                         f"a heading was renamed and its rows left the check silently")
-        items = len(dated) + len(evented) + len(unmarked)
-        if items < MIN_ITEMS:
-            scope.append(f"only {items} open item(s) found, floor is {MIN_ITEMS}")
+        scope = scope_problems(buckets)
         if scope:
+            print("open-item scope regressed:", file=sys.stderr)
             for line in scope:
-                print(line, file=sys.stderr)
-            print("  raise the floors in check_open_items.py deliberately if the shrink is real",
-                  file=sys.stderr)
+                print(f"  {line}", file=sys.stderr)
+            print("  restore the table, or move the baseline deliberately with --update and say "
+                  "why in the commit", file=sys.stderr)
             return 1
         import collections as _c
         crowded = [(d, n) for d, n in _c.Counter(c for _, _, c in dated).items()

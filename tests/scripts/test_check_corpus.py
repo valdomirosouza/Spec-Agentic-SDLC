@@ -208,6 +208,8 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             # first attempt at widening the pattern.
             Mutation("specs/data/data-quality.md", "## 10. Open items", "## 10. Pending"),
             "open items carry a date")
+        # The scope ratchet now names the table that vanished; before #86 the floors were constants
+        # that widened into non-guards as items were added.
 
     def test_a_breaking_entry_without_a_declared_next_version_is_caught(self):
         """R7-T5. ADR-0057 says version.txt follows SemVer and nothing exercised it. A BREAKING

@@ -47,6 +47,9 @@ authorises them.
 - The open-item checker covers `Open finding(s)` headings and numbered headings, not only the
   literal `Open items`, and carries floors on the number of tables and items it sees. DQ-REG-006,
   the corpus's only live open finding, sat outside the old scope (#80).
+- The open-item scope floors became a versioned baseline with `--update`, recording the table
+  paths so a failure names which table vanished. They were constants nobody raised, so every item
+  added widened the slack and nothing gave it back (#86).
 - Mutation coverage rose from 19 to 28 of 53 checks, chosen by a stated criterion — the checks
   that guard the guardrails, meaning the C8 governance invariants and the constitutional
   assertions — rather than to reach a percentage. The harness now prints its wall clock, because

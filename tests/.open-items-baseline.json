@@ -1,0 +1,17 @@
+{
+  "_comment": "Open-item scope ratchet (#78, #80, #86). Raising it is a deliberate act that belongs in a commit message; a table or item count that falls silently is a scope collapse, and a scope collapse looks exactly like success.",
+  "tables": [
+    "docs/ai-governance/model-registry.md",
+    "docs/compliance/remediation-register.md",
+    "docs/data/data-catalog.md",
+    "docs/privacy/sub-processor-register.md",
+    "specs/ai/red-team-program.md",
+    "specs/compliance/ai-post-market-monitoring.md",
+    "specs/data/data-lineage.md",
+    "specs/data/data-quality.md",
+    "specs/privacy/test-data-management.md",
+    "specs/privacy/training-data-governance.md",
+    "templates/research-template.md"
+  ],
+  "items": 31
+}

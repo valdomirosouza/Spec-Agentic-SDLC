@@ -55,6 +55,34 @@ class LiveCorpus(unittest.TestCase):
         buckets, _ = oi.audit()
         self.assertGreater(len(buckets["dated"]) + len(buckets["on-event"]), 20)
 
+    def test_the_scope_baseline_names_the_table_that_vanished(self):
+        """R8-T3. The floors were constants nobody raised: every item added widened the slack and
+        nothing gave it back. A count also cannot say WHICH table disappeared (the lesson of #79)."""
+        buckets, _ = oi.audit()
+        base = oi.read_baseline()
+        self.assertIsNotNone(base, "a committed baseline is what makes this a ratchet")
+        real = oi._TABLES
+        oi._TABLES = set(list(real)[:-1])
+        try:
+            problems = oi.scope_problems(buckets)
+        finally:
+            oi._TABLES = real
+        self.assertTrue(problems)
+        self.assertIn("are gone", problems[0])
+
+    def test_the_live_scope_satisfies_the_committed_baseline(self):
+        buckets, _ = oi.audit()
+        self.assertEqual(oi.scope_problems(buckets), [])
+
+    def test_a_missing_baseline_fails_rather_than_passing(self):
+        real = oi.BASELINE
+        oi.BASELINE = os.path.join(HERE, "tests", ".absent-baseline.json")
+        try:
+            buckets, _ = oi.audit()
+            self.assertTrue(oi.scope_problems(buckets))
+        finally:
+            oi.BASELINE = real
+
     def test_no_date_carries_more_items_than_the_limit(self):
         """R7-T4. Converting eleven quarterly deferrals to the real quarterly date put every one on
         the same day: one morning the build turns red for everyone and the cheapest way out is to
