@@ -146,8 +146,23 @@ jobs:
             echo
             echo "This is expected while the series forms: the comparison needs a report older than"
             echo "the one this run produces. It stops once a dated report has been landed and aged."
-            echo "If this note keeps arriving week after week, the pull requests this job opens are"
-            echo "not being merged, and that is the finding."
+            echo
+            # Cause and symptom belong in the same place. Without this, a series that stalls because
+            # nobody merges the measurement pull requests reports only that no baseline exists, and
+            # the reader has no way to connect the two (#87).
+            pending=$(gh pr list --state open --search "chore(sre): corpus measurement in:title" \
+                        --json number,title,createdAt \
+                        --jq '.[] | "- #\(.number) \(.title) — opened \(.createdAt[0:10])"' || true)
+            if [ -n "$pending" ]; then
+              echo "**Measurement pull requests still open.** The series cannot form until these land:"
+              echo
+              echo "$pending"
+              echo
+              echo "That is the cause of this note, not a separate problem."
+            else
+              echo "No measurement pull request is waiting, so nothing is blocked: the reports"
+              echo "landed and simply are not old enough yet."
+            fi
             echo
             echo "Run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
           } > "$body_file"

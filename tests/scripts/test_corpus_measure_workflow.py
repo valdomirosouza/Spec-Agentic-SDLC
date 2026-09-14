@@ -81,6 +81,16 @@ class Wiring(unittest.TestCase):
         self.assertNotRegex(branch.split("--title")[1].split("\n")[0] if "--title" in branch else "",
                             re.compile(r"moved", re.I))
 
+    def test_the_no_baseline_note_names_the_pull_requests_blocking_the_series(self):
+        """R8-T4. A series that stalls because nobody merges the measurement pull requests reports
+        only that no baseline exists. Cause and symptom sat in different places, and the reader had
+        no way to connect them."""
+        branch = self.t.split("Note that no comparison was possible")[1]
+        self.assertIn("gh pr list", branch,
+                      "the no-baseline note must look at the pull requests it depends on")
+        self.assertIn("--state open", branch)
+        self.assertIn("That is the cause of this note", branch)
+
     def test_a_crash_does_not_become_a_movement_report(self):
         """An unhandled exception also exits 1. Branching on the code alone would have filed a
         `numbers moved` issue describing a result nobody obtained."""

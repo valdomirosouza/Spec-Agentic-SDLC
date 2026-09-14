@@ -47,6 +47,8 @@ authorises them.
 - The open-item checker covers `Open finding(s)` headings and numbered headings, not only the
   literal `Open items`, and carries floors on the number of tables and items it sees. DQ-REG-006,
   the corpus's only live open finding, sat outside the old scope (#80).
+- The weekly no-baseline note lists the measurement pull requests still open, so a series that
+  stalls because nobody merges them says so instead of only reporting that no baseline exists (#87).
 - The open-item scope floors became a versioned baseline with `--update`, recording the table
   paths so a failure names which table vanished. They were constants nobody raised, so every item
   added widened the slack and nothing gave it back (#86).
