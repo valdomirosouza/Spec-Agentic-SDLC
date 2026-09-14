@@ -372,6 +372,17 @@ else
     printf '%s\n' "$out" | head -5 | sed 's/^/      /'
 fi
 
+# Every throttled response names the caller's budget. The corpus published a standard requiring
+# X-RateLimit-Limit/Remaining and Retry-After on every 429, and its own OpenAPI declared a 429 with
+# none of the three — a caller could not learn its budget or when to return, so it would retry at
+# once, which is the load the limit exists to prevent (REL-T2).
+if out=$(python3 scripts/python/check_rate_limit_contract.py --check --quiet 2>&1); then
+    result "throttled responses name the caller's budget" ok
+else
+    result "throttled responses name the caller's budget" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
 # A change to something that executes or binds owes a changelog entry. CLAUDE.md §7 has said so
 # all along and §7.1 describes the gate that enforces it — in the ADOPTING repository. Nothing
 # enforced it here, and seven commits of round 5, including a breaking schema change, landed with

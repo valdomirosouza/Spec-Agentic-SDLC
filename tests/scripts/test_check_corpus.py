@@ -450,6 +450,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             MovedAway("specs/features/SPEC-LGS-001-log-based-golden-signals"),
             "example bundle present", args=self.SMOKE_ARGS)
 
+    def test_a_throttled_response_without_retry_after_is_caught(self):
+        """REL-T2. The standard requires three headers on every 429; the published contract carried
+        none. A caller that cannot read its budget discovers the ceiling by hitting it, and without
+        Retry-After it returns immediately — the load the limit exists to prevent."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/api/openapi/v1/openapi.yaml",
+                     '            Retry-After: { $ref: "#/components/headers/RetryAfter" }\n', ""),
+            "throttled responses name the caller's budget")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

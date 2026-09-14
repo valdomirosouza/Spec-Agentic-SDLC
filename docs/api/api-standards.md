@@ -73,10 +73,15 @@ list (unchanged body). Implemented for `GET /v1/hitl/requests`; reusable helper:
   standard `X-RateLimit-*` headers. The agent-concurrency backpressure path returns **503** with an
   explicit `Retry-After`.
 
-### Rate limiting — **Target**
+### Rate limiting — **Current** (was Target until 2026-09-14)
 
-- Document the limit/window per endpoint in OpenAPI and guarantee `X-RateLimit-Limit`,
-  `X-RateLimit-Remaining`, and `Retry-After` on every throttled response (see `docs/api/error-model.md`).
+- Every `429` in a contract this repository publishes declares `X-RateLimit-Limit`,
+  `X-RateLimit-Remaining` and `Retry-After`, enforced by
+  `scripts/python/check_rate_limit_contract.py` and proved by mutation. Until the audit of
+  2026-09-14 this line sat under **Target** while the published OpenAPI declared a `429` carrying
+  none of the three.
+- **Still Target:** documenting the limit and window *per endpoint*. The headers say what the
+  budget is at response time; they do not let a caller plan before sending.
 
 ## 7. Idempotency — **Current** (ADR-0077)
 

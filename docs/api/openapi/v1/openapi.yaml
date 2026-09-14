@@ -103,7 +103,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "429":
-          description: Too Many Requests (ADR-0076 envelope)
+          description: >-
+            Too Many Requests (ADR-0076 envelope). Per-caller budget exceeded; see api-standards.md
+            §6. The three headers below are guaranteed on every throttled response.
+          headers:
+            X-RateLimit-Limit: { $ref: "#/components/headers/RateLimitLimit" }
+            X-RateLimit-Remaining: { $ref: "#/components/headers/RateLimitRemaining" }
+            Retry-After: { $ref: "#/components/headers/RetryAfter" }
           content:
             application/json:
               schema:
@@ -728,6 +734,23 @@ components:
         trace_id: 0af7651916cd43dd8448eb211c80319c
 
   headers:
+    RateLimitLimit:
+      description: >-
+        Requests allowed in the current window for this caller. The limiter buckets by JWT `sub`
+        when the request is authenticated and by client IP otherwise, so this is the caller's own
+        budget, not a global one (api-standards.md §6).
+      schema: { type: integer, minimum: 1 }
+      example: 60
+    RateLimitRemaining:
+      description: Requests left in the current window for this caller.
+      schema: { type: integer, minimum: 0 }
+      example: 0
+    RetryAfter:
+      description: >-
+        Seconds until the caller may retry. Required on every throttled response: without it a
+        well-behaved client retries immediately, which is the load the limit exists to prevent.
+      schema: { type: integer, minimum: 0 }
+      example: 37
     XRequestId:
       description: Correlation id, set on every response (accepted inbound, else generated). ADR-0076.
       schema:

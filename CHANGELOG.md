@@ -259,6 +259,10 @@ authorises them.
 
 ### Fixed
 
+- **The published OpenAPI declared a `429` with none of the three rate-limit headers its own
+  standard requires.** A caller could not read its budget or learn when to return, so it would
+  retry at once — the load the limit exists to prevent. The headers are declared and attached, the
+  example spec's contract too, and a gate keeps them there (#96).
 - **ADR-0075 published a limitation the gate lifecycle recorded as closed.** The ADR said the chaos
   smoke did not run in PR CI and deferred the wiring to `W2-10`; `docs/governance/gate-lifecycle.md`
   records that gate as **blocking** since shortly after. Three months of readers of the normative

@@ -86,7 +86,7 @@ paths:
         "202": { description: accepted, content: { application/json: { schema: { $ref: "#/components/schemas/IngestionResult" } } } }
         "401": { description: missing or invalid key (FR-10) }
         "422": { description: malformed batch }
-        "429": { description: rate limit exceeded (FR-11); Retry-After header, headers: { Retry-After: { schema: { type: integer } } } }
+        "429": { description: "per-key budget exceeded (FR-11); the three headers below are guaranteed", headers: { X-RateLimit-Limit: { schema: { type: integer } }, X-RateLimit-Remaining: { schema: { type: integer } }, Retry-After: { schema: { type: integer } } } }
   /analytics:
     get:
       summary: Percentiles per path, signal and window (FR-07, FR-12, FR-13)
