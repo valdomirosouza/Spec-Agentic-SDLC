@@ -259,6 +259,9 @@ authorises them.
 
 ### Fixed
 
+- **The abuse-surface question is now asked by a gate, not by a template row.** Every live feature
+  spec must address it, satisfied by the posture row *or* by a threat-surface entry — demanding the
+  template's shape would have rejected the spec that handles the concern best (#97).
 - **The published OpenAPI declared a `429` with none of the three rate-limit headers its own
   standard requires.** A caller could not read its budget or learn when to return, so it would
   retry at once — the load the limit exists to prevent. The headers are declared and attached, the

@@ -459,6 +459,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      '            Retry-After: { $ref: "#/components/headers/RetryAfter" }\n', ""),
             "throttled responses name the caller's budget")
 
+    def test_a_feature_spec_silent_on_abuse_is_caught(self):
+        """REL-T3. The posture row was section-filling. Removing the threat-surface row that carries
+        the concern in SPEC-FEAT-001 must fail: a first version of the check found the words in an
+        Assumptions row instead and stayed green."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/features/SPEC-FEAT-001-http-golden-signals/spec.md",
+                     r"^\| Label-cardinality exhaustion[^\n]*\n", "", regex=True),
+            "live feature specs address their abuse surface")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

@@ -372,6 +372,17 @@ else
     printf '%s\n' "$out" | head -5 | sed 's/^/      /'
 fi
 
+# A live feature spec says something about its abuse surface. The template's posture row and the
+# Reliability line in the NFR taxonomy were section-filling: nothing failed a spec that omitted them
+# (REL-T3). Either the posture row or a threat-surface entry satisfies this — demanding one shape
+# would have rejected the spec that handles the concern best.
+if out=$(python3 scripts/python/check_abuse_surface.py --check --quiet 2>&1); then
+    result "live feature specs address their abuse surface" ok
+else
+    result "live feature specs address their abuse surface" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
 # Every throttled response names the caller's budget. The corpus published a standard requiring
 # X-RateLimit-Limit/Remaining and Retry-After on every 429, and its own OpenAPI declared a 429 with
 # none of the three — a caller could not learn its budget or when to return, so it would retry at

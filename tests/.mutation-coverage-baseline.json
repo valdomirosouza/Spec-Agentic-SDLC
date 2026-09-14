@@ -1,7 +1,7 @@
 {
   "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering it \u2014 including by deleting checks \u2014 is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 54,
-  "proved": 41,
+  "named": 55,
+  "proved": 42,
   "checks": [
     "ADR-0022 declares exactly one floor",
     "adopter-paths",
@@ -25,6 +25,7 @@
     "frontmatter",
     "gates: 13 blocking, 9 requiring a human",
     "links",
+    "live feature specs address their abuse surface",
     "mutation coverage has not fallen",
     "no unqualified speedup ratio is published",
     "only vcs.sh creates a branch, and only behind the protected-name guard",
