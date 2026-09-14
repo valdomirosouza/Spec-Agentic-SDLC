@@ -59,6 +59,15 @@ authorises them.
 - The open-item scope floors became a versioned baseline with `--update`, recording the table
   paths so a failure names which table vanished. They were constants nobody raised, so every item
   added widened the slack and nothing gave it back (#86).
+- Mutation coverage rose to 34 of 53, closing the seven checks that could be switched off by
+  widening a filter without changing a word of the output. Proving a check also defends it against
+  widening: with the rule widened, the proof itself goes red — measured before the work was
+  planned. A removal primitive was added to the harness for the one check that counts files and so
+  cannot be perturbed by editing one (#89).
+- **The coverage number was inflated by ambiguous proofs.** A proof name matched anywhere inside a
+  check name, so `check_control_matrix` also counted for
+  `tests/scripts/test_check_control_matrix.py`. An exact name now wins outright and any other proof
+  must match exactly one check; ambiguity is reported like an orphan (#89).
 - Mutation coverage rose from 19 to 28 of 53 checks, chosen by a stated criterion — the checks
   that guard the guardrails, meaning the C8 governance invariants and the constitutional
   assertions — rather than to reach a percentage. The harness now prints its wall clock, because

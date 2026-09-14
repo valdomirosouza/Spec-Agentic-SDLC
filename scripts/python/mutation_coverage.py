@@ -109,19 +109,28 @@ def coverage():
     line, so the mapping here has to use that same rule — anything stricter would report checks as
     unproved that the harness does in fact prove."""
     names, proofs = named_checks(), proved_names()
-    covered, orphan = set(), []
+    covered, orphan, ambiguous = set(), [], []
     for p in proofs:
-        hits = [n for n in names if p in n]
-        if hits:
+        # An exact name is unambiguous by definition and wins outright; otherwise the proof must
+        # match exactly one check. A bare substring let one proof count for two checks —
+        # `check_control_matrix` also matched `tests/scripts/test_check_control_matrix.py` — so the
+        # number was inflated by proofs that cannot say which check they proved (R9-T1). Anchoring
+        # at the start instead was too strict and dropped legitimate mid-name proofs; both wrong
+        # answers were measured before this one was kept.
+        hits = [p] if p in names else [n for n in names if p in n]
+        if len(hits) == 1:
             covered.update(hits)
-        else:
+        elif not hits:
             orphan.append(p)
+        else:
+            ambiguous.append((p, hits))
     return {
         "named": len(names),
         "proved": len(covered),
         "mutations": len(proofs),
         "unproved": sorted(set(names) - covered),
         "orphan_mutations": orphan,
+        "ambiguous_mutations": ambiguous,
     }
 
 
@@ -197,6 +206,9 @@ def main(argv=None):
         if c["orphan_mutations"]:
             problems.append("mutation names no live check: "
                             + ", ".join(repr(o) for o in c["orphan_mutations"]))
+        for name, hits in c.get("ambiguous_mutations", []):
+            problems.append(f"mutation {name!r} matches {len(hits)} checks and so cannot say which "
+                            f"it proved: {hits}")
         # A new check with no proof does not lower `proved`, so the count alone would not catch it.
         # The ratio does: adding an unproved check moves it down.
         was = base["proved"] / base["named"] if base["named"] else 0

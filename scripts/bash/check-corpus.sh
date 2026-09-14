@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deterministic validation of the Spec-Agentic-SDLC corpus (issue #11). Runs locally and in CI.
 #
-# Usage: check-corpus.sh [--quiet] [--no-smoke] [--no-hook]
+# Usage: check-corpus.sh [--quiet] [--no-smoke] [--no-hook] [--no-suites]
 #
 # Checks
 #   C1 internal Markdown links resolve (adopter-provided paths, placeholders and archived
@@ -38,8 +38,8 @@
 #      (scripts/python/build_spec_registry.py --check) — the drift that left it at 50 of 58
 # Exit code = number of failing checks (0 = green).
 set -u
-QUIET=false; SMOKE=true; HOOK=true
-for a in "$@"; do case "$a" in --quiet) QUIET=true ;; --no-smoke) SMOKE=false ;; --no-hook) HOOK=false ;; --help|-h) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; esac; done
+QUIET=false; SMOKE=true; HOOK=true; SUITES=true
+for a in "$@"; do case "$a" in --quiet) QUIET=true ;; --no-smoke) SMOKE=false ;; --no-suites) SUITES=false ;; --no-hook) HOOK=false ;; --help|-h) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; esac; done
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/common.sh"
 ROOT=$(get_repo_root); cd "$ROOT"
@@ -436,7 +436,7 @@ else
     result "spec evidence paths resolve or carry an explicit marker" ok "every path resolves or is marked"
 fi
 
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     # The verifier's own test: every entry injects a defect and requires THAT check to fail.
     # Slow (it re-runs check-corpus once per mutation), so it is behind --no-smoke like the rest.
     # Wall clock, printed on every run. Each proof pays one full verifier run, and the number of

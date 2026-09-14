@@ -63,6 +63,33 @@ class Mutation:
         return False
 
 
+class MovedAway:
+    """Hide paths matching a glob, restore them whatever happens.
+
+    The harness could edit a file and create one, never take one away. A check that counts files
+    cannot be perturbed by editing any of them, so the primitive was missing rather than the
+    proof (R9-T1)."""
+
+    def __init__(self, pattern):
+        self.pattern = os.path.join(HERE, pattern)
+        self.moved = []
+
+    def __enter__(self):
+        import glob as _g
+        for p in sorted(_g.glob(self.pattern)):
+            hidden = p + ".mutation-hidden"
+            os.rename(p, hidden)
+            self.moved.append((hidden, p))
+        if not self.moved:
+            raise AssertionError(f"nothing matched {self.pattern}: the mutation would be a no-op")
+        return self
+
+    def __exit__(self, *exc):
+        for hidden, original in self.moved:
+            os.rename(hidden, original)
+        return False
+
+
 class NewFile:
     """Drop a file in, remove it whatever happens."""
 
@@ -125,7 +152,9 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             # prose mention three sections earlier and the check stayed green off a later line —
             # the mutation has to remove the thing the check claims to verify.
             Mutation("CLAUDE.md", r"\| Editing existing code[^\n]*\n", "", regex=True),
-            "change-discipline")
+            # Long enough to name one check. Bare `change-discipline` matched two, so the proof
+            # could not say which one it proved and inflated the count by one.
+            "change-discipline is in the activation table")
 
     def test_unmarking_an_implemented_spec_s_evidence_is_caught(self):
         """R5-T4. The rule that caught SPEC-FEAT-001 was widened by directory prefix until 145 of
@@ -300,6 +329,57 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      "return _RESOLVER.sub(lambda m: m.group(1) or m.group(2), segment)",
                      "return segment"),
             "red-team RT-2026-09-13 findings stay closed")
+
+    # --- R9-T1. The checks that could be switched off by widening -------------------------------
+    # Proving a check also defends it against widening: with the rule widened the proof itself goes
+    # red, which was measured before this plan was written. That closes both the widening case and
+    # the always-true-condition residual of the vacuity invariant, for each check it covers.
+
+    def test_an_unmarked_adopter_path_reference_is_caught(self):
+        """The rule the round-5 audit found widened until it exempted 145 of 146 paths."""
+        self.assert_mutation_is_caught(
+            NewFile("docs/mutation-adopter-probe.md",
+                    "# probe\n\nIt names `src/` and `.github/workflows/` without a marker.\n"),
+            "adopter-paths")
+
+    def test_a_script_that_does_not_parse_is_caught(self):
+        self.assert_mutation_is_caught(
+            NewFile("scripts/bash/mutation-syntax-probe.sh",
+                    # A real parse error. `if [ 1 = 1 ; then …` parses fine — `[` is a command,
+                    # not syntax, so the first probe tested nothing.
+                    "#!/usr/bin/env bash\nif true; then echo x\n"),
+            "bash -n")
+
+    def test_a_control_matrix_pointing_at_nothing_is_caught(self):
+        """ADR-0072: a dead implemented_by path is the defect the matrix gate exists for."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/security/asvs-control-matrix.yaml",
+                     "      - adopter:src/api/rest/routers/requests.py",
+                     "      - src/does/not/exist.py"),
+            "check_control_matrix")
+
+    def test_a_rendered_command_drifting_from_its_source_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation(".agents/skills/sdd-analyze/SKILL.md", "\n", "\nDRIFT\n", regex=False),
+            "render_commands --check")
+
+    def test_a_registry_that_disagrees_with_disk_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation("docs/governance/spec-registry.json", '"count": 58', '"count": 57'),
+            "spec registry matches disk")
+
+    def test_an_upstream_pin_missing_a_field_is_caught(self):
+        """The pin records which spec-kit commit this corpus was compared against; without the
+        commit it records nothing that can be checked."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/sdlc/spec-kit-upstream.json", '"commit"', '"commit_was"'),
+            "spec-kit-upstream.json")
+
+    def test_a_corpus_with_no_measurement_is_caught(self):
+        """The one check a file edit cannot perturb: it counts reports."""
+        self.assert_mutation_is_caught(
+            MovedAway("docs/sre/corpus-metrics-*.md"),
+            "the corpus carries at least one measurement")
 
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
