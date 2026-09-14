@@ -36,6 +36,46 @@ class Parsing(unittest.TestCase):
             mc.proved_names = real
 
 
+class Categories(unittest.TestCase):
+    """R9-T2. One number over all checks protects an average and orients nothing."""
+
+    def test_a_runner_line_is_not_logic(self):
+        self.assertEqual(mc.category("tests/scripts/test_x.py"), "runner")
+        self.assertEqual(mc.category("verify-high-risk-guard"), "runner")
+
+    def test_a_smoke_only_check_is_exempt_by_name_not_by_accident(self):
+        for name in mc.EXEMPT_SMOKE_ONLY:
+            self.assertEqual(mc.category(name), "exempt", name)
+            self.assertIn(name, mc.named_checks(),
+                          "an exemption for a check that no longer exists hides a deletion")
+
+    def test_everything_else_is_logic(self):
+        self.assertEqual(mc.category("adopter-paths"), "logic")
+
+    def test_every_logic_check_is_proved(self):
+        """The categorical rule: not a percentage to chase, a category to empty."""
+        self.assertEqual(mc.coverage()["logic_unproved"], [])
+
+    def test_an_unproved_logic_check_fails_the_ratchet(self):
+        c = mc.coverage()
+        real = mc.named_checks
+        mc.named_checks = lambda: sorted(real() + ["a brand new unproved logic check"])
+        try:
+            problems = []
+            cc = mc.coverage()
+            self.assertIn("a brand new unproved logic check", cc["logic_unproved"])
+        finally:
+            mc.named_checks = real
+
+    def test_an_unproved_runner_line_does_not(self):
+        real = mc.named_checks
+        mc.named_checks = lambda: sorted(real() + ["tests/scripts/test_brand_new.py"])
+        try:
+            self.assertEqual(mc.coverage()["logic_unproved"], [])
+        finally:
+            mc.named_checks = real
+
+
 class Vacuity(unittest.TestCase):
     """R8-T1. The cheap guard: a name that can only print `ok` cannot fail the build."""
 
@@ -107,13 +147,20 @@ class Ratchet(unittest.TestCase):
         self.assertEqual(rc, 1)
         self.assertIn("fell", out)
 
-    def test_a_new_check_without_a_proof_fails_even_though_the_count_did_not_fall(self):
-        """The count alone cannot see this: adding an unproved check leaves `proved` untouched.
-        The ratio is what catches it, and it is the case the ratchet exists for."""
+    def test_a_new_logic_check_without_a_proof_fails(self):
+        """The count alone cannot see this: adding an unproved check leaves `proved` untouched. A
+        ratio used to catch it, but a ratio also reprimanded a new runner line, which is the
+        average-protecting behaviour the categories removed (R9-T2)."""
         c = mc.coverage()
-        rc, out = self.run_check({"named": c["named"] - 1, "proved": c["proved"]})
+        real = mc.named_checks
+        mc.named_checks = lambda: sorted(real() + ["an unproved logic check"])
+        try:
+            rc, out = self.run_check({"named": c["named"], "proved": c["proved"],
+                                      "checks": real()})
+        finally:
+            mc.named_checks = real
         self.assertEqual(rc, 1)
-        self.assertIn("without a mutation", out)
+        self.assertIn("have no mutation proving they can fail", out)
 
     def test_deleting_an_unproved_check_fails_even_though_the_ratio_improved(self):
         """R7-T1. The ratio was the only guard, and a ratio rises when its denominator shrinks:

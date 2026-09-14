@@ -59,6 +59,15 @@ authorises them.
 - The open-item scope floors became a versioned baseline with `--update`, recording the table
   paths so a failure names which table vanished. They were constants nobody raised, so every item
   added widened the slack and nothing gave it back (#86).
+- Coverage is counted in three categories instead of one, and the rule is categorical: **every
+  check carrying its own logic must be proved**, 35 of 35 today. Runner lines are not required,
+  because a mutation for them would prove that breaking a suite breaks the build. Five smoke-only
+  checks are exempt by name with the measured cost attached. The old ratio rule was removed: it
+  also reprimanded a new runner line, which is the average-protecting behaviour the categories
+  exist to remove (#90).
+- The verifier carries a written statement of what the suite defends against — accident and drift —
+  and what it does not: an author who intends to disable it, where the defence is review and the
+  audit trail, not another pattern (#90).
 - Mutation coverage rose to 34 of 53, closing the seven checks that could be switched off by
   widening a filter without changing a word of the output. Proving a check also defends it against
   widening: with the rule widened, the proof itself goes red — measured before the work was

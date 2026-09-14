@@ -33,6 +33,31 @@ VERIFIER = os.path.join(ROOT, "scripts", "bash", "check-corpus.sh")
 HARNESS = os.path.join(ROOT, "tests", "scripts", "test_check_corpus.py")
 BASELINE = os.path.join(ROOT, "tests", ".mutation-coverage-baseline.json")
 
+# Three categories, because one number over all of them protects a average and orients nothing.
+# A runner line's only job is to run a test suite: a mutation for it would prove that breaking the
+# suite breaks the build, which the suite already guarantees. The exempt set is a COST decision
+# with the number attached, not an oversight — these run only in smoke mode, where one verifier run
+# costs 60 seconds against 7, so proving all five would add 300 seconds to a 242-second harness for
+# the checks that guard tooling rather than governance. `--no-suites` exists so that decision can be
+# revisited without recursing into the harness (R9-T2).
+RUNNER_PREFIXES = ("tests/", "verify-")
+EXEMPT_SMOKE_ONLY = (
+    "check-prerequisites (example)",
+    "create-new-feature --dry-run",
+    "example bundle present",
+    "setup-plan (scratch)",
+    "tasks-to-issues --dry-run (example)",
+)
+
+
+def category(name):
+    if name.startswith(RUNNER_PREFIXES):
+        return "runner"
+    if name in EXEMPT_SMOKE_ONLY:
+        return "exempt"
+    return "logic"
+
+
 _RESULT = re.compile(r'\bresult\s+"([^"]+)"')
 # The status token that follows the name. `;` may be glued on by `{ result X fail; ... }`.
 _RESULT_STATUS = re.compile(r'\bresult\s+"([^"]+)"\s+(ok|note|fail)\b')
@@ -124,13 +149,18 @@ def coverage():
             orphan.append(p)
         else:
             ambiguous.append((p, hits))
+    unproved = sorted(set(names) - covered)
     return {
         "named": len(names),
         "proved": len(covered),
         "mutations": len(proofs),
-        "unproved": sorted(set(names) - covered),
+        "unproved": unproved,
         "orphan_mutations": orphan,
         "ambiguous_mutations": ambiguous,
+        "logic_named": sorted(n for n in names if category(n) == "logic"),
+        "logic_unproved": sorted(n for n in unproved if category(n) == "logic"),
+        "runner_unproved": sorted(n for n in unproved if category(n) == "runner"),
+        "exempt_unproved": sorted(n for n in unproved if category(n) == "exempt"),
     }
 
 
@@ -209,14 +239,18 @@ def main(argv=None):
         for name, hits in c.get("ambiguous_mutations", []):
             problems.append(f"mutation {name!r} matches {len(hits)} checks and so cannot say which "
                             f"it proved: {hits}")
-        # A new check with no proof does not lower `proved`, so the count alone would not catch it.
-        # The ratio does: adding an unproved check moves it down.
-        was = base["proved"] / base["named"] if base["named"] else 0
-        now = c["proved"] / c["named"] if c["named"] else 0
-        if now < was - 1e-9:
-            problems.append(
-                f"coverage fell from {base['proved']}/{base['named']} ({was:.0%}) to "
-                f"{c['proved']}/{c['named']} ({now:.0%}) — a new check arrived without a mutation")
+        # Categorical, not numeric: every logic check must be proved. A percentage over all three
+        # categories protects an average, so unproved logic could arrive as long as a runner line
+        # arrived with it (R9-T2).
+        if c["logic_unproved"]:
+            problems.append(f"{len(c['logic_unproved'])} check(s) carrying their own logic have no "
+                            f"mutation proving they can fail:")
+            problems.extend(f"    {u}" for u in c["logic_unproved"])
+
+        # The ratio rule that used to sit here is gone. It caught a new unproved check, which the
+        # categorical rule above now does precisely; and it ALSO reprimanded a new runner line,
+        # which is exactly the average-protecting behaviour this issue set out to remove. Keeping
+        # both would have meant the categorical rule never bound anything (R9-T2).
         if problems:
             print("mutation coverage regressed:", file=sys.stderr)
             for p in problems:
@@ -225,12 +259,21 @@ def main(argv=None):
                   "baseline deliberately with --update and say why in the commit", file=sys.stderr)
             return 1
         if not a.quiet:
-            print(f"mutation coverage: {c['proved']}/{c['named']} named checks proved ({now:.0%})")
+            print(f"mutation coverage: {c['proved']}/{c['named']} named checks proved "
+                  f"({c['proved'] / c['named']:.0%}); every one of the "
+                  f"{len(c['logic_named'])} logic check(s) is proved")
         return 0
 
     print(f"named checks:      {c['named']}")
     print(f"proved by mutation {c['proved']}  ({c['proved'] / c['named']:.0%})")
     print(f"mutation entries:  {c['mutations']}")
+    print()
+    print(f"  logic checks      {len(c['logic_named'])}, unproved {len(c['logic_unproved'])}"
+          f"   (all must be proved)")
+    print(f"  runner lines      {len(c['runner_unproved'])} unproved"
+          f"   (their suite is the guard)")
+    print(f"  smoke-only exempt {len(c['exempt_unproved'])}"
+          f"   (60s per proof; a cost decision, see EXEMPT_SMOKE_ONLY)")
     if c["orphan_mutations"]:
         print("\nmutations naming no live check:")
         for o in c["orphan_mutations"]:

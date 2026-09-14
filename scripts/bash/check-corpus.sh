@@ -38,6 +38,23 @@
 #      (scripts/python/build_spec_registry.py --check) — the drift that left it at 50 of 58
 # Exit code = number of failing checks (0 = green).
 set -u
+# ---------------------------------------------------------------------------------------------
+# What this suite defends against, and what it does not. Written down because six rounds of audit
+# kept rediscovering the same boundary as if it were new (R9-T2).
+#
+#   Covered: accident and drift. A check deleted, renamed, emptied into an unconditional pass, or
+#   widened until it exempts everything. Every check carrying its own logic has a mutation that
+#   fails when the check stops working, and the coverage tool refuses a new one without a proof.
+#
+#   NOT covered: an author who intends to disable the suite. Nothing static wins that race — a
+#   condition can always be made true in a way no pattern anticipates. The defence there is human
+#   review and the audit trail (Constitution V, Article VII), not another grep. Treating it as a
+#   tooling problem would produce an arms race whose only measurable outcome is more tooling.
+#
+#   Cost, for the next person weighing a change: one run is ~7s with --no-smoke, ~60s with the
+#   dry-runs on, and the mutation harness pays one run per proof, so its cost grows with the square
+#   of the check count. `--no-suites` runs the dry-runs without recursing into the harness.
+# ---------------------------------------------------------------------------------------------
 QUIET=false; SMOKE=true; HOOK=true; SUITES=true
 for a in "$@"; do case "$a" in --quiet) QUIET=true ;; --no-smoke) SMOKE=false ;; --no-suites) SUITES=false ;; --no-hook) HOOK=false ;; --help|-h) sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;; esac; done
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -146,6 +146,14 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      "python3 scripts/python/asdd_state.py", "python scripts/python/asdd_state.py"),
             "python3, not bare python")
 
+    def test_removing_the_change_discipline_skill_file_is_caught(self):
+        """Scope discipline is a review item, not something a test can assert about a diff, so the
+        invariant is that the rule stays reachable. This check was counted as proved by the
+        activation-table mutation, because that proof's name matched two checks (R9-T1)."""
+        self.assert_mutation_is_caught(
+            MovedAway("skills/engineering/change-discipline.md"),
+            "change-discipline skill present")
+
     def test_dropping_the_change_discipline_reference_is_caught(self):
         self.assert_mutation_is_caught(
             # Delete the activation-table ROW. Renaming the first occurrence of the path mutated a
