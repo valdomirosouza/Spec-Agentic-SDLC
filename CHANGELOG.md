@@ -259,6 +259,12 @@ authorises them.
 
 ### Fixed
 
+- The leak guard reports two categories instead of collapsing them: a declared path left changed is
+  a leak and fails, any other tracked change is named as unexplained. Narrowing it yesterday had
+  traded a false positive for a false negative (#101).
+- The rate-limit gate's floor counts throttled responses, not contract files. It failed only when no
+  contract existed, so deleting every `429` satisfied it — the gate constrained only contracts that
+  already did the right thing (#102).
 - The cadence check and its proof follow the mechanism that now carries the report back: the branch
   push and the compare link, not `gh pr create` (#99).
 - **The scheduled measurement ran for the first time and could not finish.** It measured, pushed

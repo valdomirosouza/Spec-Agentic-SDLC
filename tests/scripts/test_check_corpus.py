@@ -647,19 +647,34 @@ class NoSuitesFlag(unittest.TestCase):
 
 
 class TreeIsClean(unittest.TestCase):
-    def test_no_mutation_leaked(self):
-        """A leak is a path a MUTATION touched and did not put back.
+    """Two categories, because collapsing them loses one of the two things worth knowing.
 
-        Comparing the whole tracked tree against a snapshot taken at import reported a leak for any
-        change during the run, including an edit by whoever is operating the repository — which is
-        exactly how this failed once in three runs with nothing wrong. Reproduced deliberately by
-        editing this file mid-run and watching the guard call it a leaked mutation (#98)."""
+    The guard first compared the whole tracked tree against a snapshot, which called the operator's
+    own edit a leaked mutation. Narrowing it to declared paths fixed that and opened the opposite
+    case: a mutation with a side effect on a file it never declared passed in silence. That is not
+    hypothetical — a mutation in round 10 turned a dry run into a real one and created files, and
+    had the effect landed on a tracked file it would go unseen (#101).
+
+    So: a declared path left changed is a LEAK and fails. Any other tracked change is UNEXPLAINED —
+    a side effect or the operator — and is named rather than dropped. Under the run lock the
+    operator explanation is the less likely of the two, which makes silence the wrong default."""
+
+    def test_no_mutation_leaked(self):
         dirty = {l[3:] for l in _tracked_status()} - {l[3:] for l in _STATUS_AT_START}
         leaked = sorted(dirty & _TOUCHED)
+        unexplained = sorted(dirty - _TOUCHED)
+        if unexplained:
+            print("\n  tracked files changed during this run that no mutation declared:",
+                  file=sys.stderr)
+            for u in unexplained:
+                print(f"    {u}", file=sys.stderr)
+            print("  Either a mutation had a side effect it did not declare, or the repository was "
+                  "edited while the run held the lock. The first is a defect in the mutation.",
+                  file=sys.stderr)
         self.assertEqual(
             leaked, [],
-            "a mutation left a file changed:\n" + "\n".join(leaked) +
-            "\n(paths the harness touched this run: " + ", ".join(sorted(_TOUCHED)) + ")")
+            "a mutation left a declared file changed:\n" + "\n".join(leaked) +
+            "\n(paths declared this run: " + ", ".join(sorted(_TOUCHED)) + ")")
 
 
 

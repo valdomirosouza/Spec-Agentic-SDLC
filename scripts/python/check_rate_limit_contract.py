@@ -29,6 +29,13 @@ CONTRACTS = ("docs/api/openapi/**/*.yaml", "specs/features/**/contracts/*.yaml")
 
 REQUIRED = ("X-RateLimit-Limit", "X-RateLimit-Remaining", "Retry-After")
 
+# A floor on the thing being checked, not on the files that might contain it. The first version
+# failed only when no contract FILE existed, so deleting every `429` declaration satisfied it —
+# the gate constrained only contracts that already did the right thing, and its message said
+# "0 checked, all name the caller's budget", a completeness claim over an empty set. That is the
+# denominator lesson of #79, which this corpus had already learned twice (#102).
+MIN_THROTTLED = 2
+
 # 429 only. The concurrency-backpressure 503 also carries a Retry-After per api-standards.md §6,
 # and a first version of this check demanded it on every 503 — which fired on readiness responses
 # ("Service not ready", "store unreachable") that owe no such header. Nothing in the text separates
@@ -87,13 +94,20 @@ def main(argv=None):
     if not contracts():
         print("no published contract found to check", file=sys.stderr)
         return 1
+    if seen < MIN_THROTTLED:
+        print(f"only {seen} throttled response(s) declared across the published contracts, floor is "
+              f"{MIN_THROTTLED}. An API that documents no rate limiting at all is not a contract "
+              f"that passed this check — it is one that escaped it.", file=sys.stderr)
+        print("  raise the floor deliberately if the shrink is real", file=sys.stderr)
+        return 1
     if errs:
         for e in errs:
             print(e, file=sys.stderr)
         print("  api-standards.md §6 requires these on every throttled response", file=sys.stderr)
         return 1
     if not a.quiet:
-        print(f"throttled responses: {seen} checked, all name the caller's budget and Retry-After")
+        print(f"throttled responses: {seen} of a floor of {MIN_THROTTLED}, each naming the "
+              f"caller's budget and Retry-After")
     return 0
 
 
