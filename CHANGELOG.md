@@ -63,6 +63,9 @@ authorises them.
   contract. It is machine-readable data an adopter can consume and it gained a field this session
   with nothing to record the change; the gate is armed and cannot fire until a release ships the
   contract, which is stated rather than left to be discovered (#91).
+- `--no-suites` has users: it was added a round ago to make a deferred decision possible and
+  nothing ran it. The five adopter-entry proofs need it, because leaving the sub-suites on would
+  recurse into the harness, and its contract is asserted rather than assumed (#94).
 - The five checks covering the adopter's entry path are proved, and the exempt-on-cost category is
   empty. They were dispensed last round as guarding "tooling rather than governance"; `SETUP.md`
   tells a new adopter to run `create-new-feature.sh --json --dry-run` as their first step. The CI

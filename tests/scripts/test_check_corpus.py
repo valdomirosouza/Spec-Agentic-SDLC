@@ -536,6 +536,34 @@ def _tracked_status():
 _STATUS_AT_START = _tracked_status()
 
 
+class NoSuitesFlag(unittest.TestCase):
+    """R10-T3. `--no-suites` was added one round ago to make a deferred decision possible and
+    nothing ran it — a flag in the verifier that nobody exercises can break in silence, which is the
+    category this corpus spent three rounds closing everywhere else.
+
+    It has five real users now: the proofs for the adopter-entry checks need the dry-runs on and the
+    sub-suites off, because leaving the suites on would recurse into this harness. Those five
+    exercise the flag behaviourally. What they cannot assert is the flag's own contract, which is
+    what these two do, statically and at no runtime cost."""
+
+    def setUp(self):
+        with open(CHECK, encoding="utf-8") as fh:
+            self.t = fh.read()
+
+    def test_the_flag_exists_and_gates_the_suite_block(self):
+        self.assertIn("--no-suites) SUITES=false ;;", self.t)
+        self.assertIn("if $SMOKE && $SUITES; then", self.t,
+                      "the sub-suite block, which contains this harness, must be what SUITES gates")
+
+    def test_the_smoke_proofs_are_what_exercise_it(self):
+        """If this stops being true the flag has no user again, and should go rather than sit
+        unexercised."""
+        with open(__file__, encoding="utf-8") as fh:
+            mine = fh.read()
+        self.assertIn('SMOKE_ARGS = ("--no-suites",)', mine)
+        self.assertGreaterEqual(mine.count("args=self.SMOKE_ARGS"), 5)
+
+
 class TreeIsClean(unittest.TestCase):
     def test_no_mutation_leaked(self):
         leaked = [l for l in _tracked_status() if l not in _STATUS_AT_START]
