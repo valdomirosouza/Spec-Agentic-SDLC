@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 106 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 107 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 3 (span 3 days) | — |
-| Commits per active day | 35.33 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-09-14T16:13:00 | — |
+| Commits per active day | 35.67 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-09-14T16:53:12 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -74,10 +74,10 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 106 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 41.0 h | first commit to last |
+| Commits on the default branch | 107 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 41.7 h | first commit to last |
 | Commits per elapsed hour | 2.6 | — |
-| Cumulative diff | 468 files changed, 18662 insertions(+), 1530 deletions(-) | `git diff --shortstat` from the first commit |
+| Cumulative diff | 468 files changed, 18677 insertions(+), 1530 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of
