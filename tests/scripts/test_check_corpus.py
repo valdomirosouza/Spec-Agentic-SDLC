@@ -40,6 +40,53 @@ def run_check(*extra, env=None):
     return r.returncode, r.stdout + r.stderr
 
 
+# Paths the harness itself has touched. The leak guard used to compare the WHOLE tracked tree
+# against a snapshot, so any change during the run read as a leaked mutation — including an edit
+# made by whoever is operating the repository. That produced a red that passes when re-run, which
+# is a red people re-run instead of read (#98). A leak is now a path a mutation targeted and did
+# not put back.
+# One run at a time. The harness mutates the shared working tree — it edits tracked files, drops
+# files in and renames directories away — so a second run, or any concurrent reader, sees a tree
+# that is deliberately broken. Observed twice: a mutation pointing `.claude/settings.json` at a
+# missing hook blocked every Bash call in the session while it held, and a second harness started
+# alongside the first skipped its whole class because the baseline was mid-mutation (#98).
+_LOCK = os.path.join(tempfile.gettempdir(), "spec-agentic-sdlc-mutation-harness.lock")
+
+
+def _acquire_lock():
+    if os.path.exists(_LOCK):
+        try:
+            with open(_LOCK, encoding="utf-8") as fh:
+                pid = int(fh.read().strip() or 0)
+            os.kill(pid, 0)              # raises if that process is gone
+        except (ValueError, OSError):
+            os.unlink(_LOCK)             # stale: the holder died, reclaim it
+        else:
+            raise unittest.SkipTest(
+                f"another mutation run holds {_LOCK} (pid {pid}). Two runs mutate the same working "
+                f"tree and would read each other's deliberate breakage as their own result.")
+    with open(_LOCK, "w", encoding="utf-8") as fh:
+        fh.write(str(os.getpid()))
+
+
+def setUpModule():
+    _acquire_lock()
+
+
+def tearDownModule():
+    try:
+        os.unlink(_LOCK)
+    except OSError:
+        pass
+
+
+_TOUCHED = set()
+
+
+def _touch(rel):
+    _TOUCHED.add(rel.replace(os.sep, "/"))
+
+
 class Mutation:
     """Edit a file, restore it whatever happens."""
 
@@ -49,6 +96,7 @@ class Mutation:
         self.original = None
 
     def __enter__(self):
+        _touch(self.rel)
         self.original = open(self.path, encoding="utf-8").read()
         if self.regex:
             # MULTILINE: every mutation here anchors a whole line, and `^` without it matches
@@ -81,6 +129,7 @@ class MovedAway:
     def __enter__(self):
         import glob as _g
         for p in sorted(_g.glob(self.pattern)):
+            _touch(os.path.relpath(p, HERE))
             hidden = p + ".mutation-hidden"
             os.rename(p, hidden)
             self.moved.append((hidden, p))
@@ -102,6 +151,7 @@ class NewFile:
         self.rel, self.content = rel, content
 
     def __enter__(self):
+        _touch(self.rel)
         os.makedirs(os.path.dirname(self.path), exist_ok=True)
         open(self.path, "w", encoding="utf-8").write(self.content)
         return self
@@ -133,10 +183,20 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             rc, out = run_check(*args, env=env)
         failed_lines = [l for l in out.split("\n") if l.lstrip().startswith("✗")]
         named = [l for l in failed_lines if check_name in l]
-        self.assertTrue(
-            named,
-            f"`{check_name}` stayed green under its own defect.\n"
-            f"Other checks that did fail: {failed_lines or 'none — the run was green'}")
+        if not named:
+            # Keep the whole run. A failure that happens once in three runs has to be diagnosable
+            # from its first occurrence: the ✗ lines say which check did not fire and never say
+            # why, and re-running to reproduce is what turns a rare red into a red people re-run
+            # instead of read (#98).
+            dump = os.path.join(tempfile.gettempdir(),
+                                f"mutation-{re.sub(r'[^a-z0-9]+', '-', check_name.lower())[:48]}.log")
+            with open(dump, "w", encoding="utf-8") as fh:
+                fh.write(f"check under test: {check_name}\nmutation: {mutation!r}\n"
+                         f"flags: {args or ('--no-smoke',)}\nexit: {rc}\n\n{out}")
+            self.fail(
+                f"`{check_name}` stayed green under its own defect.\n"
+                f"Other checks that did fail: {failed_lines or 'none — the run was green'}\n"
+                f"Full verifier output: {dump}")
 
     # --- the four already proven by hand in round 5 ------------------------------------------------
     def test_removing_a_human_gate_is_caught(self):
@@ -584,8 +644,19 @@ class NoSuitesFlag(unittest.TestCase):
 
 class TreeIsClean(unittest.TestCase):
     def test_no_mutation_leaked(self):
-        leaked = [l for l in _tracked_status() if l not in _STATUS_AT_START]
-        self.assertEqual(leaked, [], f"a mutation leaked into the tree:\n{chr(10).join(leaked)}")
+        """A leak is a path a MUTATION touched and did not put back.
+
+        Comparing the whole tracked tree against a snapshot taken at import reported a leak for any
+        change during the run, including an edit by whoever is operating the repository — which is
+        exactly how this failed once in three runs with nothing wrong. Reproduced deliberately by
+        editing this file mid-run and watching the guard call it a leaked mutation (#98)."""
+        dirty = {l[3:] for l in _tracked_status()} - {l[3:] for l in _STATUS_AT_START}
+        leaked = sorted(dirty & _TOUCHED)
+        self.assertEqual(
+            leaked, [],
+            "a mutation left a file changed:\n" + "\n".join(leaked) +
+            "\n(paths the harness touched this run: " + ", ".join(sorted(_TOUCHED)) + ")")
+
 
 
 if __name__ == "__main__":

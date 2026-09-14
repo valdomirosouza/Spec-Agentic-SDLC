@@ -259,6 +259,12 @@ authorises them.
 
 ### Fixed
 
+- **The mutation harness failed once in three runs with nothing wrong.** The leak guard compared
+  the whole tracked tree against a snapshot, so any change during a run read as a leaked mutation —
+  including an edit by whoever was operating the repository. It now compares only the paths a
+  mutation actually touched, and a lock refuses a second run, because the harness deliberately
+  breaks the shared working tree while it holds it. A failure also keeps the full verifier output
+  on disk, so a rare red is diagnosable from its first occurrence (#98).
 - **The abuse-surface question is now asked by a gate, not by a template row.** Every live feature
   spec must address it, satisfied by the posture row *or* by a threat-surface entry — demanding the
   template's shape would have rejected the spec that handles the concern best (#97).
