@@ -81,15 +81,17 @@ class Wiring(unittest.TestCase):
         self.assertNotRegex(branch.split("--title")[1].split("\n")[0] if "--title" in branch else "",
                             re.compile(r"moved", re.I))
 
-    def test_the_no_baseline_note_names_the_pull_requests_blocking_the_series(self):
-        """R8-T4. A series that stalls because nobody merges the measurement pull requests reports
-        only that no baseline exists. Cause and symptom sat in different places, and the reader had
-        no way to connect them."""
-        branch = self.t.split("Note that no comparison was possible")[1]
-        self.assertIn("gh pr list", branch,
-                      "the no-baseline note must look at the pull requests it depends on")
-        self.assertIn("--state open", branch)
-        self.assertIn("That is the cause of this note", branch)
+    def test_the_no_baseline_note_names_what_is_blocking_the_series(self):
+        """R8-T4, respecified for #99. A series that stalls because nobody lands the measurement
+        reports only that no baseline exists; cause and symptom sat in different places.
+
+        It used to count open pull requests, and the job stopped creating those — so it would have
+        said "nothing is blocked" every week while the branch sat unmerged, which is the opposite of
+        true. It counts commits on the branch that main does not have."""
+        note = self.t.split("Note that no comparison was possible")[1]
+        self.assertIn("origin/main..origin/chore/corpus-metrics", note,
+                      "the note must look at what actually carries the pending measurement")
+        self.assertIn("That is the cause of this note", note)
 
     def test_a_crash_does_not_become_a_movement_report(self):
         """An unhandled exception also exits 1. Branching on the code alone would have filed a
@@ -111,9 +113,39 @@ class Wiring(unittest.TestCase):
 
     def test_the_report_is_proposed_back_so_a_series_can_form(self):
         """Archiving to a build artifact alone leaves exactly one dated report on disk for ever,
-        and a comparison with one point is not a comparison."""
-        self.assertIn("gh pr create", self.t)
-        self.assertIn("--base main", self.t)
+        and a comparison with one point is not a comparison.
+
+        Respecified, not deleted. This asserted `gh pr create`, and the first scheduled run died on
+        exactly that: Actions may not create pull requests here, and the grant lives in repository
+        settings rather than in the workflow. The property that matters is unchanged — the report
+        gets back to the repository and a human lands it — so the assertion follows the mechanism
+        that now carries it (#99)."""
+        self.assertIn("git push --force-with-lease origin", self.t)
+        self.assertIn("/compare/main...", self.t,
+                      "the report is useless on a branch nobody is told how to open")
+
+    def test_it_does_not_ask_for_a_permission_the_repository_withholds(self):
+        """Declaring `pull-requests: write` bought nothing and read as capability the job does not
+        have. Its absence is the honest statement."""
+        # Uncommented lines only. The block carries a comment explaining why the permission is
+        # gone, and a first version of this assertion fired on that explanation — prose describing
+        # a declaration is not a declaration, the same distinction round 8 drew for BREAKING.
+        header = self.t.split("jobs:")[0]
+        live = [l for l in header.split("\n") if not l.lstrip().startswith("#")]
+        self.assertNotIn("pull-requests: write", "\n".join(live))
+
+    def test_one_rolling_branch_not_one_per_week(self):
+        """The dated run left an orphan on the remote; at one a week that is 52 a year."""
+        self.assertIn('branch="chore/corpus-metrics"', self.t)
+        self.assertNotIn('branch="chore/corpus-metrics-$stamp"', self.t)
+
+    def test_reporting_survives_an_earlier_step_failing(self):
+        """The whole reason the first scheduled run was silent: the step that would have said `no
+        baseline` sat after the step that failed, and a step after a failure does not run."""
+        for step in ("File what moved", "Note that no comparison was possible",
+                     "Fail if the measurement did not run cleanly"):
+            block = self.t.split(f"- name: {step}")[1][:200]
+            self.assertIn("always()", block, step)
 
     def test_it_never_merges_deploys_or_writes_to_main(self):
         """Constitution V. The workflow prepares and recommends; a human lands it."""

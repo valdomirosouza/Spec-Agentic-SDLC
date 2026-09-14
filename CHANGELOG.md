@@ -259,6 +259,14 @@ authorises them.
 
 ### Fixed
 
+- **The scheduled measurement ran for the first time and could not finish.** It measured, pushed
+  its branch, then died on `gh pr create`: Actions may not create pull requests here, and that
+  grant lives in repository settings rather than in the workflow — the thesis of ADR-0071 happening
+  to this corpus's own automation. It asks by issue now, with the compare link, which needs no such
+  grant and is less autonomous than opening a pull request. The reporting steps run even when an
+  earlier step fails, which is why the first run was silent; one rolling branch replaces one orphan
+  per week (#99).
+
 - **The mutation harness failed once in three runs with nothing wrong.** The leak guard compared
   the whole tracked tree against a snapshot, so any change during a run read as a leaked mutation —
   including an edit by whoever was operating the repository. It now compares only the paths a
