@@ -15,7 +15,12 @@ jobs:
   corpus:
     name: check-corpus.sh · markdownlint · high-risk guard
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 10 was written in round 5 without analysis and nearly drove a four-hundred-line refactor of
+    # the verifier to fit it. The harness pays one full verifier run per proof and now carries 40,
+    # which is ~5.7 min of CI; this job is a corpus check on push and is not latency-critical, so
+    # the honest move is to raise a number nobody had reasoned about rather than optimise code
+    # around it (R10-T2). Developers have the fast paths: --no-smoke (~7s) and --no-suites (~60s).
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:

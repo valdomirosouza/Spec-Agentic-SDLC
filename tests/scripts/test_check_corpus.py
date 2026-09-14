@@ -31,7 +31,11 @@ def run_check(*extra, env=None):
     test that exists to prove that gate clears the waiver explicitly."""
     e = dict(os.environ, CHANGELOG_WAIVER="mutation harness run, not a commit")
     e.update(env or {})
-    r = subprocess.run(["bash", CHECK, "--no-smoke", *extra], capture_output=True, text=True,
+    # `extra` REPLACES the default rather than adding to it. Appending `--no-suites` to a hardcoded
+    # `--no-smoke` left smoke off, so the five smoke-only checks never ran and their proofs could
+    # not fail — five green-looking failures that measured nothing (R10-T2).
+    flags = list(extra) or ["--no-smoke"]
+    r = subprocess.run(["bash", CHECK, *flags], capture_output=True, text=True,
                        cwd=HERE, timeout=300, env=e)
     return r.returncode, r.stdout + r.stderr
 
@@ -117,7 +121,7 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         if rc != 0:
             raise unittest.SkipTest(f"check-corpus is not green before mutation:\n{out[-1500:]}")
 
-    def assert_mutation_is_caught(self, mutation, check_name, env=None):
+    def assert_mutation_is_caught(self, mutation, check_name, env=None, args=()):
         """The contract: THAT check fails, named, with a message that identifies the problem.
 
         Asserting only a non-zero exit is not enough and the first version of this file proved it:
@@ -126,7 +130,7 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         check that is vacuous — the same defect it exists to find, one level up. So the failure
         marker must sit on the line naming the check under test."""
         with mutation:
-            rc, out = run_check(env=env)
+            rc, out = run_check(*args, env=env)
         failed_lines = [l for l in out.split("\n") if l.lstrip().startswith("✗")]
         named = [l for l in failed_lines if check_name in l]
         self.assertTrue(
@@ -397,6 +401,54 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      'if out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then',
                      'if [ -f README.md ] && out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then'),
             "mutation coverage has not fallen")
+
+    # --- R10-T2. The adopter's first commands -------------------------------------------------
+    # These five were exempted last round as "tooling rather than governance". SETUP.md line 16
+    # tells a new adopter to run `create-new-feature.sh --json --dry-run` as their first step, and
+    # the README says the same, so the exemption's stated reason was wrong: they guard the entry
+    # path. They run only under smoke, where a verifier run costs ~60s against ~7, so each of these
+    # is roughly eight times the cost of any other proof. `--no-suites` keeps the dry-runs on
+    # without recursing into this harness.
+    SMOKE_ARGS = ("--no-suites",)
+
+    def test_a_broken_dry_run_report_is_caught(self):
+        """Perturb the REPORTED result, never the behaviour. The first version of this mutation set
+        `DRY_RUN=maybe`, which stopped the flag being a dry run at all: the script created a feature
+        directory on disk and left the registry disagreeing with it. A mutation must make the system
+        fail an assertion, never make it do more."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/create-new-feature.sh",
+                     '"BRANCH_NAME":"%s","DRY_RUN":%s}', '"BRANCH_NAME":"%s","DRY_RAN":%s}'),
+            "create-new-feature --dry-run", args=self.SMOKE_ARGS)
+
+    def test_setup_plan_not_writing_quickstart_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/setup-plan.sh",
+                     "copy_if_absent quickstart-template.md \"$QUICKSTART\"",
+                     ": # copy_if_absent quickstart-template.md"),
+            "setup-plan (scratch)", args=self.SMOKE_ARGS)
+
+    def test_prerequisites_dropping_tasks_from_available_docs_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/check-prerequisites.sh",
+                     '$INC_TASKS && [ -f "$TASKS" ] && docs="$docs tasks.md"',
+                     '$INC_TASKS && [ -f "$TASKS" ] && docs="$docs"'),
+            "check-prerequisites (example)", args=self.SMOKE_ARGS)
+
+    def test_tasks_to_issues_planning_nothing_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/tasks-to-issues.sh",
+                     "    planned=$((planned+1))", "    planned=$((planned+0))"),
+            "tasks-to-issues --dry-run (example)", args=self.SMOKE_ARGS)
+
+    def test_a_missing_example_bundle_is_caught(self):
+        """The bundle the corpus ships as the worked example an adopter reads first."""
+        self.assert_mutation_is_caught(
+            # The whole bundle. Hiding only spec.md left the directory present, so this check never
+            # fired and three other checks failed on the wreckage instead — a mutation has to remove
+            # the thing the check actually looks for.
+            MovedAway("specs/features/SPEC-LGS-001-log-based-golden-signals"),
+            "example bundle present", args=self.SMOKE_ARGS)
 
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(

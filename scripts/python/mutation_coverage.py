@@ -33,15 +33,17 @@ VERIFIER = os.path.join(ROOT, "scripts", "bash", "check-corpus.sh")
 HARNESS = os.path.join(ROOT, "tests", "scripts", "test_check_corpus.py")
 BASELINE = os.path.join(ROOT, "tests", ".mutation-coverage-baseline.json")
 
-# Three categories, because one number over all of them protects a average and orients nothing.
-# A runner line's only job is to run a test suite: a mutation for it would prove that breaking the
-# suite breaks the build, which the suite already guarantees. The exempt set is a COST decision
-# with the number attached, not an oversight — these run only in smoke mode, where one verifier run
-# costs 60 seconds against 7, so proving all five would add 300 seconds to a 242-second harness for
-# the checks that guard tooling rather than governance. `--no-suites` exists so that decision can be
-# revisited without recursing into the harness (R9-T2).
-# Two runner lines whose body does not run the file they are named after. Declared by name with
-# the reason, which is the only honest way to carry an exception a derivation cannot express.
+# Two categories now, not three. A runner line's only job is to run a test suite: a mutation for it
+# would prove that breaking the suite breaks the build, which the suite already guarantees.
+#
+# The third category is gone. Five checks were exempt on cost — they run only under smoke, where a
+# verifier run costs ~55s against ~7 — and the stated reason was that they "guard tooling rather
+# than governance". That was wrong: SETUP.md tells a new adopter to run `create-new-feature.sh
+# --json --dry-run` as their first step, so those five cover the entry path an adopter meets before
+# anything else. They are proved (R10-T2). The cost was paid, measured, and the CI timeout raised
+# to match rather than the verifier refactored to fit a number nobody had analysed.
+EXEMPT_SMOKE_ONLY = ()
+
 RUNNER_BY_DECLARATION = {
     # Its name carries a suffix, so the path is not the name.
     "tests/scripts/test_check_corpus.py (mutation)": "tests/scripts/test_check_corpus.py",
@@ -311,8 +313,9 @@ def main(argv=None):
           f"   (all must be proved)")
     print(f"  runner lines      {len(c['runner_unproved'])} unproved"
           f"   (their suite is the guard)")
-    print(f"  smoke-only exempt {len(c['exempt_unproved'])}"
-          f"   (60s per proof; a cost decision, see EXEMPT_SMOKE_ONLY)")
+    if c["exempt_unproved"] or EXEMPT_SMOKE_ONLY:
+        print(f"  exempt on cost    {len(c['exempt_unproved'])}"
+              f"   (see EXEMPT_SMOKE_ONLY for the measured reason)")
     if c["orphan_mutations"]:
         print("\nmutations naming no live check:")
         for o in c["orphan_mutations"]:
