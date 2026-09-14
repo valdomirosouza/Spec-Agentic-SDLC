@@ -641,10 +641,16 @@ class NoSuitesFlag(unittest.TestCase):
         with open(CHECK, encoding="utf-8") as fh:
             self.t = fh.read()
 
-    def test_the_flag_exists_and_gates_the_suite_block(self):
+    def test_the_flag_exists_and_gates_every_suite_block(self):
+        """It gated one block when introduced, so a suite that regenerates the measurement still
+        ran under it and rewrote the report mid-run. Every block whose body only runs a suite is
+        gated; the dry-run block is not, because the adopter-entry proofs need it (#99)."""
         self.assertIn("--no-suites) SUITES=false ;;", self.t)
-        self.assertIn("if $SMOKE && $SUITES; then", self.t,
-                      "the sub-suite block, which contains this harness, must be what SUITES gates")
+        runners = [l for l in self.t.split("\n")
+                   if re.search(r'(python3|bash)\s+tests/scripts/\S+\s+2>&1', l)]
+        self.assertGreaterEqual(len(runners), 8, "expected the suite runners to be found")
+        blocks = self.t.count("if $SMOKE && $SUITES; then")
+        self.assertGreaterEqual(blocks, 4, "every suite-running block must be gated by SUITES")
 
     def test_the_smoke_proofs_are_what_exercise_it(self):
         """If this stops being true the flag has no user again, and should go rather than sit

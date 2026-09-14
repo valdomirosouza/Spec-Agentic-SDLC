@@ -2,6 +2,10 @@
 # Deterministic validation of the Spec-Agentic-SDLC corpus (issue #11). Runs locally and in CI.
 #
 # Usage: check-corpus.sh [--quiet] [--no-smoke] [--no-hook] [--no-suites]
+#   --no-suites keeps the script dry-runs and turns off EVERY block that only runs a test suite.
+#   It gated one such block when introduced, so `tests/scripts/test_corpus_metrics.py` still ran
+#   under it — and that suite calls `--report`, rewriting the measurement mid-run. The mutation
+#   harness's own leak guard is what surfaced it (#99).
 #
 # Checks
 #   C1 internal Markdown links resolve (adopter-provided paths, placeholders and archived
@@ -171,7 +175,7 @@ if $SMOKE; then
     fi
 fi
 
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     say "C6 script tests"
     if out=$(bash tests/scripts/test_scripts.sh 2>&1); then result "tests/scripts/test_scripts.sh" ok "$(printf '%s' "$out" | tail -1 | sed 's/scripts tests: //')"; else result "tests/scripts/test_scripts.sh" fail; printf '%s\n' "$out" | grep '✗' | sed 's/^/      /'; fi
 fi
@@ -316,12 +320,12 @@ else
         printf '%s\n' "$out" | grep -E 'MAJOR|MINOR' | head -5 | sed 's/^/      note: /'
     fi
 fi
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     if out=$(python3 tests/scripts/test_check_data_quality.py 2>&1); then result "tests/scripts/test_check_data_quality.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_data_quality.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 
 say "C14 corpus measurement"
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     if out=$(python3 tests/scripts/test_corpus_metrics.py 2>&1); then result "tests/scripts/test_corpus_metrics.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_metrics.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 if out=$(python3 scripts/python/corpus_metrics.py --check --quiet 2>&1); then

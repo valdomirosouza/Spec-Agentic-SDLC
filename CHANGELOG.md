@@ -259,6 +259,10 @@ authorises them.
 
 ### Fixed
 
+- `--no-suites` gates every block that only runs a test suite, not just one. It gated one when
+  introduced, so `test_corpus_metrics.py` still ran under it and that suite calls `--report`,
+  rewriting the measurement in the middle of a harness run. The new leak guard is what surfaced it,
+  on its first run. A full harness run is also ~130s faster (#99).
 - `ADR-0071` covers the settings this corpus's own automation depends on, not only branch
   protection, with the September failure as the motivating example and a table of every elevated
   verb the workflows use. `check_workflow_grants.py` fails on an undeclared one. It verifies the
