@@ -59,6 +59,10 @@ authorises them.
 - The open-item scope floors became a versioned baseline with `--update`, recording the table
   paths so a failure names which table vanished. They were constants nobody raised, so every item
   added widened the slack and nothing gave it back (#86).
+- `docs/governance/spec-registry.json` carries a `schema_version` and is tracked as a published
+  contract. It is machine-readable data an adopter can consume and it gained a field this session
+  with nothing to record the change; the gate is armed and cannot fire until a release ships the
+  contract, which is stated rather than left to be discovered (#91).
 - Coverage is counted in three categories instead of one, and the rule is categorical: **every
   check carrying its own logic must be proved**, 35 of 35 today. Runner lines are not required,
   because a mutation for them would prove that breaking a suite breaks the build. Five smoke-only

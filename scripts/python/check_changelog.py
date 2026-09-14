@@ -34,7 +34,10 @@ VERSION_FILE = "version.txt"
 # remembering to use it; the value of a versioned constant at the last release does not. Extend
 # this list when a new contract is published — that is the explicit limit of what can be derived,
 # stated rather than left as a silent blind spot (R8-T5).
-CONTRACTS = (("scripts/python/asdd_state.py", r'^SCHEMA_VERSION\s*=\s*"([^"]+)"'),)
+CONTRACTS = (
+    ("scripts/python/asdd_state.py", r'^SCHEMA_VERSION\s*=\s*"([^"]+)"'),
+    ("scripts/python/build_spec_registry.py", r'^SCHEMA_VERSION\s*=\s*"([^"]+)"'),
+)
 NEXT_VERSION = re.compile(r"\*\*Next version:\*\*\s*v?(\d+)\.(\d+)\.(\d+)")
 # A compatibility claim is a structured marker at the head of a bullet, not the word anywhere in
 # the block. Scanning for the bare word fired on the three lines that EXPLAIN this rule — prose

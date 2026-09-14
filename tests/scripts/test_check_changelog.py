@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for scripts/python/check_changelog.py (#77). stdlib only."""
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -137,6 +138,42 @@ class NextVersion(unittest.TestCase):
         breaks, notes = cc.derived_breaks()
         self.assertEqual(breaks, [], "nothing published in 1.0.0 has changed value")
         self.assertTrue(any("did not exist at the last release" in n for n in notes))
+
+
+class DerivedContracts(unittest.TestCase):
+    """R9-T3. The published registry is machine-readable data an adopter can consume, and it gained
+    a field this session with nothing to record the change. It carries a version now."""
+
+    def test_the_registry_is_a_tracked_contract(self):
+        self.assertIn("scripts/python/build_spec_registry.py", [c[0] for c in cc.CONTRACTS])
+
+    def test_every_tracked_contract_declares_a_version_today(self):
+        for path, pattern in cc.CONTRACTS:
+            text = open(os.path.join(cc.ROOT, path), encoding="utf-8").read()
+            self.assertRegex(text, re.compile(pattern, re.M), path)
+
+    def test_a_changed_contract_value_is_a_derived_break(self):
+        """The live repository cannot exercise this: both contracts postdate release 1.0.0, so
+        nothing held against them can break. The comparison itself is what is proved here."""
+        real_at, real_commit = cc._at, cc.release_commit
+        cc.release_commit = lambda: "pretend-release"
+        cc._at = lambda commit, path: 'SCHEMA_VERSION = "older_value"\n'
+        try:
+            breaks, _ = cc.derived_breaks()
+        finally:
+            cc._at, cc.release_commit = real_at, real_commit
+        self.assertEqual(len(breaks), len(cc.CONTRACTS))
+        self.assertIn("older_value", breaks[0])
+
+    def test_an_unchanged_contract_value_is_not_a_break(self):
+        real_at, real_commit = cc._at, cc.release_commit
+        cc.release_commit = lambda: "pretend-release"
+        cc._at = lambda commit, path: open(os.path.join(cc.ROOT, path), encoding="utf-8").read()
+        try:
+            breaks, _ = cc.derived_breaks()
+        finally:
+            cc._at, cc.release_commit = real_at, real_commit
+        self.assertEqual(breaks, [])
 
 
 class LiveTree(unittest.TestCase):
