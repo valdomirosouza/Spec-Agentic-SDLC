@@ -47,6 +47,10 @@ authorises them.
 - The open-item checker covers `Open finding(s)` headings and numbered headings, not only the
   literal `Open items`, and carries floors on the number of tables and items it sees. DQ-REG-006,
   the corpus's only live open finding, sat outside the old scope (#80).
+- Mutation coverage rose from 19 to 28 of 53 checks, chosen by a stated criterion — the checks
+  that guard the guardrails, meaning the C8 governance invariants and the constitutional
+  assertions — rather than to reach a percentage. The harness now prints its wall clock, because
+  each proof pays a full verifier run and the cost grows with the square of the check count (#85).
 - `mutation_coverage.py --vacuity` — a check name that can only print `ok` cannot fail the build.
   Neutering a check keeps its name, so the ratchet that guards names approved it: the verifier
   printed `✓ bash -n — neutered` and stayed green (#84).
@@ -208,6 +212,10 @@ authorises them.
 
 ### Fixed
 
+- **`check-prerequisites keeps --require-approved` counted a string.** It grepped the file for the
+  flag, which matched the usage comment, so deleting the case arm that implements it left the check
+  green. Found by writing the mutation for it; it now runs the script and asserts the flag is
+  accepted (#85).
 - **Vacuous checks, second and third pass.** The refusal check counted occurrences of a string and
   stayed green with every refusal neutralised to a no-op; the productivity-ratio regex had lost the
   forms it used to catch; the coverage-floor regex exempted any line citing the ADR, which is what a

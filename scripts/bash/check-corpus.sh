@@ -187,8 +187,19 @@ ok=any('high-risk-action-guard.py' in h.get('command','') and h.get('type')=='co
        for m in hooks for h in m.get('hooks',[]) if any(t in m.get('matcher','') for t in ('Bash','Edit','Write')))
 sys.exit(0 if ok else 1)
 PY2
-grep -q -- '--require-approved' scripts/bash/check-prerequisites.sh && grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
-    && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok || result "check-prerequisites keeps --require-approved (approved|implemented only)" fail
+# Behaviour, not presence. Grepping the file for the flag matched the usage comment on line 6, so
+# deleting the case arm that implements it left the check green — the same string-counting mistake
+# the refusal check made in R5-T2, found here by writing the mutation for it (R8-T2).
+prereq_bad=""
+if bash scripts/bash/check-prerequisites.sh --require-approved --paths-only 2>&1 \
+        | grep -q 'unknown option'; then
+    prereq_bad="[--require-approved is not accepted]"
+fi
+grep -q 'approved|implemented' scripts/bash/check-prerequisites.sh \
+    || prereq_bad="$prereq_bad [approved|implemented vocabulary missing]"
+[ -z "$prereq_bad" ] \
+    && result "check-prerequisites keeps --require-approved (approved|implemented only)" ok \
+    || result "check-prerequisites keeps --require-approved (approved|implemented only)" fail "$prereq_bad"
 # The coverage floor is one number in one place. A bare number in a normative text is how it
 # came to be stated three ways (80 in the constitution, 85 in ADR-0022, 75 as the escalation
 # trigger, with nothing reconciling them).
@@ -428,7 +439,12 @@ fi
 if $SMOKE; then
     # The verifier's own test: every entry injects a defect and requires THAT check to fail.
     # Slow (it re-runs check-corpus once per mutation), so it is behind --no-smoke like the rest.
-    if out=$(python3 tests/scripts/test_check_corpus.py 2>&1); then result "tests/scripts/test_check_corpus.py (mutation)" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_corpus.py (mutation)" fail "a check stayed green under its own defect"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -8 | sed 's/^/      /'; fi
+    # Wall clock, printed on every run. Each proof pays one full verifier run, and the number of
+    # proofs grows with the number of checks, so the cost grows with the square. It fits today with
+    # room to spare; the point of printing it is that the ceiling shows up before it bites, rather
+    # than as a later round's finding (R8-T2).
+    mut_t0=$(date +%s)
+    if out=$(python3 tests/scripts/test_check_corpus.py 2>&1); then result "tests/scripts/test_check_corpus.py (mutation)" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1) · $(( $(date +%s) - mut_t0 ))s wall clock"; else result "tests/scripts/test_check_corpus.py (mutation)" fail "a check stayed green under its own defect"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -8 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_open_items.py 2>&1); then result "tests/scripts/test_check_open_items.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_open_items.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then result "tests/scripts/test_check_changelog.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_changelog.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi

@@ -226,6 +226,77 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      regex=True),
             "every named check has a failing path")
 
+    # --- R8-T2. The checks that guard the guardrails -------------------------------------------
+    # Chosen by a stated criterion, not to reach a number: these assert Constitution articles and
+    # the C8 governance invariants, where a vacuous check is most dangerous. Writing mutations to
+    # hit a percentage produces weak mutations, which is the round-5 pathology inverted.
+
+    def test_a_script_that_pushes_is_caught(self):
+        """Constitution V. No script here performs an outward version-control action."""
+        self.assert_mutation_is_caught(
+            NewFile("scripts/bash/mutation-push-probe.sh",
+                    "#!/usr/bin/env bash\ngit push origin main\n"),
+            "scripts never push")
+
+    def test_a_second_script_creating_a_branch_is_caught(self):
+        """ADR-0095 names exactly one exception, behind the protected-name guard."""
+        self.assert_mutation_is_caught(
+            NewFile("scripts/bash/mutation-branch-probe.sh",
+                    "#!/usr/bin/env bash\ngit checkout -b probe\n"),
+            "only vcs.sh creates a branch")
+
+    def test_the_delivery_state_reaching_for_git_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation("scripts/python/asdd_state.py",
+                     'STATUSES = ("done", "blocked")',
+                     'STATUSES = ("done", "blocked")\n_PROBE = ["git"]'),
+            "asdd_state.py runs no git or gh")
+
+    def test_unhooking_the_high_risk_guard_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation(".claude/settings.json",
+                     "high-risk-action-guard.py", "disabled-guard.py"),
+            "settings.json keeps the PreToolUse high-risk guard")
+
+    def test_deleting_a_constitutional_article_is_caught(self):
+        self.assert_mutation_is_caught(
+            Mutation("memory/constitution.md",
+                     "### V. Human Oversight of Agents", "### V. Oversight"),
+            "constitution has articles")
+
+    def test_a_second_coverage_floor_is_caught(self):
+        """One number, one place. Two declared floors is the ambiguity the check exists for."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/adr/ADR-0022-testing-strategy.md",
+                     "> ## The declared coverage floor is 85%",
+                     "> ## The declared coverage floor is 85%\n>\n> ## The declared coverage floor is 80%"),
+            "ADR-0022 declares exactly one floor")
+
+    def test_dropping_tests_first_from_the_task_template_is_caught(self):
+        """Constitution II. The template is where tests-first reaches every generated task."""
+        self.assert_mutation_is_caught(
+            Mutation("templates/tasks-template.md",
+                     "### Tests first (write, run, watch them FAIL)", "### Tests (optional)"),
+            "tasks-template keeps tests-first")
+
+    def test_removing_the_approved_spec_requirement_is_caught(self):
+        """Article I. Without it the prerequisite script stops demanding an approved spec."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/check-prerequisites.sh",
+                     "--require-approved) REQ_APPROVED=true ;;",
+                     "--require-anything) REQ_APPROVED=true ;;"),
+            "check-prerequisites keeps --require-approved")
+
+    def test_reintroducing_the_red_team_finding_is_caught(self):
+        """RT-04 (High): `$(which git) push` evaded the guard because command substitution hid the
+        binary name. The exercise's twelve attempts are kept as tests precisely so the fix cannot
+        be undone quietly."""
+        self.assert_mutation_is_caught(
+            Mutation(".claude/hooks/high-risk-action-guard.py",
+                     "return _RESOLVER.sub(lambda m: m.group(1) or m.group(2), segment)",
+                     "return segment"),
+            "red-team RT-2026-09-13 findings stay closed")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",
