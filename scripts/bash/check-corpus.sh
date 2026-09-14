@@ -349,9 +349,9 @@ fi
 # exercised that. The changelog records a BREAKING schema change while version.txt sits at 1.0.0;
 # in three months nobody would remember a break was pending (R7-T5).
 if out=$(python3 scripts/python/check_changelog.py --version --quiet 2>&1); then
-    result "a BREAKING entry declares the next version" ok
+    result "compatibility claims match what the last release published" ok
 else
-    result "a BREAKING entry declares the next version" fail
+    result "compatibility claims match what the last release published" fail
     printf '%s\n' "$out" | head -5 | sed 's/^/      /'
 fi
 

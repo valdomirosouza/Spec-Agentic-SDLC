@@ -29,8 +29,18 @@ UNRELEASED = "## [Unreleased]"
 WATCHED = ("scripts/", ".github/workflows/", ".claude/hooks/", "memory/", "CLAUDE.md", "AGENTS.md")
 
 VERSION_FILE = "version.txt"
+
+# Contracts an adopter can hold a file against. A word in prose depends on whoever writes it
+# remembering to use it; the value of a versioned constant at the last release does not. Extend
+# this list when a new contract is published — that is the explicit limit of what can be derived,
+# stated rather than left as a silent blind spot (R8-T5).
+CONTRACTS = (("scripts/python/asdd_state.py", r'^SCHEMA_VERSION\s*=\s*"([^"]+)"'),)
 NEXT_VERSION = re.compile(r"\*\*Next version:\*\*\s*v?(\d+)\.(\d+)\.(\d+)")
-BREAKING = re.compile(r"\bBREAKING\b")
+# A compatibility claim is a structured marker at the head of a bullet, not the word anywhere in
+# the block. Scanning for the bare word fired on the three lines that EXPLAIN this rule — prose
+# describing a claim is not a claim, and a checker that cannot tell them apart makes its own
+# documentation unpublishable (R8-T5).
+BREAKING = re.compile(r"^\s*[-*]\s+\*\*BREAKING\b", re.M)
 
 # Generated on nearly every run as a side effect of measuring; an entry for each would be noise
 # that teaches people to ignore the gate.
@@ -94,6 +104,44 @@ def current_version():
     return tuple(int(x) for x in m.groups()) if m else None
 
 
+def release_commit():
+    """The commit where version.txt last changed: the state an adopter on the current release has."""
+    r = subprocess.run(["git", "log", "--format=%H", "-1", "--", VERSION_FILE],
+                       capture_output=True, text=True, cwd=ROOT, timeout=60)
+    return r.stdout.strip() or None
+
+
+def _at(commit, path):
+    r = subprocess.run(["git", "show", f"{commit}:{path}"],
+                       capture_output=True, text=True, cwd=ROOT, timeout=60)
+    return r.stdout if r.returncode == 0 else None
+
+
+def derived_breaks():
+    """Contracts that existed at the last release AND changed value since.
+
+    A contract introduced after the release cannot break anyone on it: nobody holds a file written
+    by a tool that did not ship. That is what makes this derivable rather than a matter of
+    remembering a word."""
+    commit = release_commit()
+    if not commit:
+        return [], ["no release commit found: version.txt has never been committed"]
+    breaks, notes = [], []
+    for path, pattern in CONTRACTS:
+        rx = re.compile(pattern, re.M)
+        then = _at(commit, path)
+        if then is None:
+            notes.append(f"{path} did not exist at the last release, so nothing held against it "
+                         f"can break")
+            continue
+        now = open(os.path.join(ROOT, path), encoding="utf-8").read()
+        a = rx.search(then)
+        b = rx.search(now)
+        if a and b and a.group(1) != b.group(1):
+            breaks.append(f"{path}: {a.group(1)} → {b.group(1)}")
+    return breaks, notes
+
+
 def version_problems():
     """A BREAKING entry has to say what version it forces.
 
@@ -109,13 +157,28 @@ def version_problems():
     declared = NEXT_VERSION.search(block)
     nxt = tuple(int(x) for x in declared.groups()) if declared else None
 
-    if BREAKING.search(block):
+    breaks, _notes = derived_breaks()
+    claims_breaking = bool(BREAKING.search(block))
+
+    if breaks:
         if nxt is None:
-            errs.append(f"{UNRELEASED} records a BREAKING change and does not declare the next "
-                        f"version. Add a line: `> **Next version:** {cur[0] + 1}.0.0`")
+            errs.append(f"{UNRELEASED} breaks a published contract ({'; '.join(breaks)}) and "
+                        f"declares no next version. Add: `> **Next version:** {cur[0] + 1}.0.0`")
         elif nxt[0] <= cur[0]:
-            errs.append(f"a BREAKING change needs a major bump: declared "
-                        f"{'.'.join(map(str, nxt))}, current is {'.'.join(map(str, cur))}")
+            errs.append(f"a broken contract needs a major bump: declared "
+                        f"{'.'.join(map(str, nxt))}, current is {'.'.join(map(str, cur))} "
+                        f"({'; '.join(breaks)})")
+    elif claims_breaking:
+        # The case this rule was written for, and it was my own claim. `asdd_state.py` arrived
+        # after 1.0.0, so nobody on that release holds a v1 state file and the v1→v2 change breaks
+        # no published contract. The BREAKING label, and the 2.0.0 it forced, overstated the impact
+        # exactly the way the withdrawn 160x claim did (Article IX).
+        errs.append(
+            f"{UNRELEASED} says BREAKING, but no contract published at the last release changed. "
+            f"Either the label overstates the impact — a tool added after the release cannot break "
+            f"anyone on it — or the contract is not in CONTRACTS and should be added.")
+        if nxt is not None and nxt[0] > cur[0]:
+            errs.append(f"and the declared {'.'.join(map(str, nxt))} follows from that label")
     if nxt is not None and nxt <= cur:
         errs.append(f"declared next version {'.'.join(map(str, nxt))} is not ahead of "
                     f"{'.'.join(map(str, cur))}")
@@ -137,7 +200,12 @@ def main(argv=None):
         if not a.quiet:
             block = unreleased_block()
             d = NEXT_VERSION.search(block)
+            brks, notes = derived_breaks()
+            for n in notes:
+                print(f"  {n}")
             print(f"version: {'.'.join(map(str, current_version()))}"
+                  + (f", breaks {len(brks)} published contract(s)" if brks else
+                     ", no published contract broken")
                   + (f", next declared {d.group(1)}.{d.group(2)}.{d.group(3)}" if d else
                      ", no next version declared and none required"))
         return 0

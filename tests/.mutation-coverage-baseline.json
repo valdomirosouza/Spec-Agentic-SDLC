@@ -4,7 +4,6 @@
   "proved": 28,
   "checks": [
     "ADR-0022 declares exactly one floor",
-    "a BREAKING entry declares the next version",
     "adopter-paths",
     "adr-index",
     "asdd_state.py runs no git or gh",
@@ -15,6 +14,7 @@
     "check-prerequisites (example)",
     "check-prerequisites keeps --require-approved (approved|implemented only)",
     "check_control_matrix",
+    "compatibility claims match what the last release published",
     "constitution and CLAUDE.md reference the floor, not a bare number",
     "constitution has articles I\u2013IX and a version line",
     "create-new-feature --dry-run",

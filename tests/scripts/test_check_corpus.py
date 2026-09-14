@@ -211,12 +211,14 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         # The scope ratchet now names the table that vanished; before #86 the floors were constants
         # that widened into non-guards as items were added.
 
-    def test_a_breaking_entry_without_a_declared_next_version_is_caught(self):
-        """R7-T5. ADR-0057 says version.txt follows SemVer and nothing exercised it. A BREAKING
-        entry sat under [Unreleased] with the version at 1.0.0 and no link between the two."""
+    def test_an_unfounded_compatibility_claim_is_caught(self):
+        """R8-T5. The claim is derived from what the last release actually published, not from a
+        word. A contract added after the release cannot break anyone on it — which is what made
+        the BREAKING label here, and the 2.0.0 it forced, an overstatement of my own."""
         self.assert_mutation_is_caught(
-            Mutation("CHANGELOG.md", "> **Next version:** 2.0.0", "> Next release: soon"),
-            "declares the next version")
+            Mutation("CHANGELOG.md", "### Fixed",
+                     "### Fixed\n\n- **BREAKING: an invented incompatibility.**"),
+            "compatibility claims match")
 
     def test_neutering_a_check_into_an_unconditional_pass_is_caught(self):
         """R8-T1. Replacing a check's two-branch construct with a bare `ok` keeps its name, so the

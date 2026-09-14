@@ -9,10 +9,13 @@ authorises them.
 
 ## [Unreleased]
 
-> **Next version:** 2.0.0 — major, because the delivery-state schema change below is
-> BREAKING for adopters holding a `asdd_state_v1` file. `version.txt` is the version of
-> record (ADR-0057) and moves when the release is cut, not before; this line is what ties
-> the two together, and `check_changelog.py --version` enforces it.
+> **Next version:** 1.1.0 — minor. Nothing published in 1.0.0 is broken: `asdd_state.py`
+> was added *after* that release, so nobody on 1.0.0 holds a state file its schema change
+> could invalidate. An earlier draft of this line said 2.0.0 on the strength of the word
+> BREAKING, which was a compatibility claim nobody had checked against its baseline.
+> `version.txt` is the version of record (ADR-0057) and moves when the release is cut, not
+> before; `check_changelog.py --version` derives the claim from the repository state at the
+> last release rather than from a word.
 
 ### Added
 
@@ -47,6 +50,10 @@ authorises them.
 - The open-item checker covers `Open finding(s)` headings and numbered headings, not only the
   literal `Open items`, and carries floors on the number of tables and items it sees. DQ-REG-006,
   the corpus's only live open finding, sat outside the old scope (#80).
+- The compatibility claim is derived from the repository state at the last release, not from a
+  word in prose. A contract introduced after the release cannot break anyone on it, and the
+  BREAKING label here said otherwise: the 2.0.0 declared last round overstated the impact and is
+  corrected to 1.1.0 (#88).
 - The weekly no-baseline note lists the measurement pull requests still open, so a series that
   stalls because nobody merges them says so instead of only reporting that no baseline exists (#87).
 - The open-item scope floors became a versioned baseline with `--update`, recording the table
@@ -243,7 +250,7 @@ authorises them.
 
 ### Changed
 
-- **BREAKING (adopters): delivery state schema `asdd_state_v1` to `asdd_state_v2`.** The
+- **Delivery state schema `asdd_state_v1` to `asdd_state_v2`** — affects anyone tracking `main` who already ran the tool; **not** anyone on release 1.0.0, which never shipped it. The
   `artifacts` map changed meaning from `{basename: path}` to `{path: phase}`. Both shapes are
   objects of strings, so a v1 file loaded as v2 renders every artefact inverted and validates
   clean. A v1 file is now refused with an explanation. **Convert with

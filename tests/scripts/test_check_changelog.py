@@ -101,20 +101,20 @@ class NextVersion(unittest.TestCase):
                 cc.ROOT = real_root
             return rc, out.getvalue() + err.getvalue()
 
-    def test_breaking_without_a_declared_version_fails(self):
-        rc, out = self.check(f"{cc.UNRELEASED}\n\n- BREAKING: the schema changed\n")
-        self.assertEqual(rc, 1)
-        self.assertIn("does not declare the next version", out)
-
-    def test_breaking_with_only_a_minor_bump_fails(self):
+    def test_a_breaking_label_with_nothing_published_broken_fails(self):
+        """R8-T5. The case this rule exists for, and it was my own claim: asdd_state.py arrived
+        after 1.0.0, so nobody on that release holds a v1 file and the schema change breaks no
+        published contract. The label, and the 2.0.0 it forced, overstated the impact."""
         rc, out = self.check(
-            f"{cc.UNRELEASED}\n\n> **Next version:** 1.1.0\n\n- BREAKING: the schema changed\n")
+            f"{cc.UNRELEASED}\n\n- **BREAKING: the schema changed**\n")
         self.assertEqual(rc, 1)
-        self.assertIn("major bump", out)
+        self.assertIn("no contract published at the last release changed", out)
 
-    def test_breaking_with_a_major_bump_passes(self):
+    def test_prose_describing_a_claim_is_not_a_claim(self):
+        """Scanning for the bare word fired on the lines that explain this rule. A checker that
+        cannot tell a description from an assertion makes its own documentation unpublishable."""
         rc, _ = self.check(
-            f"{cc.UNRELEASED}\n\n> **Next version:** 2.0.0\n\n- BREAKING: the schema changed\n")
+            f"{cc.UNRELEASED}\n\n- the gate ties a BREAKING entry to the version it forces\n")
         self.assertEqual(rc, 0)
 
     def test_no_breaking_needs_no_declaration(self):
@@ -129,8 +129,14 @@ class NextVersion(unittest.TestCase):
     def test_breaking_in_an_older_release_does_not_count(self):
         """The block stops at the next release heading, so a break shipped long ago cannot keep
         demanding a bump for ever."""
-        rc, _ = self.check(f"{cc.UNRELEASED}\n\n- a fix\n\n## [1.0.0]\n\n- BREAKING: old news\n")
+        rc, _ = self.check(
+            f"{cc.UNRELEASED}\n\n- a fix\n\n## [1.0.0]\n\n- **BREAKING: old news**\n")
         self.assertEqual(rc, 0)
+
+    def test_a_contract_absent_at_the_release_cannot_break_anyone(self):
+        breaks, notes = cc.derived_breaks()
+        self.assertEqual(breaks, [], "nothing published in 1.0.0 has changed value")
+        self.assertTrue(any("did not exist at the last release" in n for n in notes))
 
 
 class LiveTree(unittest.TestCase):
