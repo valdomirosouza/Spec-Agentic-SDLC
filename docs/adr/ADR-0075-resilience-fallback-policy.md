@@ -60,9 +60,16 @@ is validated by a Chaos Toolkit experiment.
 
 ### Neutral
 
-- The experiments run against a deployed staging stack (Chaos Toolkit), not in PR unit CI; PR CI
-  only validates their well-formedness (`tests/chaos/test_experiments_valid.py`). Wiring a
-  lightweight fault into CI is tracked separately (STRENGTHENING-PLAN W2-10).
+- The full experiments run against a deployed staging stack (Chaos Toolkit). PR CI validates their
+  well-formedness (`adopter:tests/chaos/test_experiments_valid.py`) **and** runs a single-fault
+  resilience smoke: the W2-10 wiring this ADR originally deferred was delivered, and the Chaos
+  Smoke gate is **blocking**, path-filtered to the workers / HITL / retry paths.
+  [`docs/governance/gate-lifecycle.md`](../governance/gate-lifecycle.md) is the source of truth for
+  that status; this ADR does not restate it, because two places stating the same fact is how they
+  came to disagree. From this ADR's date (2026-06-13) until the audit of 2026-09-14 the paragraph
+  above said the smoke did not exist, while the gate lifecycle recorded it as blocking — an
+  authority conflict of the same class as issues #48, #49 and #50, found by a reader asking whether
+  self-healing was actually exercised.
 
 ## Alternatives Considered
 
@@ -74,4 +81,4 @@ is validated by a Chaos Toolkit experiment.
 ## References
 
 - `CLAUDE.md §0.1` (Infrastructure Fallback Pattern) · `src/api/rest/main.py` (audit prod-block)
-- `reports/STRENGTHENING-PLAN.md` W2-9 · `tests/chaos/experiments/`
+- `adopter:reports/STRENGTHENING-PLAN.md` W2-9 · `adopter:tests/chaos/experiments/`

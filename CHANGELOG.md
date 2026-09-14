@@ -259,6 +259,13 @@ authorises them.
 
 ### Fixed
 
+- **ADR-0075 published a limitation the gate lifecycle recorded as closed.** The ADR said the chaos
+  smoke did not run in PR CI and deferred the wiring to `W2-10`; `docs/governance/gate-lifecycle.md`
+  records that gate as **blocking** since shortly after. Three months of readers of the normative
+  resilience ADR were told resilience was not exercised on pull requests. The ADR now cites the gate
+  lifecycle as the source of truth instead of restating the status, because two places stating the
+  same fact is how they came to disagree (#95).
+
 - **`check-prerequisites keeps --require-approved` counted a string.** It grepped the file for the
   flag, which matched the usage comment, so deleting the case arm that implements it left the check
   green. Found by writing the mutation for it; it now runs the script and asserts the flag is
