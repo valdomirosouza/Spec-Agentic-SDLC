@@ -392,6 +392,18 @@ else
     printf '%s\n' "$out" | head -6 | sed 's/^/      /'
 fi
 
+# A workflow may not use an elevated verb the corpus has not written down. corpus-measure.yml
+# declared a permission the repository withholds and its first scheduled run died on exactly that:
+# the grant lives in repository settings, outside every file here (R12-T2). This verifies the
+# dependency is declared, never that it is granted — reading that needs an administrative
+# credential the corpus does not have.
+if out=$(python3 scripts/python/check_workflow_grants.py --check --quiet 2>&1); then
+    result "elevated workflow verbs are declared in ADR-0071" ok
+else
+    result "elevated workflow verbs are declared in ADR-0071" fail
+    printf '%s\n' "$out" | head -5 | sed 's/^/      /'
+fi
+
 # Every throttled response names the caller's budget. The corpus published a standard requiring
 # X-RateLimit-Limit/Remaining and Retry-After on every 429, and its own OpenAPI declared a 429 with
 # none of the three — a caller could not learn its budget or when to return, so it would retry at

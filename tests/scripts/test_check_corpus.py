@@ -532,6 +532,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      r"^\| Label-cardinality exhaustion[^\n]*\n", "", regex=True),
             "live feature specs address their abuse surface")
 
+    def test_an_undeclared_elevated_workflow_verb_is_caught(self):
+        """R12-T2. ADR-0071 says a job that exists is not a job that is enforced, because the grant
+        lives outside the repository — and was scoped to branch protection, so it did not cover the
+        setting that stopped this corpus's own automation three months later."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/adr/ADR-0071-repository-settings-as-code.md",
+                     "| `gh label create` |", "| `gh label made` |"),
+            "elevated workflow verbs are declared")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

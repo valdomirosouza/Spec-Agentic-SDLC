@@ -259,6 +259,11 @@ authorises them.
 
 ### Fixed
 
+- `ADR-0071` covers the settings this corpus's own automation depends on, not only branch
+  protection, with the September failure as the motivating example and a table of every elevated
+  verb the workflows use. `check_workflow_grants.py` fails on an undeclared one. It verifies the
+  dependency is written down, never that the grant is switched on — reading that needs an
+  administrative credential the corpus does not have and should not hold (#100).
 - The leak guard reports two categories instead of collapsing them: a declared path left changed is
   a leak and fails, any other tracked change is named as unexplained. Narrowing it yesterday had
   traded a false positive for a false negative (#101).

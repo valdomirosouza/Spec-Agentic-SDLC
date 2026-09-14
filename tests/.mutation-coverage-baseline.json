@@ -1,7 +1,7 @@
 {
   "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering it \u2014 including by deleting checks \u2014 is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 55,
-  "proved": 42,
+  "named": 56,
+  "proved": 43,
   "checks": [
     "ADR-0022 declares exactly one floor",
     "adopter-paths",
@@ -20,6 +20,7 @@
     "create-new-feature --dry-run",
     "data-quality rules over the corpus's own datasets",
     "documented agent commands use python3, not bare python",
+    "elevated workflow verbs are declared in ADR-0071",
     "every named check has a failing path",
     "example bundle present",
     "frontmatter",
