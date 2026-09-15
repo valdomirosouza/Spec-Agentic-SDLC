@@ -633,6 +633,42 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                     "verified_by:\n  - nowhere/does-not-exist.py\n---\n\n# probe\n"),
             "data-quality")
 
+    def test_a_risk_class_renamed_in_one_place_is_caught(self):
+        """#110. The defect was never that a word differed. It was that six classes in prose and
+        four tiers in the gate data had no mapping, so four documents restated the vocabulary from
+        memory and two drifted — and the copy an agent executed was one of the two.
+
+        Renaming the class in the arbiter and nowhere else reproduces exactly that: the declaration
+        moves, the restatements do not, and the check has to notice rather than let authority
+        migrate to whichever copy was read last."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/process/gates/phase-gates.yaml",
+                     "label: Small bug fix", "label: Trivial defect"),
+            "one risk-class vocabulary")
+
+    def test_an_architecture_doc_that_stopped_describing_the_repository_is_caught(self):
+        """#111. Rendering to a fifth tool without saying so in ARCHITECTURE.md is the drift that
+        matters: the document's whole claim is that it knows which files are sources and which are
+        generated copies, and a new copy that it does not name breaks exactly that claim.
+
+        The mutation is on render_commands.TARGETS rather than on the document, because a document
+        edited to be wrong proves only that the check reads it. This proves the check reads BOTH,
+        and notices when they disagree."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/python/render_commands.py",
+                     '"gemini":  (".gemini/commands/{name}.toml", "toml"),',
+                     '"gemini":  (".gemini/commands/{name}.toml", "toml"),\n'
+                     '    "zed":     (".zed/skills/{name}/SKILL.md", "md"),'),
+            "ARCHITECTURE.md still describes this repository")
+
+    def test_a_template_with_no_index_entry_is_caught(self):
+        """#112. The direction that is wrong today is not the direction that will be wrong next:
+        the check closes both ways, and this proves the half a hand-written index actually loses —
+        a file arrives and nobody adds the row."""
+        self.assert_mutation_is_caught(
+            NewFile("templates/mutation-probe-template.md", "# probe\n\nA template nobody indexed.\n"),
+            "every template is indexed")
+
     def test_an_adoption_that_arrives_unusable_is_caught(self):
         """#108. `templates/` out of the minimal layer leaves the corpus itself untouched — it still
         has the templates — and leaves an adopter with a first command that writes an empty spec.

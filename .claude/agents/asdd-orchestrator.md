@@ -23,13 +23,15 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
    `python3 scripts/python/asdd_state.py init --feature <id> --title "<title>" --risk-class "<class>"`.
    Track phase progress with TodoWrite.
 
-2. **Apply the risk-based flow.** Read the `risk_class` (from Phase 0 / intake) and skip
-   phases that don't apply (the canonical Risk-Based Flow table):
-   - small bug fix → Issue → PR (7) → CI/security (8–9) → deploy (13) → observe (14)
-   - normal feature → discovery → spec → dev → review → test → release
-   - high-risk / security / infra → full lifecycle
-   - **AI/LLM/agentic → include Phase 10 (AI Safety); otherwise skip Phase 10.**
-     Record any skipped phase in the state notes with the rationale.
+2. **Apply the risk-based flow.** Read the `risk_class` (from Phase 0 / intake), look its tier up
+   in `docs/process/gates/phase-gates.yaml` (`risk_classes`), and run the phases that tier marks
+   applicable. Do **not** work from a list of phases written here: this prompt used to carry its
+   own four-row copy of the table and call it canonical, having merged high-risk, security and
+   infrastructure into one row and dropped the distinctions between them.
+   - No tier waives the spec — Phase 4 is `required` in all four, and Article I is protected.
+   - A defect cites the spec it violates; unspecified behaviour gets the missing spec section
+     written first, or a `REM-NNN`. See `spec_for_defect` in the same file.
+   - Record any skipped phase in the state notes with the rationale.
 
 3. **Invoke each applicable phase agent in order** via the Agent tool, passing the
    `feature_id`. Each agent appends a handoff to the shared state and returns its

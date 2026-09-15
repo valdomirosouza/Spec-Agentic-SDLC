@@ -21,8 +21,9 @@ You own exactly this phase. You draft and recommend; a human prioritizes and dec
 
 1. Write `docs/product/FEAT-{id}/intake-form.md` containing: **problem statement**,
    **value hypothesis** (expected value + how it's measured), a proposed **risk class**
-   (one of: small bug fix · normal feature · high-risk feature · AI/LLM/agentic feature ·
-   security-sensitive · infrastructure/platform), and a proposed **owner**.
+   (one of the `risk_classes` labels in docs/process/gates/phase-gates.yaml: Small bug fix ·
+   Normal feature · High-risk feature · AI/LLM/agentic feature · Security-sensitive change ·
+   Infrastructure/platform change), and a proposed **owner**.
 2. The risk class selects the downstream path (risk-based flow). Note in `notes` which
    phases the orchestrator can skip for this risk class.
 3. Do **not** create the GitHub Issue here — that is Phase 1.

@@ -29,6 +29,12 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C19 one risk-class vocabulary: every class maps to a tier that exists, every restatement uses
+#      the declared labels, no second copy calls itself canonical (check_risk_classes.py --check)
+#  C18 ARCHITECTURE.md describes this repository and cannot drift from it: every path exists, the
+#      rendered-copy table matches render_commands, the measured block is current
+#  C17 templates/README.md indexes every template and nothing else, closed both ways
+#      (scripts/python/check_templates_index.py --check)
 #  C16 a fresh adoption of each layer works — links resolve, the verifier runs green, the first
 #      command in SETUP.md produces a feature bundle (scripts/python/check_adoption.py --check)
 #  C16 every adoption layer is closed under reference: no file a layer copies points at a file the
@@ -94,6 +100,7 @@ changed scripts and contracts are recorded in the changelog
 spec-kit-upstream.json
 adoption layers are closed under reference
 a fresh adoption works
+ARCHITECTURE.md still describes this repository
 open items carry a date or a named trigger
 spec registry matches disk
 spec evidence paths resolve or carry an explicit marker
@@ -346,6 +353,41 @@ if $SMOKE; then
         result "a fresh adoption works" fail
         printf '%s\n' "$out" | head -6 | sed 's/^/      /'
     fi
+fi
+
+say "C18 corpus architecture document"
+# The structure document is the easiest kind of file to be quietly wrong: docs/repo-structure.md
+# called itself auto-generated for months while nothing generated it. This one is checked — every
+# path it names exists, its rendered-copy table matches render_commands.TARGETS, and its measured
+# block is regenerated rather than hand-corrected (#111).
+if out=$(python3 scripts/python/check_architecture_doc.py --check --quiet 2>&1); then
+    result "ARCHITECTURE.md still describes this repository" ok "paths, integrations and measured block current"
+else
+    result "ARCHITECTURE.md still describes this repository" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
+say "C19 risk-class vocabulary"
+# Two unrelated classification systems — six risk classes in prose, four tiers in the gate data —
+# with no mapping between them, restated in four documents, two of which were already wrong. The
+# copy an agent executed was the wrong one. Authority moves to whichever copy was read last, which
+# is the cost of an uncontrolled vocabulary (#110).
+if out=$(python3 scripts/python/check_risk_classes.py --check --quiet 2>&1); then
+    result "one risk-class vocabulary, restated identically everywhere" ok "6 classes → 4 tiers"
+else
+    result "one risk-class vocabulary, restated identically everywhere" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
+say "C17 templates index"
+# Thirteen templates shipped with no index and two of them are called a spec template. Closed in
+# both directions rather than in the direction that happens to be wrong today: a template with no
+# entry fails, and an entry with no template fails (#112).
+if out=$(python3 scripts/python/check_templates_index.py --check --quiet 2>&1); then
+    result "every template is indexed, and every index entry is a template" ok "$(printf '%s' "$out" | head -1)"
+else
+    result "every template is indexed, and every index entry is a template" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
 fi
 
 say "C10 upstream pin"

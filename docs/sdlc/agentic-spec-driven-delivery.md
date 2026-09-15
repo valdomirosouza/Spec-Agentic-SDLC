@@ -89,16 +89,33 @@ flowchart TD
 ## Risk-based flow
 
 Do **not** force every change through all 15 phases. Match the path to the risk class
-(assigned at Phase 0):
+(assigned at Phase 0). The class names a **tier**, and the phases follow from each phase's
+`applicability` in [`docs/process/gates/phase-gates.yaml`](../process/gates/phase-gates.yaml) —
+which is the arbiter for that data (ADR-0095 §2). This table is the narrative for the same
+mapping, and `check-corpus.sh` C19 fails if the two stop agreeing.
 
-| Change type                    | Recommended path                                                               |
-| ------------------------------ | ------------------------------------------------------------------------------ |
-| Small bug fix                  | Issue → PR → CI/security → deploy → observe                                    |
-| Normal feature                 | Discovery → Spec → Dev → Review → Test → Release                               |
-| High-risk feature              | Full lifecycle with architecture, security, observability, and release gates   |
-| AI/LLM/agentic feature         | Full lifecycle **plus** the AI Safety & Agent Governance gate (Phase 10)       |
-| Security-sensitive change      | Full lifecycle **plus** threat model, stricter approval, enhanced auditability |
-| Infrastructure/platform change | Full lifecycle **plus** rollback plan, PRR, operational readiness review       |
+| Change type                    | Tier       | Beyond the tier                                            |
+| ------------------------------ | ---------- | ---------------------------------------------------------- |
+| Small bug fix                  | TRIVIAL    | —                                                          |
+| Normal feature                 | STANDARD   | —                                                          |
+| High-risk feature              | GOVERNED   | architecture, observability and release gates forced        |
+| AI/LLM/agentic feature         | GOVERNED   | **plus** the AI Safety & Agent Governance gate (Phase 10)  |
+| Security-sensitive change      | REGULATED  | **plus** threat model, stricter approval, auditability      |
+| Infrastructure/platform change | GOVERNED   | **plus** rollback plan, PRR, operational readiness review   |
+
+**No tier waives the spec.** Phase 4 is `required` in all four, and Article I is protected — it may
+be strengthened, never weakened. An earlier version of this table gave the small-bug-fix row the
+path "Issue → PR → CI/security → deploy → observe", which read as a specification waiver and sent
+an agent straight into a `pr-governance` gate that blocks a `fix:` PR citing no approved spec.
+
+**Which spec a defect cites**, the question that left the agent stuck at that gate:
+
+- **A regression** cites the spec the behaviour violates, and adds the regression test to that
+  spec's test strategy. Nothing new is written: the behaviour was specified and the code disagreed.
+- **Unspecified behaviour** has no spec to cite, and that is the finding. Write the missing spec
+  section first, then fix against it. The escape is a `REM-NNN` remediation id, which
+  `pr-governance` accepts in place of a spec path — for a defect whose correct behaviour is not a
+  product decision anyone has made yet.
 
 Team-size adoption tiers (what to activate vs. skip) are in
 [`CUSTOMISING.md §8`](../../CUSTOMISING.md).

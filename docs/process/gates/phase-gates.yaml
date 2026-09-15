@@ -65,6 +65,63 @@ tiers:
     description: Touches a control surface (guardrails, autonomy, financial/PII core) — full lifecycle.
     scope_ceiling: { files: null, adrs: null, modules: null }
 
+# ── Risk classes (EST-T1) ────────────────────────────────────────────────────
+# The change type assigned at Phase 0. Until this block existed, the corpus carried two unrelated
+# classification systems — six risk classes in prose and four tiers here — with no mapping between
+# them, so an agent applied whichever it had read last. Four documents restated the six classes and
+# two of the four disagreed: the orchestrator prompt merged three classes into one and called its
+# own four-row copy "the canonical Risk-Based Flow table", and DEFINITION_OF_READY called the first
+# class "small fix".
+#
+# The classes live here because ADR-0095 §2 makes this file the arbiter for gate DATA, and which
+# phases a change must pass is gate data. A class names a TIER; the phases then follow from each
+# phase's `applicability` above. This block adds a mapping, never a second list of phases — a
+# second list is what drifted.
+#
+# `adds` forces a phase that the tier alone would leave conditional.
+risk_classes:
+  - id: small_bug_fix
+    label: Small bug fix
+    tier: TRIVIAL
+    adds: []
+    # NOT a specification waiver. Phase 4 is `required` in every tier, including TRIVIAL, and
+    # Article I (Specification First) is protected — it may be strengthened, never weakened. The
+    # prose path for this class used to read "Issue → PR → CI/security → deploy → observe", which
+    # told an agent to skip Phase 4 and put it straight into a pr-governance gate that blocks a
+    # `fix:` PR with no approved spec path. What Phase 4 means for a defect is in `spec_for_defect`.
+  - id: normal_feature
+    label: Normal feature
+    tier: STANDARD
+    adds: []
+  - id: high_risk_feature
+    label: High-risk feature
+    tier: GOVERNED
+    adds: [5, 11, 12]
+  - id: ai_agentic_feature
+    label: AI/LLM/agentic feature
+    tier: GOVERNED
+    adds: [10]
+  - id: security_sensitive
+    label: Security-sensitive change
+    tier: REGULATED
+    adds: [5]
+  - id: infrastructure_platform
+    label: Infrastructure/platform change
+    tier: GOVERNED
+    adds: [11, 13]
+
+# Which spec a defect fix cites — the question the corpus required an answer to and never gave.
+# `pr-governance` blocks a `fix:` PR that cites no spec path with status approved or implemented,
+# and nothing said what a defect is supposed to cite.
+spec_for_defect:
+  regression: The spec the defective behaviour violates. The fix cites it and adds the regression
+    test to that spec's test strategy; no new spec is written, because the behaviour was already
+    specified and the code disagreed with it.
+  unspecified_behaviour: There is no spec to cite, which is itself the finding. Write the missing
+    spec section first (Article I), then fix against it. The escape is a `REM-NNN` remediation id,
+    which `pr-governance` accepts in place of a spec path — for a defect whose correct behaviour is
+    not a product decision anyone has made yet.
+
 # Condition keys referenced by a phase's `applicability.condition` (used for `conditional` tiers).
 applicability_conditions:
   processes_data: Change reads, stores, or transmits personal data (ADR-0012, CLAUDE.md §3.1).

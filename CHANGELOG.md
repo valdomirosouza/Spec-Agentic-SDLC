@@ -19,6 +19,27 @@ authorises them.
 
 ### Added
 
+- `risk_classes` and `spec_for_defect` in `docs/process/gates/phase-gates.yaml`, plus check C19 —
+  the six risk classes get ids, labels and a tier, in the file ADR-0095 §2 makes the arbiter for
+  gate data. The corpus carried two unrelated classification systems with no mapping between them:
+  six classes in prose, four tiers in the data. C19 requires every class to name a tier that
+  exists, every phase it forces to exist, every restating document to use the declared labels, and
+  no second copy to call itself canonical (#110).
+- `ARCHITECTURE.md` and check C18 — the corpus describes its own structure for the first time: what
+  is a source, what is a generated copy and what regenerates it, what each adoption layer carries,
+  where the root of authority sits. Two neighbouring documents described the *adopting*
+  repository's architecture and tree, and the answer to "is this file a source or a copy?" lived in
+  four places at once. Checked rather than trusted: every path it names must exist, its
+  rendered-copy table must match `render_commands.TARGETS`, and its measured block is regenerated
+  with `--update` rather than hand-corrected. Deliberately excluded from every adoption layer, for
+  the same reason as `.corpus-origin` (#111).
+- `templates/README.md` and check C17 — the thirteen templates get an index, closed in both
+  directions: a template with no entry fails, an entry with no template fails. All thirteen were
+  already consumed, so this is a discovery problem, not an orphan problem — and the two files a
+  newcomer would read as "the spec template" (`templates/spec-template.md` for a feature bundle,
+  `specs/SPEC-TEMPLATE.md` for a standing system spec) now say which is which where both are
+  found. The check caught a real gap on its first run: a lowercase-only pattern missed
+  `contracts-README-template.md` (#112).
 - `.gitattributes` and `.editorconfig`, in every adoption layer. 534 Markdown files and 12 shell
   scripts travel into repositories on other platforms; without normalisation a contributor on
   Windows produces a diff that touches every line of a file, and the link, frontmatter and mutation
@@ -282,6 +303,22 @@ authorises them.
 
 ### Fixed
 
+- The risk-based flow table told an agent to skip the spec for a bug fix. Its small-bug-fix row
+  read "Issue → PR → CI/security → deploy → observe", while Phase 4 is `required` in all four tiers
+  and Article I (Specification First) is protected. An agent following the table walked into a
+  `pr-governance` gate that blocks a `fix:` PR citing no approved spec, with nothing anywhere
+  saying what a defect is supposed to cite. It does now: a regression cites the spec it violates;
+  unspecified behaviour gets the missing spec section written first, or a `REM-NNN` (#110).
+- `.claude/agents/asdd-orchestrator.md` called its own four-row copy of the flow table "the
+  canonical Risk-Based Flow table". It was not canonical, and it had merged high-risk,
+  security-sensitive and infrastructure into one row — dropping the distinctions the real table
+  draws. It now looks the tier up in the arbiter instead of carrying a list. `DEFINITION_OF_READY`
+  called the first class "small fix"; three documents now use the declared labels exactly (#110).
+- `docs/repo-structure.md` stops calling itself an auto-generated reference. Nothing generated it,
+  and the sentence immediately after the claim asked a human to keep it current. A document that
+  claims a guarantee it does not have is worse than one that claims none, because a reader stops
+  checking. Both it and `docs/architecture.md` now say they describe the *adopting* repository and
+  point at `ARCHITECTURE.md` for this one (#111).
 - The verifier could end early and look green. `common.sh` sets `errexit`, so a helper exiting
   non-zero inside a bare assignment ends `check-corpus.sh` where it stands — with no failure line
   printed at all. Extracting the C1 link rule into `check_links.py`, which exits 1 on a broken
