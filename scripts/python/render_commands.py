@@ -75,6 +75,24 @@ def main():
     if mode == "--check":
         tmp = tempfile.mkdtemp()
         w = render_all(tmp)
+
+        # Only integrations this repository actually installed. A repository that adopted the corpus
+        # asking for `claude` alone has no `.github/skills` or `.cursor/skills` at all, and calling
+        # forty never-installed files "stale" made a fresh adoption look broken when it was simply
+        # not using those agents (#107). An installed integration missing one file is still stale.
+        installed = set()
+        for agent, (pattern, kind) in TARGETS.items():
+            base = os.path.join(ROOT, pattern.split("{name}")[0].rstrip("/"))
+            if os.path.isdir(base):
+                installed.add(agent)
+
+        def agent_of(rel):
+            for agent, (pattern, kind) in TARGETS.items():
+                if rel.startswith(pattern.split("{name}")[0]):
+                    return agent
+            return None
+
+        w = [rel for rel in w if agent_of(rel) in installed]
         stale = [rel for rel in w if not os.path.exists(os.path.join(ROOT, rel)) or not filecmp.cmp(os.path.join(tmp, rel), os.path.join(ROOT, rel), shallow=False)]
         # committed copies that no longer have a source
         extra = []

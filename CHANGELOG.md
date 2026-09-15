@@ -19,6 +19,12 @@ authorises them.
 
 ### Added
 
+- `scripts/python/check_adopt_closure.py` and check C16 — every adoption layer is closed under
+  reference: a file a layer copies may not point at a file the layer omits. Adopting `governed`
+  into a clean directory arrived with eleven broken links, because a layer is a hand-written list
+  of paths and a hand-written list is complete only where someone looked. The check reads the
+  layers out of `adopt.sh` rather than restating them, so the two cannot drift, and it closes the
+  set under the property instead of adding today's eleven names (#107).
 - `tests/scripts/test_check_corpus.py` — the mutation harness: every entry injects the defect a
   check exists to catch and requires **that** check to fail, named. Fifty assertions had never been
   exercised, which is why three vacuous checks survived one round and two more the next (#66).
@@ -352,6 +358,13 @@ authorises them.
 
 ### Changed
 
+- `adopt.sh` no longer ships `check-corpus.sh` in the `minimal` layer. The layer excludes
+  governance deliberately, and the verifier checks governance: a fresh minimal adoption ran twenty
+  checks against files it had declined and reported seven failures for them. The verifier travels
+  with the layer it verifies (#107).
+- `check_control_matrix.py` treats a missing control matrix as an error only in the corpus. A
+  repository that adopted the corpus without the matrices has nothing to verify, not a defect
+  (#107).
 - **Delivery state schema `asdd_state_v1` to `asdd_state_v2`** — affects anyone tracking `main` who already ran the tool; **not** anyone on release 1.0.0, which never shipped it. The
   `artifacts` map changed meaning from `{basename: path}` to `{path: phase}`. Both shapes are
   objects of strings, so a v1 file loaded as v2 renders every artefact inverted and validates

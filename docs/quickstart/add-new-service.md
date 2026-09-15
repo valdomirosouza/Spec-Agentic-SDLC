@@ -2,7 +2,7 @@
 
 # Adding a New Service
 
-> **Read first:** [docs/quickstart/README.md](README.md) and your language guide before starting.
+> **Read first:** `README.md` and your language guide before starting.
 
 This checklist covers every step required to register a new service in the monorepo — from directory creation to CI and deployment. Work through it top-to-bottom; each step must be completed before the next.
 

@@ -99,7 +99,7 @@ RACI defines accountability for every key process in this system.
 
 ## 5. Data Governance
 
-> Roles, council and decision rights: [`../data/data-governance-charter.md`](../data/data-governance-charter.md).
+> Roles, council and decision rights: `docs/data/data-governance-charter.md`.
 > **DO** = data owner (domain lead), **DS** = data steward, **DC** = data custodian (platform/SRE).
 
 | Process                                                     | TL  | DO    | DS  | DC  | SEC | DPO   | AIGOV | SRE |

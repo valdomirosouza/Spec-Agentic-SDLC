@@ -29,6 +29,8 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C16 every adoption layer is closed under reference: no file a layer copies points at a file the
+#      layer omits (scripts/python/check_adopt_closure.py --check)
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
@@ -88,6 +90,7 @@ compatibility claims match what the last release published
 elevated workflow verbs are declared in ADR-0071
 changed scripts and contracts are recorded in the changelog
 spec-kit-upstream.json
+adoption layers are closed under reference
 open items carry a date or a named trigger
 spec registry matches disk
 spec evidence paths resolve or carry an explicit marker
@@ -335,6 +338,19 @@ grep -qE '"(git|gh)"' scripts/python/asdd_state.py \
 
 say "C9 rendered per-agent commands"
 if out=$(python3 scripts/python/render_commands.py --check 2>&1); then result "render_commands --check" ok "$(printf '%s' "$out" | head -1)"; else result "render_commands --check" fail "$(printf '%s' "$out" | head -1)"; printf '%s\n' "$out" | sed -n '2,12p' | sed 's/^/      /'; fi
+
+say "C16 adoption layers"
+# A layer is a hand-written list of paths, and a hand-written list is complete only where someone
+# looked: adopting `governed` into a clean directory arrived with eleven links pointing at files the
+# layer declines to copy. The same shape as the spec-kit finding of the same day, from the other
+# side — a set chosen by enumeration is incomplete exactly where nobody looked, so the fix is to
+# close it under the property rather than to add today's eleven names (#107).
+if out=$(python3 scripts/python/check_adopt_closure.py --check --quiet 2>&1); then
+    result "adoption layers are closed under reference" ok "minimal · governed · full"
+else
+    result "adoption layers are closed under reference" fail "$(printf '%s' "$out" | head -1)"
+    python3 scripts/python/check_adopt_closure.py 2>&1 | sed -n '1,12p' | sed 's/^/      /'
+fi
 
 say "C10 upstream pin"
 if out=$(python3 - <<'PY3'

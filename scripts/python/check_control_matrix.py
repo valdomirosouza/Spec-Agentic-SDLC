@@ -132,7 +132,7 @@ def check_matrix(rel, quiet=False):
     path = os.path.join(ROOT, rel)
     errs, notes = [], []
     if not os.path.isfile(path):
-        return [f"{rel}: missing"], []
+        return ([f"{rel}: missing"] if is_corpus() else []), []
     top, controls = parse_matrix(open(path, encoding="utf-8").read())
 
     for k in ("standard", "version"):                                            # M1
@@ -197,12 +197,21 @@ def check_matrix(rel, quiet=False):
 def check_iso42001(quiet=False):
     path = os.path.join(ROOT, ISO42001_MATRIX)
     if not os.path.isfile(path):
-        return [f"{ISO42001_MATRIX}: missing"], []
+        return ([f"{ISO42001_MATRIX}: missing"] if is_corpus() else []), []
     text = open(path, encoding="utf-8").read()
     missing = [f"A.{i}" for i in range(2, 11) if f"**A.{i}**" not in text]
     if not quiet:
         print(f"  {ISO42001_MATRIX}: {9 - len(missing)}/9 Annex A objectives present")
     return ([f"{ISO42001_MATRIX}: objectives not found: {', '.join(missing)}"] if missing else []), []
+
+
+def is_corpus():
+    """This repository is the corpus itself, declared by the marker adopt.sh does not copy.
+
+    The corpus must carry all four matrices; a repository that adopted it may have taken only the
+    security ones, and requiring the EU AI Act matrix of someone who did not take it is the check
+    answering a question nobody asked (#107)."""
+    return os.path.isfile(os.path.join(ROOT, ".corpus-origin"))
 
 
 def main():

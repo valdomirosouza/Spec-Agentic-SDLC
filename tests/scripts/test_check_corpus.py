@@ -622,6 +622,16 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                     "verified_by:\n  - nowhere/does-not-exist.py\n---\n\n# probe\n"),
             "data-quality")
 
+    def test_a_layer_that_drops_a_referenced_file_is_caught(self):
+        """#107. `governed` copies AGENTS.md, which links to CONTRIBUTING.md; dropping the target
+        from the layer leaves a copied file pointing at one the layer omits. The defect the check
+        exists to catch is exactly this, and it arrived eleven times over without anyone seeing it,
+        because what was tested about adopt.sh was that files were copied — never that what landed
+        was usable."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/adopt.sh", " CONTRIBUTING.md CUSTOMISING.md", " CUSTOMISING.md"),
+            "adoption layers are closed under reference")
+
 
 def _tracked_status():
     r = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True,

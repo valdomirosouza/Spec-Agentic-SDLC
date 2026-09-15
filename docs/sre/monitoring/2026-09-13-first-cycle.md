@@ -7,7 +7,7 @@
 > executed for the first time. That plan's own open item 2 said it had never been executed; this
 > note closes it.
 > **Owner:** SRE Lead · **Co-owner:** AI Governance Lead · **Cadence:** weekly, scheduled in
-> [`.github/workflows/corpus-measure.yml`](../../../.github/workflows/corpus-measure.yml)
+> `.github/workflows/corpus-measure.yml`
 
 ## What this cycle could observe
 
