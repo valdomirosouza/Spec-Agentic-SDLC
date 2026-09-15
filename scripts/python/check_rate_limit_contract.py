@@ -84,6 +84,15 @@ def problems():
     return errs, seen
 
 
+def is_corpus():
+    """This repository is the corpus itself, declared by a marker adopt.sh does not copy.
+
+    The emptiness floor below is a corpus rule: here, finding nothing means the scan broke. In a
+    repository that adopted the corpus, finding nothing means they have not written one yet, and
+    failing them for that is the check answering a question nobody asked (#106)."""
+    return os.path.isfile(os.path.join(ROOT, ".corpus-origin"))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true")
@@ -92,9 +101,12 @@ def main(argv=None):
     errs, seen = problems()
 
     if not contracts():
-        print("no published contract found to check", file=sys.stderr)
-        return 1
-    if seen < MIN_THROTTLED:
+        if is_corpus():
+            print("no published contract found to check", file=sys.stderr)
+            return 1
+        print("no published contract yet — nothing to check")
+        return 0
+    if seen < MIN_THROTTLED and is_corpus():
         print(f"only {seen} throttled response(s) declared across the published contracts, floor is "
               f"{MIN_THROTTLED}. An API that documents no rate limiting at all is not a contract "
               f"that passed this check — it is one that escaped it.", file=sys.stderr)

@@ -259,6 +259,16 @@ authorises them.
 
 ### Fixed
 
+- **The verifier crashed and flooded in a freshly adopted repository.** Measured by adopting into a
+  clean directory: the `governed` layer produced 17 failures and 2 Python tracebacks, and `minimal`
+  died on the third check with a `FileNotFoundError`. A repository now declares whether it IS the
+  corpus, through a `.corpus-origin` marker that `adopt.sh` does not copy; the checks that audit the
+  corpus governing itself are skipped elsewhere, and a missing input reports a sentence instead of
+  raising. The `governed` layer is down to 4 failures and no tracebacks (#106).
+- The emptiness floors on abuse surface and throttled responses are corpus rules. Here, finding
+  nothing means the scan broke; in an adopting repository it means they have not written one yet
+  (#106).
+
 - **Eighteen gaps declared in the control matrices carried no deadline, and the checker could not
   see them.** It globbed `**/*.md`, so the mechanism built to end undated deferrals had file-format
   scope rather than conceptual scope; the matrices are YAML. Two of the gaps are EU AI Act

@@ -61,7 +61,10 @@ def used_verbs():
 
 
 def declared_verbs():
-    with open(os.path.join(ROOT, ADR), encoding="utf-8") as fh:
+    path = os.path.join(ROOT, ADR)
+    if not os.path.isfile(path):
+        return set()          # absent here: the caller reports it, nobody tracebacks (#106)
+    with open(path, encoding="utf-8") as fh:
         text = fh.read()
     out = set()
     # The whole first cell, backticks and all. Stopping at the first backtick read

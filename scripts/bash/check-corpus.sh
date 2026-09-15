@@ -64,10 +64,47 @@ for a in "$@"; do case "$a" in --quiet) QUIET=true ;; --no-smoke) SMOKE=false ;;
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/common.sh"
 ROOT=$(get_repo_root); cd "$ROOT"
+# Is this the corpus itself, or a repository that adopted it? Declared by a marker file that
+# adopt.sh does not copy, never inferred: a fresh adoption reached seventeen failures and two
+# tracebacks because every self-audit check ran against a repository that is not the corpus (#106).
+SELF=true
+[ -f .corpus-origin ] || SELF=false
+$SELF || say "running in a repository that adopted this corpus — checks that audit the corpus governing itself are skipped"
 EXAMPLE="specs/features/SPEC-LGS-001-log-based-golden-signals"
 fails=0
 say() { $QUIET || echo "$@"; }
+# Checks that audit the corpus governing ITSELF. They are meaningless in a repository that adopted
+# the corpus — its mutation baseline, measurement series, red-team ratchet, upstream pin and
+# changelog are this project's, not the adopter's. Listed by name rather than detected by shape,
+# because every shape-based guess this series has tried was wrong in one direction or the other.
+CORPUS_ONLY="
+data-quality rules over the corpus's own datasets
+the measurement report is structurally current
+the measurement is scheduled, not merely described
+the corpus carries at least one measurement of itself
+mutation coverage has not fallen
+red-team RT-2026-09-13 findings stay closed
+compatibility claims match what the last release published
+elevated workflow verbs are declared in ADR-0071
+changed scripts and contracts are recorded in the changelog
+spec-kit-upstream.json
+open items carry a date or a named trigger
+spec registry matches disk
+spec evidence paths resolve or carry an explicit marker
+tests/scripts/test_check_corpus.py (mutation)
+tests/scripts/test_mutation_coverage.py
+tests/scripts/test_corpus_measure_workflow.py
+tests/scripts/test_check_changelog.py
+tests/scripts/test_check_open_items.py
+"
+
+is_corpus_only() { printf '%s' "$CORPUS_ONLY" | grep -Fxq "$1"; }
+
 result() { # name status detail — ok | note | fail
+    if ! $SELF && is_corpus_only "$1"; then
+        say "  · $1 — skipped: audits the corpus governing itself"
+        return 0
+    fi
     case "$2" in
         ok)   say "  ✓ $1${3:+ — $3}" ;;
         note) echo "  ! $1${3:+ — $3}" ;;   # alert severity: visible, does not fail the build
@@ -135,8 +172,14 @@ if [ "$c2_bad" = 0 ]; then result "frontmatter" ok "$c2_n specs valid"; else res
 
 say "C3 ADR index"
 C3=$(python3 - <<'PY'
-import re,glob,os
+import re,glob,os,sys
 files=sorted(glob.glob('docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md'))
+# A repository that adopted the corpus may carry no ADRs and no index. That is a check which does
+# not apply, and it used to be an unhandled FileNotFoundError on the third line of a fresh
+# adoption — the first thing anyone saw of this tool (#106).
+if not files or not os.path.isfile('docs/adr/README.md'):
+    print('n/a: no docs/adr index in this repository')
+    sys.exit(0)
 nums=sorted(int(os.path.basename(f)[4:8]) for f in files)
 bad=[]
 if nums!=list(range(1,len(nums)+1)): bad.append(f"numbering not contiguous: {[n for n in range(1,max(nums)+1) if n not in nums]} missing, duplicates {[n for n in set(nums) if nums.count(n)>1]}")

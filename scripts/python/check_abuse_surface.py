@@ -90,6 +90,15 @@ def problems():
     return errs, rows
 
 
+def is_corpus():
+    """This repository is the corpus itself, declared by a marker adopt.sh does not copy.
+
+    The emptiness floor below is a corpus rule: here, finding nothing means the scan broke. In a
+    repository that adopted the corpus, finding nothing means they have not written one yet, and
+    failing them for that is the check answering a question nobody asked (#106)."""
+    return os.path.isfile(os.path.join(ROOT, ".corpus-origin"))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--check", action="store_true")
@@ -98,8 +107,11 @@ def main(argv=None):
     errs, rows = problems()
 
     if not rows:
-        print("no live feature spec found to check", file=sys.stderr)
-        return 1
+        if is_corpus():
+            print("no live feature spec found to check", file=sys.stderr)
+            return 1
+        print("no live feature spec yet — nothing to check")
+        return 0
     if errs:
         for e in errs:
             print(e, file=sys.stderr)

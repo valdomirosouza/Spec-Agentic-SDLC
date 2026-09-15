@@ -69,6 +69,13 @@ def changed_paths():
     return {p for p in paths if p}
 
 
+def missing(path):
+    """A file this corpus has and an adopting repository may not. Absent means the check does not
+    apply here, which is a sentence to print — not a Python traceback, which is what a fresh
+    adoption used to get (#106)."""
+    return not os.path.isfile(os.path.join(ROOT, path))
+
+
 def problems():
     """Two failures, deliberately independent of each other.
 
@@ -77,6 +84,8 @@ def problems():
     passed or failed according to what happened to be edited, and could not be proved by mutation
     on a clean tree. An invariant that only holds sometimes is not an invariant."""
     errs = []
+    if missing(CHANGELOG):
+        return [f"no {CHANGELOG} in this repository — nothing to record against"], []
     with open(os.path.join(ROOT, CHANGELOG), encoding="utf-8") as fh:
         if UNRELEASED not in fh.read():
             errs.append(f"{CHANGELOG} has no `{UNRELEASED}` section, so nothing can be recorded "
@@ -153,6 +162,9 @@ def version_problems():
     version.txt sits at 1.0.0, and in three months nobody will remember a break was pending — the
     rule was written and never made to act on anything (R7-T5)."""
     errs = []
+    for needed in (CHANGELOG, VERSION_FILE):
+        if missing(needed):
+            return [f"no {needed} in this repository — no version of record to check against"]
     block = unreleased_block()
     cur = current_version()
     if cur is None:
