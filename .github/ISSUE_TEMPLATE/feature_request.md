@@ -27,9 +27,9 @@ assignees: []
 - [ ] Small bug fix — Issue → PR → CI/security → deploy → observe
 - [ ] Normal feature — Discovery → Spec → Dev → Review → Test → Release
 - [ ] High-risk feature — full lifecycle + architecture/security/observability/release gates
-- [ ] AI / LLM / agentic feature — full lifecycle + **AI Safety & Agent Governance** gate (Phase 10)
-- [ ] Security-sensitive — full lifecycle + threat model + stricter approval/auditability
-- [ ] Infrastructure / platform — full lifecycle + rollback plan + PRR
+- [ ] AI/LLM/agentic feature — full lifecycle + **AI Safety & Agent Governance** gate (Phase 10)
+- [ ] Security-sensitive change — full lifecycle + threat model + stricter approval/auditability
+- [ ] Infrastructure/platform change — full lifecycle + rollback plan + PRR
 
 ## Discovery Link
 

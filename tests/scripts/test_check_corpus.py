@@ -183,6 +183,17 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             rc, out = run_check(*args, env=env)
         failed_lines = [l for l in out.split("\n") if l.lstrip().startswith("✗")]
         named = [l for l in failed_lines if check_name in l]
+        # A run that ended early is not a run that stayed green, and the harness used to call it
+        # one. common.sh sets errexit, so a helper exiting non-zero inside a bare assignment kills
+        # the verifier where it stands; three proofs then reported "stayed green" for a run that
+        # died at check 1 of 58 and printed no ✗ at all. The distinction is the whole diagnosis,
+        # so it belongs in the message rather than in whoever reads it next (#108).
+        reported = len([l for l in out.split("\n") if l.lstrip()[:1] in ("✓", "✗", "·")])
+        if not named and reported < 10:
+            self.fail(
+                f"the verifier ended early under this mutation — {reported} check(s) reported "
+                f"before it stopped, so `{check_name}` never ran. This is a crash in the verifier, "
+                f"not a vacuous check.\n{out[-800:]}")
         if not named:
             # Keep the whole run. A failure that happens once in three runs has to be diagnosable
             # from its first occurrence: the ✗ lines say which check did not fire and never say
@@ -532,6 +543,24 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      r"^\| Label-cardinality exhaustion[^\n]*\n", "", regex=True),
             "live feature specs address their abuse surface")
 
+    def test_an_undeclared_elevated_workflow_verb_is_caught(self):
+        """R12-T2. ADR-0071 says a job that exists is not a job that is enforced, because the grant
+        lives outside the repository — and was scoped to branch protection, so it did not cover the
+        setting that stopped this corpus's own automation three months later."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/adr/ADR-0071-repository-settings-as-code.md",
+                     "| `gh label create` |", "| `gh label made` |"),
+            "elevated workflow verbs are declared")
+
+    def test_a_yaml_gap_without_a_deadline_is_caught(self):
+        """R13-T1. The deadline mechanism had file-format scope, not conceptual scope: it watched
+        Markdown tables under an `Open items` heading and never saw the eighteen gaps declared in
+        the control matrices, two of them EU AI Act conformity obligations."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/security/asvs-control-matrix.yaml",
+                     r'^(\s*)resolve_by: "2026-\d\d-\d\d"\n', "", regex=True),
+            "open items carry a date")
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",
@@ -604,6 +633,64 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                     "verified_by:\n  - nowhere/does-not-exist.py\n---\n\n# probe\n"),
             "data-quality")
 
+    def test_a_risk_class_renamed_in_one_place_is_caught(self):
+        """#110. The defect was never that a word differed. It was that six classes in prose and
+        four tiers in the gate data had no mapping, so four documents restated the vocabulary from
+        memory and two drifted — and the copy an agent executed was one of the two.
+
+        Renaming the class in the arbiter and nowhere else reproduces exactly that: the declaration
+        moves, the restatements do not, and the check has to notice rather than let authority
+        migrate to whichever copy was read last."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/process/gates/phase-gates.yaml",
+                     "label: Small bug fix", "label: Trivial defect"),
+            "one risk-class vocabulary")
+
+    def test_an_architecture_doc_that_stopped_describing_the_repository_is_caught(self):
+        """#111. Rendering to a fifth tool without saying so in ARCHITECTURE.md is the drift that
+        matters: the document's whole claim is that it knows which files are sources and which are
+        generated copies, and a new copy that it does not name breaks exactly that claim.
+
+        The mutation is on render_commands.TARGETS rather than on the document, because a document
+        edited to be wrong proves only that the check reads it. This proves the check reads BOTH,
+        and notices when they disagree."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/python/render_commands.py",
+                     '"gemini":  (".gemini/commands/{name}.toml", "toml"),',
+                     '"gemini":  (".gemini/commands/{name}.toml", "toml"),\n'
+                     '    "zed":     (".zed/skills/{name}/SKILL.md", "md"),'),
+            "ARCHITECTURE.md still describes this repository")
+
+    def test_a_template_with_no_index_entry_is_caught(self):
+        """#112. The direction that is wrong today is not the direction that will be wrong next:
+        the check closes both ways, and this proves the half a hand-written index actually loses —
+        a file arrives and nobody adds the row."""
+        self.assert_mutation_is_caught(
+            NewFile("templates/mutation-probe-template.md", "# probe\n\nA template nobody indexed.\n"),
+            "every template is indexed")
+
+    def test_an_adoption_that_arrives_unusable_is_caught(self):
+        """#108. `templates/` out of the minimal layer leaves the corpus itself untouched — it still
+        has the templates — and leaves an adopter with a first command that writes an empty spec.
+        That is the whole category: a defect invisible from inside the repository that ships it.
+
+        It runs with smoke on and the sub-suites off, like the other adopter-entry proofs: the
+        adoption check is behind --no-smoke, and leaving the suites on would recurse into this
+        harness."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/adopt.sh", 'MINIMAL="memory templates ', 'MINIMAL="memory '),
+            "a fresh adoption works", args=self.SMOKE_ARGS)
+
+    def test_a_layer_that_drops_a_referenced_file_is_caught(self):
+        """#107. `governed` copies AGENTS.md, which links to CONTRIBUTING.md; dropping the target
+        from the layer leaves a copied file pointing at one the layer omits. The defect the check
+        exists to catch is exactly this, and it arrived eleven times over without anyone seeing it,
+        because what was tested about adopt.sh was that files were copied — never that what landed
+        was usable."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/adopt.sh", " CONTRIBUTING.md CUSTOMISING.md", " CUSTOMISING.md"),
+            "adoption layers are closed under reference")
+
 
 def _tracked_status():
     r = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True,
@@ -632,10 +719,16 @@ class NoSuitesFlag(unittest.TestCase):
         with open(CHECK, encoding="utf-8") as fh:
             self.t = fh.read()
 
-    def test_the_flag_exists_and_gates_the_suite_block(self):
+    def test_the_flag_exists_and_gates_every_suite_block(self):
+        """It gated one block when introduced, so a suite that regenerates the measurement still
+        ran under it and rewrote the report mid-run. Every block whose body only runs a suite is
+        gated; the dry-run block is not, because the adopter-entry proofs need it (#99)."""
         self.assertIn("--no-suites) SUITES=false ;;", self.t)
-        self.assertIn("if $SMOKE && $SUITES; then", self.t,
-                      "the sub-suite block, which contains this harness, must be what SUITES gates")
+        runners = [l for l in self.t.split("\n")
+                   if re.search(r'(python3|bash)\s+tests/scripts/\S+\s+2>&1', l)]
+        self.assertGreaterEqual(len(runners), 8, "expected the suite runners to be found")
+        blocks = self.t.count("if $SMOKE && $SUITES; then")
+        self.assertGreaterEqual(blocks, 4, "every suite-running block must be gated by SUITES")
 
     def test_the_smoke_proofs_are_what_exercise_it(self):
         """If this stops being true the flag has no user again, and should go rather than sit
@@ -646,20 +739,64 @@ class NoSuitesFlag(unittest.TestCase):
         self.assertGreaterEqual(mine.count("args=self.SMOKE_ARGS"), 5)
 
 
-class TreeIsClean(unittest.TestCase):
-    def test_no_mutation_leaked(self):
-        """A leak is a path a MUTATION touched and did not put back.
+class TheVerifierCannotEndEarly(unittest.TestCase):
+    """common.sh sets errexit, which makes a bare `x=$(cmd)` in check-corpus.sh a trapdoor: a
+    helper that exits non-zero ends the run where it stands, and the verifier prints no failure —
+    it prints nothing. That reads as a short green run to a person and, until assert_mutation_is_caught
+    learned the difference, as a green check to this harness.
 
-        Comparing the whole tracked tree against a snapshot taken at import reported a leak for any
-        change during the run, including an edit by whoever is operating the repository — which is
-        exactly how this failed once in three runs with nothing wrong. Reproduced deliberately by
-        editing this file mid-run and watching the guard call it a leaked mutation (#98)."""
+    It shipped exactly once, in the refactor that gave the C1 link rule its own script, and cost
+    three proofs. The first version of this test read the shell statically and tried to tell a
+    protected assignment from an exposed one by its shape; it called `ROOT=$(get_repo_root)` a
+    defect and missed nothing real. Shape-based reasoning is what this corpus has rejected five
+    times, so the assertion is behavioural instead: give the verifier the defect that killed it and
+    require it to keep going (#108)."""
+
+    def test_a_broken_link_does_not_end_the_run(self):
+        reported_when_clean = self._reported()
+        with NewFile("docs/mutation-probe-early-exit.md",
+                     "<!-- adopter-paths: probe -->\n\n# probe\n\n[dead](./nowhere.md)\n"):
+            reported = self._reported()
+        self.assertGreaterEqual(
+            reported, reported_when_clean - 1,
+            f"the verifier reported {reported} checks with one broken link and "
+            f"{reported_when_clean} without: it stopped early instead of failing a check")
+
+    @staticmethod
+    def _reported():
+        _, out = run_check()
+        return len([l for l in out.split("\n") if l.lstrip()[:1] in ("✓", "✗", "·")])
+
+
+class TreeIsClean(unittest.TestCase):
+    """Two categories, because collapsing them loses one of the two things worth knowing.
+
+    The guard first compared the whole tracked tree against a snapshot, which called the operator's
+    own edit a leaked mutation. Narrowing it to declared paths fixed that and opened the opposite
+    case: a mutation with a side effect on a file it never declared passed in silence. That is not
+    hypothetical — a mutation in round 10 turned a dry run into a real one and created files, and
+    had the effect landed on a tracked file it would go unseen (#101).
+
+    So: a declared path left changed is a LEAK and fails. Any other tracked change is UNEXPLAINED —
+    a side effect or the operator — and is named rather than dropped. Under the run lock the
+    operator explanation is the less likely of the two, which makes silence the wrong default."""
+
+    def test_no_mutation_leaked(self):
         dirty = {l[3:] for l in _tracked_status()} - {l[3:] for l in _STATUS_AT_START}
         leaked = sorted(dirty & _TOUCHED)
+        unexplained = sorted(dirty - _TOUCHED)
+        if unexplained:
+            print("\n  tracked files changed during this run that no mutation declared:",
+                  file=sys.stderr)
+            for u in unexplained:
+                print(f"    {u}", file=sys.stderr)
+            print("  Either a mutation had a side effect it did not declare, or the repository was "
+                  "edited while the run held the lock. The first is a defect in the mutation.",
+                  file=sys.stderr)
         self.assertEqual(
             leaked, [],
-            "a mutation left a file changed:\n" + "\n".join(leaked) +
-            "\n(paths the harness touched this run: " + ", ".join(sorted(_TOUCHED)) + ")")
+            "a mutation left a declared file changed:\n" + "\n".join(leaked) +
+            "\n(paths declared this run: " + ", ".join(sorted(_TOUCHED)) + ")")
 
 
 

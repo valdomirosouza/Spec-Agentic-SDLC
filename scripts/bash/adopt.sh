@@ -2,14 +2,15 @@
 # Copy a layer of the Spec-Agentic-SDLC corpus into a product repository (issue #16, ADR-0091).
 # The corpus equivalent of spec-kit's `specify init --here`, without a CLI runtime.
 #
-# Usage: adopt.sh (--here | <target-dir>) [--layer minimal|governed|full]
+# Usage: adopt.sh (--here | <target-dir>) [--layer minimal|governed|full] [--list]
 #                 [--integration claude|copilot|cursor|gemini|codex]... [--force] [--dry-run] [--json]
 #
 # Layers (SETUP.md §1):
-#   minimal   memory/ templates/ scripts/bash/ scripts/python/ specs/spec-frontmatter.schema.json
+#   minimal   memory/ templates/ scripts/bash/ (minus check-corpus.sh) scripts/python/ specs/spec-frontmatter.schema.json
 #             specs/features/README.md .claude/skills/sdd-*/ .claude/settings.json .claude/hooks/
 #             .markdownlint-cli2.jsonc version.txt
 #   governed  minimal + CLAUDE.md AGENTS.md CLAUDE_SESSION_INIT.md SETUP.md skills/ .claude/ (all)
+#             …and every file those point at: the layer is closed under reference (#107)
 #             docs/adr/ docs/process/ docs/sdlc/ docs/governance/ docs/reference/ specs/security/
 #             harness/ .github/ (templates, CODEOWNERS, workflows/corpus-check.yml)
 #   full      governed + everything else under docs/ specs/ prompts/ and the root policies
@@ -18,11 +19,14 @@
 #   gemini → .gemini/commands · codex → .agents/skills
 # Existing files are never overwritten unless --force. Nothing is deleted. No git command runs.
 set -e
-TARGET=""; LAYER="minimal"; INTEGRATIONS="claude"; FORCE=false; DRY=false; JSON=false
+TARGET=""; LAYER="minimal"; INTEGRATIONS="claude"; FORCE=false; DRY=false; JSON=false; LIST=false
 while [ $# -gt 0 ]; do
     case "$1" in
         --here) TARGET="$PWD" ;;
         --layer) shift; LAYER="$1" ;;
+        # What would this copy? Printed one path per line, so a human can read it and
+        # check_adopt_closure.py can ask the layer definition itself instead of restating it (#107).
+        --list) LIST=true; DRY=true ;;
         --integration) shift; INTEGRATIONS="$INTEGRATIONS $1" ;;
         --force) FORCE=true ;;
         --dry-run) DRY=true ;;
@@ -39,8 +43,8 @@ SRC="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 mkdir -p "$TARGET"; TARGET="$(CDPATH="" cd "$TARGET" && pwd)"
 [ "$SRC" != "$TARGET" ] || { echo "ERROR: target is the corpus itself" >&2; exit 1; }
 
-MINIMAL="memory templates scripts/bash scripts/python specs/spec-frontmatter.schema.json specs/features/README.md .claude/settings.json .claude/hooks .markdownlint-cli2.jsonc version.txt LICENSE"
-GOVERNED="CLAUDE.md AGENTS.md CLAUDE_SESSION_INIT.md SETUP.md skills .claude docs/adr docs/process docs/sdlc docs/governance docs/reference specs/security specs/README.md harness .github/ISSUE_TEMPLATE .github/PULL_REQUEST_TEMPLATE .github/DISCUSSION_TEMPLATE .github/pull_request_template.md .github/CODEOWNERS .github/workflows/corpus-check.yml tests/scripts"
+MINIMAL="memory templates scripts/bash scripts/python tests/hooks specs/spec-frontmatter.schema.json specs/features/README.md .claude/settings.json .claude/hooks .markdownlint-cli2.jsonc .gitattributes .editorconfig version.txt LICENSE"
+GOVERNED="CLAUDE.md AGENTS.md CLAUDE_SESSION_INIT.md SETUP.md skills .claude docs/adr docs/process docs/sdlc docs/governance docs/reference specs/security specs/README.md harness .github/ISSUE_TEMPLATE .github/PULL_REQUEST_TEMPLATE .github/DISCUSSION_TEMPLATE .github/pull_request_template.md .github/CODEOWNERS .github/workflows/corpus-check.yml tests/scripts CHANGELOG.md CONTRIBUTING.md CUSTOMISING.md docs/glossary.md docs/troubleshooting.md docs/ai-governance/ai-safety-checklist.md docs/sre/prr/PRR-TEMPLATE.md specs/SPEC-TEMPLATE.md docs/dependency-manifest.yaml docs/privacy/pii-inventory.md CODE_OF_CONDUCT.md README.md docs/quickstart/add-new-service.md CITATION.cff specs/system/SPEC-LGS-001-log-based-golden-signals.md"
 FULL="docs specs prompts README.md CONTRIBUTING.md CUSTOMISING.md SECURITY.md PRIVACY.md CODE_OF_CONDUCT.md CHANGELOG.md CITATION.cff"
 
 paths="$MINIMAL"
@@ -59,9 +63,18 @@ for i in $INTEGRATIONS; do
 done
 
 # Expand to a unique, sorted file list relative to SRC.
+# The corpus verifier checks governance, and `minimal` excludes governance on purpose. Shipping it
+# there meant a fresh minimal adoption ran twenty checks against files it had deliberately declined
+# and reported seven failures for them (#107). It travels with the layer it verifies.
+EXCLUDE=""
+[ "$LAYER" = minimal ] && EXCLUDE="scripts/bash/check-corpus.sh"
+
 files=$(for p in $paths; do
     if [ -d "$SRC/$p" ]; then (cd "$SRC" && find "$p" -type f); elif [ -f "$SRC/$p" ]; then echo "$p"; fi
 done | grep -v '/\.DS_Store$' | sort -u)
+for x in $EXCLUDE; do files=$(printf '%s\n' "$files" | grep -vFx "$x"); done
+
+if $LIST; then printf '%s\n' "$files"; exit 0; fi
 
 copied=0; skipped=0; total=0; skipped_list=""
 for f in $files; do

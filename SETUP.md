@@ -26,9 +26,13 @@ appears under `specs/features/<SPEC-ID>-<slug>/`. That is the whole minimal laye
 
 | Layer        | Copy these paths                                                                                                                                                        | You get                                                                                                   |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **minimal**  | `memory/`, `templates/`, `scripts/bash/`, `.claude/skills/sdd-*/`, `.claude/settings.json`, `.claude/hooks/`, `specs/spec-frontmatter.schema.json`, `specs/features/README.md` | The spec-kit-style workflow (`/sdd-*`), the constitution, the feature bundle, the high-risk-action guard |
+| **minimal**  | `memory/`, `templates/`, `scripts/bash/` (except `check-corpus.sh`), `.claude/skills/sdd-*/`, `.claude/settings.json`, `.claude/hooks/`, `specs/spec-frontmatter.schema.json`, `specs/features/README.md` | The spec-kit-style workflow (`/sdd-*`), the constitution, the feature bundle, the high-risk-action guard |
 | **governed** | minimal + `CLAUDE.md`, `AGENTS.md`, `CLAUDE_SESSION_INIT.md`, `skills/`, `.claude/skills/` (all), `.claude/agents/`, `.claude/personas/`, `docs/adr/`, `docs/process/`, `docs/sdlc/`, `docs/governance/`, `specs/security/`, `harness/`, `.github/` templates | The 15-phase lifecycle with nine human gates, delivery agents, `/deliver`, ADRs, control matrices, PR/issue templates, harness gate specs |
 | **full**     | governed + everything else under `docs/` and `specs/` (privacy, compliance, SRE, audit, runbooks, product, GTM)                                                          | The complete compliance and audit evidence corpus (LGPD/GDPR, ISO 27001, SOX, SOC 2, DORA, PRR)           |
+
+`check-corpus.sh` verifies governance, so it arrives with **governed** — the layer that
+brings the governance to verify. A `minimal` adoption that ran it got twenty checks over files
+it had deliberately declined, and seven failures for them.
 
 Copy with `scripts/bash/adopt.sh --here --layer <minimal|governed|full> [--integration copilot|cursor|gemini|codex]`
 (run from a clone of this corpus, or `adopt.sh <target-dir>` from here; ADR-0091). It never

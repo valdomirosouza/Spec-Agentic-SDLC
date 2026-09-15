@@ -2,6 +2,10 @@
 # Deterministic validation of the Spec-Agentic-SDLC corpus (issue #11). Runs locally and in CI.
 #
 # Usage: check-corpus.sh [--quiet] [--no-smoke] [--no-hook] [--no-suites]
+#   --no-suites keeps the script dry-runs and turns off EVERY block that only runs a test suite.
+#   It gated one such block when introduced, so `tests/scripts/test_corpus_metrics.py` still ran
+#   under it — and that suite calls `--report`, rewriting the measurement mid-run. The mutation
+#   harness's own leak guard is what surfaced it (#99).
 #
 # Checks
 #   C1 internal Markdown links resolve (adopter-provided paths, placeholders and archived
@@ -25,6 +29,16 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C19 one risk-class vocabulary: every class maps to a tier that exists, every restatement uses
+#      the declared labels, no second copy calls itself canonical (check_risk_classes.py --check)
+#  C18 ARCHITECTURE.md describes this repository and cannot drift from it: every path exists, the
+#      rendered-copy table matches render_commands, the measured block is current
+#  C17 templates/README.md indexes every template and nothing else, closed both ways
+#      (scripts/python/check_templates_index.py --check)
+#  C16 a fresh adoption of each layer works — links resolve, the verifier runs green, the first
+#      command in SETUP.md produces a feature bundle (scripts/python/check_adoption.py --check)
+#  C16 every adoption layer is closed under reference: no file a layer copies points at a file the
+#      layer omits (scripts/python/check_adopt_closure.py --check)
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
 #  C12 control matrices (ASVS, OWASP GenAI, EU AI Act, ISO 42001): ids unique, owner and status
 #      present, n/a justified, partial has a gap, every corpus path exists (adopter:/ci:/planned: aside)
@@ -60,10 +74,50 @@ for a in "$@"; do case "$a" in --quiet) QUIET=true ;; --no-smoke) SMOKE=false ;;
 SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$SCRIPT_DIR/common.sh"
 ROOT=$(get_repo_root); cd "$ROOT"
+# Is this the corpus itself, or a repository that adopted it? Declared by a marker file that
+# adopt.sh does not copy, never inferred: a fresh adoption reached seventeen failures and two
+# tracebacks because every self-audit check ran against a repository that is not the corpus (#106).
+SELF=true
+[ -f .corpus-origin ] || SELF=false
+$SELF || say "running in a repository that adopted this corpus — checks that audit the corpus governing itself are skipped"
 EXAMPLE="specs/features/SPEC-LGS-001-log-based-golden-signals"
 fails=0
 say() { $QUIET || echo "$@"; }
+# Checks that audit the corpus governing ITSELF. They are meaningless in a repository that adopted
+# the corpus — its mutation baseline, measurement series, red-team ratchet, upstream pin and
+# changelog are this project's, not the adopter's. Listed by name rather than detected by shape,
+# because every shape-based guess this series has tried was wrong in one direction or the other.
+CORPUS_ONLY="
+data-quality rules over the corpus's own datasets
+the measurement report is structurally current
+the measurement is scheduled, not merely described
+the corpus carries at least one measurement of itself
+mutation coverage has not fallen
+red-team RT-2026-09-13 findings stay closed
+compatibility claims match what the last release published
+elevated workflow verbs are declared in ADR-0071
+changed scripts and contracts are recorded in the changelog
+spec-kit-upstream.json
+adoption layers are closed under reference
+a fresh adoption works
+ARCHITECTURE.md still describes this repository
+open items carry a date or a named trigger
+spec registry matches disk
+spec evidence paths resolve or carry an explicit marker
+tests/scripts/test_check_corpus.py (mutation)
+tests/scripts/test_mutation_coverage.py
+tests/scripts/test_corpus_measure_workflow.py
+tests/scripts/test_check_changelog.py
+tests/scripts/test_check_open_items.py
+"
+
+is_corpus_only() { printf '%s' "$CORPUS_ONLY" | grep -Fxq "$1"; }
+
 result() { # name status detail — ok | note | fail
+    if ! $SELF && is_corpus_only "$1"; then
+        say "  · $1 — skipped: audits the corpus governing itself"
+        return 0
+    fi
     case "$2" in
         ok)   say "  ✓ $1${3:+ — $3}" ;;
         note) echo "  ! $1${3:+ — $3}" ;;   # alert severity: visible, does not fail the build
@@ -72,32 +126,12 @@ result() { # name status detail — ok | note | fail
 }
 
 say "C1 internal links"
-C1=$(python3 - <<'PY'
-import re,os,glob,sys
-ADOPTER=('src/','tests/','services/','frontend/','infrastructure/','scaffold/','deprecated/','services.yaml','.env.example',
-         'Makefile','pyproject.toml','version.txt.bak','.github/workflows/','scripts/governance/','docs/api/grpc/','reports/')
-SKIP_FILES=('docs/reference/repository-template-v2-README.md','docs/reference/repository-template-v2-SETUP.md')
-link=re.compile(r'\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
-md=[]
-for d,dn,fn in os.walk('.'):
-    dn[:]=[x for x in dn if x not in ('.git','.serena','.sdd','node_modules')]
-    md+=[os.path.normpath(os.path.join(d,f)) for f in fn if f.endswith('.md')]
-md=[p for p in md if p not in SKIP_FILES]
-bad=[]
-for p in md:
-    s=open(p,encoding='utf-8',errors='replace').read()
-    for m in link.finditer(s):
-        t=m.group(1)
-        if t.startswith(('http://','https://','#','mailto:','<')): continue
-        t=t.split('#')[0]
-        if not t or '...' in t or 'XXX' in t or '{' in t or '<' in t: continue
-        tgt=os.path.normpath(os.path.join(os.path.dirname(p),t))
-        if tgt.startswith(ADOPTER) or ('/'+tgt).endswith(tuple('/'+a for a in ADOPTER if not a.endswith('/'))): continue
-        if not os.path.exists(tgt): bad.append(f"{p} → {t}")
-print(len(md)); print(len(bad)); print("\n".join(bad))
-PY
-)
-c1_files=$(printf '%s\n' "$C1" | sed -n 1p); c1_bad=$(printf '%s\n' "$C1" | sed -n 2p)
+# The rule moved to scripts/python/check_links.py when it gained a second caller: the adoption
+# check asks it of a freshly adopted tree, where the answer can differ (#108). `|| true` because
+# common.sh sets errexit and this is a bare assignment: a helper that exits non-zero here ends the
+# verifier at check 1 of 58 with no failure line printed, which reads as a green run.
+C1=$(python3 scripts/python/check_links.py || true)
+c1_files=$(printf '%s\n' "$C1" | sed -n 1p); c1_bad=$(printf '%s\n' "$C1" | sed -n 2p) || true
 if [ "$c1_bad" = 0 ]; then result "links" ok "$c1_files Markdown files, 0 broken"; else result "links" fail "$c1_bad broken"; printf '%s\n' "$C1" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C2 spec frontmatter"
@@ -125,14 +159,20 @@ for p in sorted(glob.glob('specs/**/*.md',recursive=True)):
     if lu and not re.fullmatch(r'\d{4}-\d{2}-\d{2}',lu): bad.append(f"{p}: bad last_updated {lu!r}")
 print(n); print(len(bad)); print("\n".join(bad))
 PY
-)
-c2_n=$(printf '%s\n' "$C2" | sed -n 1p); c2_bad=$(printf '%s\n' "$C2" | sed -n 2p)
+) || true
+c2_n=$(printf '%s\n' "$C2" | sed -n 1p); c2_bad=$(printf '%s\n' "$C2" | sed -n 2p) || true
 if [ "$c2_bad" = 0 ]; then result "frontmatter" ok "$c2_n specs valid"; else result "frontmatter" fail "$c2_bad invalid"; printf '%s\n' "$C2" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C3 ADR index"
 C3=$(python3 - <<'PY'
-import re,glob,os
+import re,glob,os,sys
 files=sorted(glob.glob('docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md'))
+# A repository that adopted the corpus may carry no ADRs and no index. That is a check which does
+# not apply, and it used to be an unhandled FileNotFoundError on the third line of a fresh
+# adoption — the first thing anyone saw of this tool (#106).
+if not files or not os.path.isfile('docs/adr/README.md'):
+    print('n/a: no docs/adr index in this repository')
+    sys.exit(0)
 nums=sorted(int(os.path.basename(f)[4:8]) for f in files)
 bad=[]
 if nums!=list(range(1,len(nums)+1)): bad.append(f"numbering not contiguous: {[n for n in range(1,max(nums)+1) if n not in nums]} missing, duplicates {[n for n in set(nums) if nums.count(n)>1]}")
@@ -145,8 +185,8 @@ for l in sorted(linked):
     if not os.path.exists('docs/adr/'+l): bad.append(f"index links a missing file: {l}")
 print(len(files)); print(len(bad)); print("\n".join(bad))
 PY
-)
-c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p)
+) || true
+c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p) || true
 if [ "$c3_bad" = 0 ]; then result "adr-index" ok "$c3_n ADRs, contiguous, all indexed"; else result "adr-index" fail "$c3_bad problems"; printf '%s\n' "$C3" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C4 scripts"
@@ -171,7 +211,7 @@ if $SMOKE; then
     fi
 fi
 
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     say "C6 script tests"
     if out=$(bash tests/scripts/test_scripts.sh 2>&1); then result "tests/scripts/test_scripts.sh" ok "$(printf '%s' "$out" | tail -1 | sed 's/scripts tests: //')"; else result "tests/scripts/test_scripts.sh" fail; printf '%s\n' "$out" | grep '✗' | sed 's/^/      /'; fi
 fi
@@ -289,6 +329,67 @@ grep -qE '"(git|gh)"' scripts/python/asdd_state.py \
 say "C9 rendered per-agent commands"
 if out=$(python3 scripts/python/render_commands.py --check 2>&1); then result "render_commands --check" ok "$(printf '%s' "$out" | head -1)"; else result "render_commands --check" fail "$(printf '%s' "$out" | head -1)"; printf '%s\n' "$out" | sed -n '2,12p' | sed 's/^/      /'; fi
 
+say "C16 adoption layers"
+# A layer is a hand-written list of paths, and a hand-written list is complete only where someone
+# looked: adopting `governed` into a clean directory arrived with eleven links pointing at files the
+# layer declines to copy. The same shape as the spec-kit finding of the same day, from the other
+# side — a set chosen by enumeration is incomplete exactly where nobody looked, so the fix is to
+# close it under the property rather than to add today's eleven names (#107).
+if out=$(python3 scripts/python/check_adopt_closure.py --check --quiet 2>&1); then
+    result "adoption layers are closed under reference" ok "minimal · governed · full"
+else
+    result "adoption layers are closed under reference" fail "$(printf '%s' "$out" | head -1)"
+    python3 scripts/python/check_adopt_closure.py 2>&1 | sed -n '1,12p' | sed 's/^/      /'
+fi
+
+# A fresh adoption is exercised, not described: three layers copied into temporary directories,
+# their links resolved, their verifier run, and the first command in SETUP.md asked to produce a
+# real feature bundle. Behind --no-smoke, and it prints its wall clock, because three adoptions of
+# a 500-file corpus is the most expensive proof here and an expensive proof states its price (#108).
+if $SMOKE; then
+    if out=$(python3 scripts/python/check_adoption.py --check --quiet 2>&1); then
+        result "a fresh adoption works" ok "$(printf '%s' "$out" | tail -1)"
+    else
+        result "a fresh adoption works" fail
+        printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+    fi
+fi
+
+say "C18 corpus architecture document"
+# The structure document is the easiest kind of file to be quietly wrong: docs/repo-structure.md
+# called itself auto-generated for months while nothing generated it. This one is checked — every
+# path it names exists, its rendered-copy table matches render_commands.TARGETS, and its measured
+# block is regenerated rather than hand-corrected (#111).
+if out=$(python3 scripts/python/check_architecture_doc.py --check --quiet 2>&1); then
+    result "ARCHITECTURE.md still describes this repository" ok "paths, integrations and measured block current"
+else
+    result "ARCHITECTURE.md still describes this repository" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
+say "C19 risk-class vocabulary"
+# Two unrelated classification systems — six risk classes in prose, four tiers in the gate data —
+# with no mapping between them, restated in four documents, two of which were already wrong. The
+# copy an agent executed was the wrong one. Authority moves to whichever copy was read last, which
+# is the cost of an uncontrolled vocabulary (#110).
+if out=$(python3 scripts/python/check_risk_classes.py --check --quiet 2>&1); then
+    result "one risk-class vocabulary, restated identically everywhere" ok "6 classes → 4 tiers"
+else
+    result "one risk-class vocabulary, restated identically everywhere" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
+say "C17 templates index"
+# Thirteen templates shipped with no index and two of them are called a spec template. Closed in
+# both directions rather than in the direction that happens to be wrong today: a template with no
+# entry fails, and an entry with no template fails (#112).
+if out=$(python3 scripts/python/check_templates_index.py --check --quiet 2>&1); then
+    result "every template is indexed, and every index entry is a template" ok "$(printf '%s' "$out" | head -1)"
+else
+    result "every template is indexed, and every index entry is a template" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
 say "C10 upstream pin"
 if out=$(python3 - <<'PY3'
 import json,re,sys
@@ -316,12 +417,12 @@ else
         printf '%s\n' "$out" | grep -E 'MAJOR|MINOR' | head -5 | sed 's/^/      note: /'
     fi
 fi
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     if out=$(python3 tests/scripts/test_check_data_quality.py 2>&1); then result "tests/scripts/test_check_data_quality.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_data_quality.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 
 say "C14 corpus measurement"
-if $SMOKE; then
+if $SMOKE && $SUITES; then
     if out=$(python3 tests/scripts/test_corpus_metrics.py 2>&1); then result "tests/scripts/test_corpus_metrics.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_metrics.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
 fi
 if out=$(python3 scripts/python/corpus_metrics.py --check --quiet 2>&1); then
@@ -390,6 +491,18 @@ if out=$(python3 scripts/python/check_abuse_surface.py --check --quiet 2>&1); th
 else
     result "live feature specs address their abuse surface" fail
     printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
+# A workflow may not use an elevated verb the corpus has not written down. corpus-measure.yml
+# declared a permission the repository withholds and its first scheduled run died on exactly that:
+# the grant lives in repository settings, outside every file here (R12-T2). This verifies the
+# dependency is declared, never that it is granted — reading that needs an administrative
+# credential the corpus does not have.
+if out=$(python3 scripts/python/check_workflow_grants.py --check --quiet 2>&1); then
+    result "elevated workflow verbs are declared in ADR-0071" ok
+else
+    result "elevated workflow verbs are declared in ADR-0071" fail
+    printf '%s\n' "$out" | head -5 | sed 's/^/      /'
 fi
 
 # Every throttled response names the caller's budget. The corpus published a standard requiring
@@ -468,7 +581,7 @@ print(f"{len(bad)} {len(backlog)} {len({i for i, *_ in backlog})}")
 for row in bad[:5]:
     print(f"{row[0]} {row[1]} — {row[2]}")
 PY_EV
-)
+) || true
 ev_head=$(printf '%s' "$ev" | head -1)
 ev_unresolved=$(printf '%s' "$ev_head" | cut -d' ' -f1)
 ev_unmarked=$(printf '%s' "$ev_head" | cut -d' ' -f2)

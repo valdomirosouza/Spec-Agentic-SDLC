@@ -2,6 +2,9 @@
 
 # System Architecture
 
+> **The architecture of the system that adopts this corpus**, not of the corpus itself — for that,
+> see `ARCHITECTURE.md` in the corpus repository.
+
 **Owner:** Tech Lead | **Last updated:** 2026-05-28
 **ADR references:** ADR-0001, ADR-0002, ADR-0003, ADR-0004, ADR-0010\*, ADR-0011\*
 

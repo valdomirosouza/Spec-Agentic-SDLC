@@ -19,6 +19,50 @@ authorises them.
 
 ### Added
 
+- `risk_classes` and `spec_for_defect` in `docs/process/gates/phase-gates.yaml`, plus check C19 —
+  the six risk classes get ids, labels and a tier, in the file ADR-0095 §2 makes the arbiter for
+  gate data. The corpus carried two unrelated classification systems with no mapping between them:
+  six classes in prose, four tiers in the data. C19 requires every class to name a tier that
+  exists, every phase it forces to exist, every restating document to use the declared labels, and
+  no second copy to call itself canonical (#110).
+- `ARCHITECTURE.md` and check C18 — the corpus describes its own structure for the first time: what
+  is a source, what is a generated copy and what regenerates it, what each adoption layer carries,
+  where the root of authority sits. Two neighbouring documents described the *adopting*
+  repository's architecture and tree, and the answer to "is this file a source or a copy?" lived in
+  four places at once. Checked rather than trusted: every path it names must exist, its
+  rendered-copy table must match `render_commands.TARGETS`, and its measured block is regenerated
+  with `--update` rather than hand-corrected. Deliberately excluded from every adoption layer, for
+  the same reason as `.corpus-origin` (#111).
+- `templates/README.md` and check C17 — the thirteen templates get an index, closed in both
+  directions: a template with no entry fails, an entry with no template fails. All thirteen were
+  already consumed, so this is a discovery problem, not an orphan problem — and the two files a
+  newcomer would read as "the spec template" (`templates/spec-template.md` for a feature bundle,
+  `specs/SPEC-TEMPLATE.md` for a standing system spec) now say which is which where both are
+  found. The check caught a real gap on its first run: a lowercase-only pattern missed
+  `contracts-README-template.md` (#112).
+- `.gitattributes` and `.editorconfig`, in every adoption layer. 534 Markdown files and 12 shell
+  scripts travel into repositories on other platforms; without normalisation a contributor on
+  Windows produces a diff that touches every line of a file, and the link, frontmatter and mutation
+  checks then read content their editor rewrote. `.editorconfig` agrees with
+  `.markdownlint-cli2.jsonc` rather than inventing a second opinion, and exempts Markdown from
+  trailing-whitespace trimming because 34 lines end in two deliberate spaces — a hard line break is
+  content. The adoption check asserts both files arrive (#109).
+- `scripts/python/check_adoption.py` and check C16 — a fresh adoption of each layer is exercised,
+  not described: copied into a temporary directory, its links resolved, its verifier run, and the
+  first command in `SETUP.md` asked to produce a real feature bundle. `adopt.sh` had three tests
+  and all three asked whether files were copied, which is how a `governed` adoption reached
+  seventeen failures and two tracebacks with every gate green. Run for real rather than
+  `--dry-run`: a dry run never opens `templates/`, so it stays green in an adoption that copied
+  none. 31s wall clock for three layers, printed on every run (#108).
+- `scripts/python/check_links.py` — the C1 link rule as a script, now that it has a second caller.
+  The adoption check asks it of a freshly adopted tree, where the same question has a different
+  answer (#108).
+- `scripts/python/check_adopt_closure.py` and check C16 — every adoption layer is closed under
+  reference: a file a layer copies may not point at a file the layer omits. Adopting `governed`
+  into a clean directory arrived with eleven broken links, because a layer is a hand-written list
+  of paths and a hand-written list is complete only where someone looked. The check reads the
+  layers out of `adopt.sh` rather than restating them, so the two cannot drift, and it closes the
+  set under the property instead of adding today's eleven names (#107).
 - `tests/scripts/test_check_corpus.py` — the mutation harness: every entry injects the defect a
   check exists to catch and requires **that** check to fail, named. Fifty assertions had never been
   exercised, which is why three vacuous checks survived one round and two more the next (#66).
@@ -259,6 +303,67 @@ authorises them.
 
 ### Fixed
 
+- The risk-based flow table told an agent to skip the spec for a bug fix. Its small-bug-fix row
+  read "Issue → PR → CI/security → deploy → observe", while Phase 4 is `required` in all four tiers
+  and Article I (Specification First) is protected. An agent following the table walked into a
+  `pr-governance` gate that blocks a `fix:` PR citing no approved spec, with nothing anywhere
+  saying what a defect is supposed to cite. It does now: a regression cites the spec it violates;
+  unspecified behaviour gets the missing spec section written first, or a `REM-NNN` (#110).
+- `.claude/agents/asdd-orchestrator.md` called its own four-row copy of the flow table "the
+  canonical Risk-Based Flow table". It was not canonical, and it had merged high-risk,
+  security-sensitive and infrastructure into one row — dropping the distinctions the real table
+  draws. It now looks the tier up in the arbiter instead of carrying a list. `DEFINITION_OF_READY`
+  called the first class "small fix"; three documents now use the declared labels exactly (#110).
+- `docs/repo-structure.md` stops calling itself an auto-generated reference. Nothing generated it,
+  and the sentence immediately after the claim asked a human to keep it current. A document that
+  claims a guarantee it does not have is worse than one that claims none, because a reader stops
+  checking. Both it and `docs/architecture.md` now say they describe the *adopting* repository and
+  point at `ARCHITECTURE.md` for this one (#111).
+- The verifier could end early and look green. `common.sh` sets `errexit`, so a helper exiting
+  non-zero inside a bare assignment ends `check-corpus.sh` where it stands — with no failure line
+  printed at all. Extracting the C1 link rule into `check_links.py`, which exits 1 on a broken
+  link, opened that trapdoor: any run with a broken link died at check 1 of 58 and three mutation
+  proofs reported "stayed green" for a verifier that had crashed. `check_links.py` now exits 0
+  unless `--check` is passed, the four assignments whose command can genuinely fail tolerate it,
+  and the mutation harness distinguishes a check that stayed green from a run that never reached
+  it (#108).
+- **The verifier crashed and flooded in a freshly adopted repository.** Measured by adopting into a
+  clean directory: the `governed` layer produced 17 failures and 2 Python tracebacks, and `minimal`
+  died on the third check with a `FileNotFoundError`. A repository now declares whether it IS the
+  corpus, through a `.corpus-origin` marker that `adopt.sh` does not copy; the checks that audit the
+  corpus governing itself are skipped elsewhere, and a missing input reports a sentence instead of
+  raising. The `governed` layer is down to 4 failures and no tracebacks (#106).
+- The emptiness floors on abuse surface and throttled responses are corpus rules. Here, finding
+  nothing means the scan broke; in an adopting repository it means they have not written one yet
+  (#106).
+
+- **Eighteen gaps declared in the control matrices carried no deadline, and the checker could not
+  see them.** It globbed `**/*.md`, so the mechanism built to end undated deferrals had file-format
+  scope rather than conceptual scope; the matrices are YAML. Two of the gaps are EU AI Act
+  conformity obligations. All eighteen now carry an ISO date or a declared `on-event:`, staggered by
+  the reviewer who owns each matrix, and an unmarked item fails instead of alerting — a ratchet on a
+  number that reached zero (#104).
+- One matrix gap was stale: it said no monitoring cycle had been executed, and the first cycle is
+  recorded in `docs/sre/monitoring/2026-09-13-first-cycle.md`. A compliance matrix that overstates
+  its gaps is inaccurate in the other direction (#104).
+- `gh api` joins the closed list of elevated workflow verbs. It does whatever the others do and
+  more, and was never declared; no workflow uses it, so the door was simply open (#105).
+
+- `--no-suites` gates every block that only runs a test suite, not just one. It gated one when
+  introduced, so `test_corpus_metrics.py` still ran under it and that suite calls `--report`,
+  rewriting the measurement in the middle of a harness run. The new leak guard is what surfaced it,
+  on its first run. A full harness run is also ~130s faster (#99).
+- `ADR-0071` covers the settings this corpus's own automation depends on, not only branch
+  protection, with the September failure as the motivating example and a table of every elevated
+  verb the workflows use. `check_workflow_grants.py` fails on an undeclared one. It verifies the
+  dependency is written down, never that the grant is switched on — reading that needs an
+  administrative credential the corpus does not have and should not hold (#100).
+- The leak guard reports two categories instead of collapsing them: a declared path left changed is
+  a leak and fails, any other tracked change is named as unexplained. Narrowing it yesterday had
+  traded a false positive for a false negative (#101).
+- The rate-limit gate's floor counts throttled responses, not contract files. It failed only when no
+  contract existed, so deleting every `429` satisfied it — the gate constrained only contracts that
+  already did the right thing (#102).
 - The cadence check and its proof follow the mechanism that now carries the report back: the branch
   push and the compare link, not `gh pr create` (#99).
 - **The scheduled measurement ran for the first time and could not finish.** It measured, pushed
@@ -315,6 +420,13 @@ authorises them.
 
 ### Changed
 
+- `adopt.sh` no longer ships `check-corpus.sh` in the `minimal` layer. The layer excludes
+  governance deliberately, and the verifier checks governance: a fresh minimal adoption ran twenty
+  checks against files it had declined and reported seven failures for them. The verifier travels
+  with the layer it verifies (#107).
+- `check_control_matrix.py` treats a missing control matrix as an error only in the corpus. A
+  repository that adopted the corpus without the matrices has nothing to verify, not a defect
+  (#107).
 - **Delivery state schema `asdd_state_v1` to `asdd_state_v2`** — affects anyone tracking `main` who already ran the tool; **not** anyone on release 1.0.0, which never shipped it. The
   `artifacts` map changed meaning from `{basename: path}` to `{path: phase}`. Both shapes are
   objects of strings, so a v1 file loaded as v2 renders every artefact inverted and validates

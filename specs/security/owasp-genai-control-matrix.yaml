@@ -59,6 +59,7 @@ controls:
       Dependencies and the model version are pinned and an SBOM is produced, but no AI bill of
       materials covers prompts, retrieval indices and the embedding model (see
       docs/ai-governance/model-registry.md §2).
+    resolve_by: "2026-12-04"
     justification: >-
       Model + dependency versions are pinned (ADR-0051) and a CycloneDX SBOM is generated/signed
       per build; full SLSA L3 provenance attestation is a roadmap target, not yet enforced.
@@ -79,6 +80,7 @@ controls:
       The behavioural contract catches regression at promotion; nothing detects poisoning of the
       retrieval corpus or agent memory between promotions, and the memory-governance controls are
       documented but not implemented.
+    resolve_by: "2026-12-18"
     justification: >-
       A new model version cannot be promoted without passing the behavioral-contract suite
       (ADR-0051); training-data provenance/integrity is upstream of the template and out of scope.
@@ -130,6 +132,7 @@ controls:
     gap: >-
       The injection guard and output masking reduce leakage; no test asserts that the system prompt
       itself cannot be reconstructed, and the red-team programme has never been exercised.
+    resolve_by: "2026-12-04"
     justification: >-
       The injection guard and output masking reduce system-prompt extraction; a dedicated
       system-prompt-leakage abuse-case suite is not yet present and is tracked for extension.
@@ -147,6 +150,7 @@ controls:
     gap: >-
       Embeddings are encrypted at rest and access is controlled; the corpus is classified L2 and its
       datasheet is draft, so the dataset is not cleared for model use.
+    resolve_by: "2026-12-18"
     justification: >-
       Vector store encrypts stored embeddings (ADR-0018); embedding-poisoning detection and
       per-tenant partitioning are adopter-extended for multi-tenant deployments.
@@ -182,6 +186,7 @@ controls:
       Rate limits, concurrency caps and action limits bound consumption per request; no budget alert
       fires on aggregate spend, so a slow drain is not detected (denial of wallet, red-team
       technique 10).
+    resolve_by: "2026-12-04"
     justification: >-
       Rate limiting, a request concurrency semaphore, and per-action limits cap consumption; a
       dedicated per-token LLM cost budget is enforced separately (LLM Budget Circuit Breaker

@@ -1,0 +1,12 @@
+# This repository IS the Spec-Agentic-SDLC corpus, not a repository that adopted it.
+#
+# `scripts/bash/adopt.sh` deliberately does not copy this file, so a repository that adopted the
+# corpus does not carry it. `check-corpus.sh` reads its presence to decide whether to run the
+# checks that audit the corpus governing ITSELF — mutation coverage, the measurement series, the
+# red-team ratchet, the upstream pin, the changelog of this project. Those checks are meaningless
+# in an adopting repository and, before this marker existed, produced seventeen failures and two
+# Python tracebacks on a fresh adoption (#106).
+#
+# Declared rather than inferred. Guessing from the presence of `docs/adr/` or of the spec-kit pin
+# would have been wrong in both directions: the governed layer copies both.
+corpus: valdomirosouza/Spec-Agentic-SDLC

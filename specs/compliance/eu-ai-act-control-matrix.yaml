@@ -70,6 +70,7 @@ controls:
     gap: >-
       Risk identification is spread across DPIAs and threat models; a single AI risk register with
       residual-risk acceptance is still missing.
+    resolve_by: "2027-01-15"
 
   - id: ART-10
     article: "Art. 10"
@@ -91,6 +92,7 @@ controls:
     gap: >-
       Datasheets exist as a template and one instance; bias examination of the retrieval corpus is
       defined as a procedure but no examination has been recorded.
+    resolve_by: "on-event: an adopter proposes operational training data"
 
   - id: ART-11
     article: "Art. 11 + Annex IV"
@@ -111,6 +113,7 @@ controls:
     gap: >-
       The system card and model card exist; an Annex IV index mapping each required element to the
       artefact that carries it is still to be written.
+    resolve_by: "2027-01-29"
 
   - id: ART-12
     article: "Art. 12"
@@ -145,6 +148,7 @@ controls:
     owner: AI Governance Lead
     status: partial
     gap: Instructions for use exist as a system card section, not as a deployer-facing document.
+    resolve_by: "on-event: the first deployer receives the system"
 
   - id: ART-14
     article: "Art. 14"
@@ -192,6 +196,7 @@ controls:
     gap: >-
       Accuracy and robustness have thresholds (evaluator 0.75, groundedness 0.9); a declared
       accuracy metric per intended purpose, as Art. 15 requires, is not yet stated.
+    resolve_by: "2027-01-15"
 
   # --- Chapter III Section 3 — Provider obligations -----------------------------------------------
   - id: ART-16
@@ -210,6 +215,7 @@ controls:
     owner: AI Governance Lead
     status: partial
     gap: Conformity assessment, declaration, CE marking and registration are not yet evidenced.
+    resolve_by: "on-event: placing the system on the EU market"
 
   - id: ART-17
     article: "Art. 17"
@@ -250,6 +256,7 @@ controls:
     owner: SRE Lead
     status: partial
     gap: Notification list and channel for distributors and authorities are not yet named.
+    resolve_by: "on-event: the first distributor or authority is engaged"
 
   # --- Conformity, marking, registration ---------------------------------------------------------
   - id: ART-43
@@ -295,6 +302,7 @@ controls:
     gap: >-
       The obligation is assumed to apply (ADR-0093 §2.5) but no user-facing disclosure requirement
       is written into the spec template, and no content-marking decision is recorded.
+    resolve_by: "2027-01-29"
 
   # --- Chapter V — General-purpose AI models ------------------------------------------------------
   - id: ART-51-55
@@ -318,6 +326,7 @@ controls:
       obtain, retain and record the provider's documentation and systemic-risk determination, not
       to produce them.
     gap: The provider's published determination and training-content summary are not yet retained as evidence.
+    resolve_by: "on-event: a provider determination is published upstream"
 
   # --- Chapter IX — Post-market monitoring and incidents ------------------------------------------
   - id: ART-72
@@ -335,7 +344,8 @@ controls:
     gate: ["Phase 11 — Observability", "Phase 14 — Post-Deploy Learning"]
     owner: SRE Lead
     status: partial
-    gap: The plan exists; no monitoring cycle has been executed and recorded.
+    gap: "none — the first monitoring cycle ran on 2026-09-13 and is recorded in docs/sre/monitoring/2026-09-13-first-cycle.md"
+    resolve_by: "on-event: closed; kept as the record of what was missing"
 
   - id: ART-73
     article: "Art. 73"
@@ -355,3 +365,4 @@ controls:
     gap: >-
       Procedure and deadlines are documented; the competent authority per Member State and the
       reporting channel are adopter-specific and not yet filled in.
+    resolve_by: "on-event: placing the system on the EU market"

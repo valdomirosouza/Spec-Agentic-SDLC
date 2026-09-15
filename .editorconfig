@@ -1,0 +1,29 @@
+# Editor settings for the Spec-Agentic-SDLC corpus (#109). Consistent with
+# .markdownlint-cli2.jsonc — where the linter has an opinion, this file agrees with it rather
+# than inventing a second one.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+[*.md]
+# MD013 (line length) is off in the linter: tables and reference links run long on purpose.
+max_line_length = off
+# 34 Markdown lines end in two spaces — a hard line break, which is content. An editor that
+# strips them changes the rendering of files nobody edited.
+trim_trailing_whitespace = false
+
+[*.py]
+indent_size = 4
+max_line_length = 100
+
+[*.{sh,bash}]
+indent_size = 4
+
+[Makefile]
+indent_style = tab

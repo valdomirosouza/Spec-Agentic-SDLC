@@ -47,6 +47,34 @@ has no teeth unless the "which checks are required" decision is itself codified 
    `trivy`, `sbom`, `contract-drift`, AI-safety/model-contract where applicable, and
    `verify-f7-hook` (the high-risk-guard regression suite).
 
+## Settings this corpus's own automation depends on
+
+Added 2026-09-14, after the first scheduled run of `corpus-measure.yml` failed. It measured,
+regenerated the report and pushed its branch, then died on:
+
+```
+pull request create failed: GraphQL: GitHub Actions is not permitted to
+create or approve pull requests (createPullRequest)
+```
+
+The workflow declared `pull-requests: write` and that bought nothing, because the grant is a
+repository setting. This ADR was written in June against exactly that risk and scoped to branch
+protection, so it did not cover the setting that stopped the corpus's own automation three months
+later. The scope is widened here rather than a second ADR being opened.
+
+| Elevated verb a workflow uses | What must be granted | Where it is granted | Status |
+| --- | --- | --- | --- |
+| `git push` (topic branch) | `contents: write` | workflow `permissions:` | granted |
+| `gh issue create`, `gh issue comment` | `issues: write` | workflow `permissions:` | granted |
+| `gh label create` | `issues: write` | workflow `permissions:` | granted |
+| `gh api` | whatever the called method needs — it is a general client, so the row must name the method | workflow `permissions:` and/or repository settings | **unused; declare the method before using it** |
+| `gh pr create` | Settings → Actions → **Allow GitHub Actions to create and approve pull requests** | repository settings, outside this repo | **not granted — no longer used** |
+
+`scripts/python/check_workflow_grants.py` fails when a workflow uses an elevated verb this table
+does not carry. It verifies the dependency is **written down**, not that the grant is switched on:
+reading that needs an administrative credential the corpus does not have and should not hold.
+Discovering a missing grant still happens on the first run — which is how this one was found.
+
 ## Consequences
 
 ### Positive

@@ -70,6 +70,7 @@ controls:
     gap: >-
       Ownership checks exist per endpoint; no systematic object-level authorisation test covers
       every resource, so a new endpoint can omit the check without failing a gate.
+    resolve_by: "2026-12-04"
     justification: >-
       Function/role-level authorization is enforced in auth.py and the HITL gateway; centralized
       per-object ownership checks are not yet generalized across all resources. Adopters must add
@@ -152,6 +153,7 @@ controls:
     gap: >-
       Secrets are read from the environment and a key vault is the documented target (ADR-0008); the
       corpus cannot verify which one an adopter wired.
+    resolve_by: "on-event: the adopting repository provisions a key vault"
     justification: >-
       Secrets are env-injected with placeholder rejection; an external key vault (e.g. Vault/KMS)
       is an adopter integration the template documents but does not bundle.

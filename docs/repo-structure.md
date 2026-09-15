@@ -2,8 +2,13 @@
 
 # Repository Structure — Annotated Directory Tree
 
-> Auto-generated reference. If the actual tree diverges from this document, update
-> this file as part of the PR that changes the structure.
+> **The tree of a repository that has adopted this corpus**, not of the corpus itself — for that,
+> see `ARCHITECTURE.md` in the corpus repository. Maintained by hand: the PR that changes the
+> structure updates this file.
+>
+> It said "auto-generated reference" for months, with the next sentence asking a human to keep it
+> current. Nothing generated it. A document that claims a guarantee it does not have is worse than
+> one that claims none, because a reader stops checking (#111).
 
 ---
 

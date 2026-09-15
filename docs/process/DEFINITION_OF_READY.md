@@ -23,7 +23,7 @@ A GitHub Issue may **not** enter a sprint until **ALL** of the following criteri
 - [ ] **Feature spec template created** — `specs/features/<SPEC-ID>-<slug>/spec.md` exists with sections 1–5 complete (Goal, User Stories, API Delta, Event Delta, Data Model)
 - [ ] **Size label applied** — one of `size: S`, `size: M`, `size: L`, `size: XL`
 - [ ] **Component labels applied** — one or more of `component: api`, `component: frontend`, `component: infra`, `component: agent`
-- [ ] **Risk class assigned** (ADR-0058 Phase 0) — one of: small fix · normal feature · high-risk feature · AI/LLM/agentic feature · security-sensitive · infrastructure/platform. Determines which downstream gates apply (risk-based flow).
+- [ ] **Risk class assigned** (ADR-0058 Phase 0) — one of: Small bug fix · Normal feature · High-risk feature · AI/LLM/agentic feature · Security-sensitive change · Infrastructure/platform change. Determines which downstream gates apply (risk-based flow).
 - [ ] **ADR need identified** — an ADR is linked/planned for the architectural decision, OR "N/A: no architectural decision" is explicitly stated.
 - [ ] **Threat model need identified** — a threat model is required (security/privacy/AI risk) and planned, OR "N/A: no new threat surface" is explicitly stated.
 - [ ] **Observability expectations defined** — the critical user journey, golden signals, and required logs/metrics/traces/alerts are noted (or "N/A: no runtime surface").
