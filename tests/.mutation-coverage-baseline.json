@@ -1,9 +1,10 @@
 {
   "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering it \u2014 including by deleting checks \u2014 is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 57,
-  "proved": 44,
+  "named": 58,
+  "proved": 45,
   "checks": [
     "ADR-0022 declares exactly one floor",
+    "a fresh adoption works",
     "adopter-paths",
     "adoption layers are closed under reference",
     "adr-index",

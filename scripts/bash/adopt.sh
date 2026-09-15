@@ -43,7 +43,7 @@ SRC="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 mkdir -p "$TARGET"; TARGET="$(CDPATH="" cd "$TARGET" && pwd)"
 [ "$SRC" != "$TARGET" ] || { echo "ERROR: target is the corpus itself" >&2; exit 1; }
 
-MINIMAL="memory templates scripts/bash scripts/python tests/hooks specs/spec-frontmatter.schema.json specs/features/README.md .claude/settings.json .claude/hooks .markdownlint-cli2.jsonc version.txt LICENSE"
+MINIMAL="memory templates scripts/bash scripts/python tests/hooks specs/spec-frontmatter.schema.json specs/features/README.md .claude/settings.json .claude/hooks .markdownlint-cli2.jsonc .gitattributes .editorconfig version.txt LICENSE"
 GOVERNED="CLAUDE.md AGENTS.md CLAUDE_SESSION_INIT.md SETUP.md skills .claude docs/adr docs/process docs/sdlc docs/governance docs/reference specs/security specs/README.md harness .github/ISSUE_TEMPLATE .github/PULL_REQUEST_TEMPLATE .github/DISCUSSION_TEMPLATE .github/pull_request_template.md .github/CODEOWNERS .github/workflows/corpus-check.yml tests/scripts CHANGELOG.md CONTRIBUTING.md CUSTOMISING.md docs/glossary.md docs/troubleshooting.md docs/ai-governance/ai-safety-checklist.md docs/sre/prr/PRR-TEMPLATE.md specs/SPEC-TEMPLATE.md docs/dependency-manifest.yaml docs/privacy/pii-inventory.md CODE_OF_CONDUCT.md README.md docs/quickstart/add-new-service.md CITATION.cff specs/system/SPEC-LGS-001-log-based-golden-signals.md"
 FULL="docs specs prompts README.md CONTRIBUTING.md CUSTOMISING.md SECURITY.md PRIVACY.md CODE_OF_CONDUCT.md CHANGELOG.md CITATION.cff"
 

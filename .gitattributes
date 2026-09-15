@@ -1,0 +1,26 @@
+# Line-ending normalisation for a corpus whose whole purpose is to be copied into other
+# repositories (#109). 534 Markdown files and 12 shell scripts travel into repositories on other
+# platforms; without this, a contributor on Windows produces a diff that touches every line of a
+# file, and the link, frontmatter and mutation checks then read content their editor rewrote.
+#
+# Normalise everything textual in the repository, and store LF.
+* text=auto eol=lf
+
+# Scripts must be LF wherever they land: a CRLF shebang line makes the interpreter unfindable.
+*.sh    text eol=lf
+*.py    text eol=lf diff=python
+
+# Markdown carries 34 lines that end in two deliberate spaces (a hard line break). They are
+# content, not whitespace noise — see .editorconfig, which tells editors not to strip them.
+*.md    text
+
+# Binaries an adopting repository brings with it. This corpus ships none today; the marks exist
+# because this file is copied into repositories that do, and a mangled PNG is silent damage.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary

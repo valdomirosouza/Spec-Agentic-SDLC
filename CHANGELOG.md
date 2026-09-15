@@ -19,6 +19,23 @@ authorises them.
 
 ### Added
 
+- `.gitattributes` and `.editorconfig`, in every adoption layer. 534 Markdown files and 12 shell
+  scripts travel into repositories on other platforms; without normalisation a contributor on
+  Windows produces a diff that touches every line of a file, and the link, frontmatter and mutation
+  checks then read content their editor rewrote. `.editorconfig` agrees with
+  `.markdownlint-cli2.jsonc` rather than inventing a second opinion, and exempts Markdown from
+  trailing-whitespace trimming because 34 lines end in two deliberate spaces — a hard line break is
+  content. The adoption check asserts both files arrive (#109).
+- `scripts/python/check_adoption.py` and check C16 — a fresh adoption of each layer is exercised,
+  not described: copied into a temporary directory, its links resolved, its verifier run, and the
+  first command in `SETUP.md` asked to produce a real feature bundle. `adopt.sh` had three tests
+  and all three asked whether files were copied, which is how a `governed` adoption reached
+  seventeen failures and two tracebacks with every gate green. Run for real rather than
+  `--dry-run`: a dry run never opens `templates/`, so it stays green in an adoption that copied
+  none. 31s wall clock for three layers, printed on every run (#108).
+- `scripts/python/check_links.py` — the C1 link rule as a script, now that it has a second caller.
+  The adoption check asks it of a freshly adopted tree, where the same question has a different
+  answer (#108).
 - `scripts/python/check_adopt_closure.py` and check C16 — every adoption layer is closed under
   reference: a file a layer copies may not point at a file the layer omits. Adopting `governed`
   into a clean directory arrived with eleven broken links, because a layer is a hand-written list
@@ -265,6 +282,14 @@ authorises them.
 
 ### Fixed
 
+- The verifier could end early and look green. `common.sh` sets `errexit`, so a helper exiting
+  non-zero inside a bare assignment ends `check-corpus.sh` where it stands — with no failure line
+  printed at all. Extracting the C1 link rule into `check_links.py`, which exits 1 on a broken
+  link, opened that trapdoor: any run with a broken link died at check 1 of 58 and three mutation
+  proofs reported "stayed green" for a verifier that had crashed. `check_links.py` now exits 0
+  unless `--check` is passed, the four assignments whose command can genuinely fail tolerate it,
+  and the mutation harness distinguishes a check that stayed green from a run that never reached
+  it (#108).
 - **The verifier crashed and flooded in a freshly adopted repository.** Measured by adopting into a
   clean directory: the `governed` layer produced 17 failures and 2 Python tracebacks, and `minimal`
   died on the third check with a `FileNotFoundError`. A repository now declares whether it IS the

@@ -183,6 +183,17 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             rc, out = run_check(*args, env=env)
         failed_lines = [l for l in out.split("\n") if l.lstrip().startswith("✗")]
         named = [l for l in failed_lines if check_name in l]
+        # A run that ended early is not a run that stayed green, and the harness used to call it
+        # one. common.sh sets errexit, so a helper exiting non-zero inside a bare assignment kills
+        # the verifier where it stands; three proofs then reported "stayed green" for a run that
+        # died at check 1 of 58 and printed no ✗ at all. The distinction is the whole diagnosis,
+        # so it belongs in the message rather than in whoever reads it next (#108).
+        reported = len([l for l in out.split("\n") if l.lstrip()[:1] in ("✓", "✗", "·")])
+        if not named and reported < 10:
+            self.fail(
+                f"the verifier ended early under this mutation — {reported} check(s) reported "
+                f"before it stopped, so `{check_name}` never ran. This is a crash in the verifier, "
+                f"not a vacuous check.\n{out[-800:]}")
         if not named:
             # Keep the whole run. A failure that happens once in three runs has to be diagnosable
             # from its first occurrence: the ✗ lines say which check did not fire and never say
@@ -622,6 +633,18 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                     "verified_by:\n  - nowhere/does-not-exist.py\n---\n\n# probe\n"),
             "data-quality")
 
+    def test_an_adoption_that_arrives_unusable_is_caught(self):
+        """#108. `templates/` out of the minimal layer leaves the corpus itself untouched — it still
+        has the templates — and leaves an adopter with a first command that writes an empty spec.
+        That is the whole category: a defect invisible from inside the repository that ships it.
+
+        It runs with smoke on and the sub-suites off, like the other adopter-entry proofs: the
+        adoption check is behind --no-smoke, and leaving the suites on would recurse into this
+        harness."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/adopt.sh", 'MINIMAL="memory templates ', 'MINIMAL="memory '),
+            "a fresh adoption works", args=self.SMOKE_ARGS)
+
     def test_a_layer_that_drops_a_referenced_file_is_caught(self):
         """#107. `governed` copies AGENTS.md, which links to CONTRIBUTING.md; dropping the target
         from the layer leaves a copied file pointing at one the layer omits. The defect the check
@@ -678,6 +701,35 @@ class NoSuitesFlag(unittest.TestCase):
             mine = fh.read()
         self.assertIn('SMOKE_ARGS = ("--no-suites",)', mine)
         self.assertGreaterEqual(mine.count("args=self.SMOKE_ARGS"), 5)
+
+
+class TheVerifierCannotEndEarly(unittest.TestCase):
+    """common.sh sets errexit, which makes a bare `x=$(cmd)` in check-corpus.sh a trapdoor: a
+    helper that exits non-zero ends the run where it stands, and the verifier prints no failure —
+    it prints nothing. That reads as a short green run to a person and, until assert_mutation_is_caught
+    learned the difference, as a green check to this harness.
+
+    It shipped exactly once, in the refactor that gave the C1 link rule its own script, and cost
+    three proofs. The first version of this test read the shell statically and tried to tell a
+    protected assignment from an exposed one by its shape; it called `ROOT=$(get_repo_root)` a
+    defect and missed nothing real. Shape-based reasoning is what this corpus has rejected five
+    times, so the assertion is behavioural instead: give the verifier the defect that killed it and
+    require it to keep going (#108)."""
+
+    def test_a_broken_link_does_not_end_the_run(self):
+        reported_when_clean = self._reported()
+        with NewFile("docs/mutation-probe-early-exit.md",
+                     "<!-- adopter-paths: probe -->\n\n# probe\n\n[dead](./nowhere.md)\n"):
+            reported = self._reported()
+        self.assertGreaterEqual(
+            reported, reported_when_clean - 1,
+            f"the verifier reported {reported} checks with one broken link and "
+            f"{reported_when_clean} without: it stopped early instead of failing a check")
+
+    @staticmethod
+    def _reported():
+        _, out = run_check()
+        return len([l for l in out.split("\n") if l.lstrip()[:1] in ("✓", "✗", "·")])
 
 
 class TreeIsClean(unittest.TestCase):

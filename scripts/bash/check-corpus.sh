@@ -29,6 +29,8 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C16 a fresh adoption of each layer works — links resolve, the verifier runs green, the first
+#      command in SETUP.md produces a feature bundle (scripts/python/check_adoption.py --check)
 #  C16 every adoption layer is closed under reference: no file a layer copies points at a file the
 #      layer omits (scripts/python/check_adopt_closure.py --check)
 #  C11 tests of the sdd-gate UserPromptSubmit hook (tests/hooks/test_sdd_gate.py, ADR-0092)
@@ -91,6 +93,7 @@ elevated workflow verbs are declared in ADR-0071
 changed scripts and contracts are recorded in the changelog
 spec-kit-upstream.json
 adoption layers are closed under reference
+a fresh adoption works
 open items carry a date or a named trigger
 spec registry matches disk
 spec evidence paths resolve or carry an explicit marker
@@ -116,32 +119,12 @@ result() { # name status detail — ok | note | fail
 }
 
 say "C1 internal links"
-C1=$(python3 - <<'PY'
-import re,os,glob,sys
-ADOPTER=('src/','tests/','services/','frontend/','infrastructure/','scaffold/','deprecated/','services.yaml','.env.example',
-         'Makefile','pyproject.toml','version.txt.bak','.github/workflows/','scripts/governance/','docs/api/grpc/','reports/')
-SKIP_FILES=('docs/reference/repository-template-v2-README.md','docs/reference/repository-template-v2-SETUP.md')
-link=re.compile(r'\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)')
-md=[]
-for d,dn,fn in os.walk('.'):
-    dn[:]=[x for x in dn if x not in ('.git','.serena','.sdd','node_modules')]
-    md+=[os.path.normpath(os.path.join(d,f)) for f in fn if f.endswith('.md')]
-md=[p for p in md if p not in SKIP_FILES]
-bad=[]
-for p in md:
-    s=open(p,encoding='utf-8',errors='replace').read()
-    for m in link.finditer(s):
-        t=m.group(1)
-        if t.startswith(('http://','https://','#','mailto:','<')): continue
-        t=t.split('#')[0]
-        if not t or '...' in t or 'XXX' in t or '{' in t or '<' in t: continue
-        tgt=os.path.normpath(os.path.join(os.path.dirname(p),t))
-        if tgt.startswith(ADOPTER) or ('/'+tgt).endswith(tuple('/'+a for a in ADOPTER if not a.endswith('/'))): continue
-        if not os.path.exists(tgt): bad.append(f"{p} → {t}")
-print(len(md)); print(len(bad)); print("\n".join(bad))
-PY
-)
-c1_files=$(printf '%s\n' "$C1" | sed -n 1p); c1_bad=$(printf '%s\n' "$C1" | sed -n 2p)
+# The rule moved to scripts/python/check_links.py when it gained a second caller: the adoption
+# check asks it of a freshly adopted tree, where the answer can differ (#108). `|| true` because
+# common.sh sets errexit and this is a bare assignment: a helper that exits non-zero here ends the
+# verifier at check 1 of 58 with no failure line printed, which reads as a green run.
+C1=$(python3 scripts/python/check_links.py || true)
+c1_files=$(printf '%s\n' "$C1" | sed -n 1p); c1_bad=$(printf '%s\n' "$C1" | sed -n 2p) || true
 if [ "$c1_bad" = 0 ]; then result "links" ok "$c1_files Markdown files, 0 broken"; else result "links" fail "$c1_bad broken"; printf '%s\n' "$C1" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C2 spec frontmatter"
@@ -169,8 +152,8 @@ for p in sorted(glob.glob('specs/**/*.md',recursive=True)):
     if lu and not re.fullmatch(r'\d{4}-\d{2}-\d{2}',lu): bad.append(f"{p}: bad last_updated {lu!r}")
 print(n); print(len(bad)); print("\n".join(bad))
 PY
-)
-c2_n=$(printf '%s\n' "$C2" | sed -n 1p); c2_bad=$(printf '%s\n' "$C2" | sed -n 2p)
+) || true
+c2_n=$(printf '%s\n' "$C2" | sed -n 1p); c2_bad=$(printf '%s\n' "$C2" | sed -n 2p) || true
 if [ "$c2_bad" = 0 ]; then result "frontmatter" ok "$c2_n specs valid"; else result "frontmatter" fail "$c2_bad invalid"; printf '%s\n' "$C2" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C3 ADR index"
@@ -195,8 +178,8 @@ for l in sorted(linked):
     if not os.path.exists('docs/adr/'+l): bad.append(f"index links a missing file: {l}")
 print(len(files)); print(len(bad)); print("\n".join(bad))
 PY
-)
-c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p)
+) || true
+c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p) || true
 if [ "$c3_bad" = 0 ]; then result "adr-index" ok "$c3_n ADRs, contiguous, all indexed"; else result "adr-index" fail "$c3_bad problems"; printf '%s\n' "$C3" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C4 scripts"
@@ -350,6 +333,19 @@ if out=$(python3 scripts/python/check_adopt_closure.py --check --quiet 2>&1); th
 else
     result "adoption layers are closed under reference" fail "$(printf '%s' "$out" | head -1)"
     python3 scripts/python/check_adopt_closure.py 2>&1 | sed -n '1,12p' | sed 's/^/      /'
+fi
+
+# A fresh adoption is exercised, not described: three layers copied into temporary directories,
+# their links resolved, their verifier run, and the first command in SETUP.md asked to produce a
+# real feature bundle. Behind --no-smoke, and it prints its wall clock, because three adoptions of
+# a 500-file corpus is the most expensive proof here and an expensive proof states its price (#108).
+if $SMOKE; then
+    if out=$(python3 scripts/python/check_adoption.py --check --quiet 2>&1); then
+        result "a fresh adoption works" ok "$(printf '%s' "$out" | tail -1)"
+    else
+        result "a fresh adoption works" fail
+        printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+    fi
 fi
 
 say "C10 upstream pin"
@@ -543,7 +539,7 @@ print(f"{len(bad)} {len(backlog)} {len({i for i, *_ in backlog})}")
 for row in bad[:5]:
     print(f"{row[0]} {row[1]} — {row[2]}")
 PY_EV
-)
+) || true
 ev_head=$(printf '%s' "$ev" | head -1)
 ev_unresolved=$(printf '%s' "$ev_head" | cut -d' ' -f1)
 ev_unmarked=$(printf '%s' "$ev_head" | cut -d' ' -f2)
