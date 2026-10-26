@@ -80,10 +80,17 @@ tiers:
 #
 # `adds` forces a phase that the tier alone would leave conditional.
 risk_classes:
+  # `minimum_tier`, not `tier`: the class sets a FLOOR the run may not go below, and the ADR-0064
+  # safety valve may promote above it mid-run. The first version of this block said `tier`, a
+  # value — which silently dropped the floor semantics and the three conditional escalations the
+  # older mapping in .claude/skills/deliver/SKILL.md had carried since W13-T6. A declaration that
+  # replaces another has to be at least as expressive as the one it replaces (R15-T1).
   - id: small_bug_fix
     label: Small bug fix
-    tier: TRIVIAL
+    minimum_tier: TRIVIAL
     adds: []
+    escalate_when: The ADR-0064 safety valve fires — scope ceiling exceeded, a control trigger, or
+      a guardrail touched. Promotes to STANDARD and re-enters the phases that were skipped.
     # NOT a specification waiver. Phase 4 is `required` in every tier, including TRIVIAL, and
     # Article I (Specification First) is protected — it may be strengthened, never weakened. The
     # prose path for this class used to read "Issue → PR → CI/security → deploy → observe", which
@@ -91,24 +98,29 @@ risk_classes:
     # `fix:` PR with no approved spec path. What Phase 4 means for a defect is in `spec_for_defect`.
   - id: normal_feature
     label: Normal feature
-    tier: STANDARD
+    minimum_tier: STANDARD
     adds: []
+    escalate_when: null
   - id: high_risk_feature
     label: High-risk feature
-    tier: GOVERNED
+    minimum_tier: GOVERNED
     adds: [5, 11, 12]
+    escalate_when: null
   - id: ai_agentic_feature
     label: AI/LLM/agentic feature
-    tier: GOVERNED
+    minimum_tier: GOVERNED
     adds: [10]
+    escalate_when: REGULATED when the change touches src/guardrails/ or the HITL gateway.
   - id: security_sensitive
     label: Security-sensitive change
-    tier: REGULATED
+    minimum_tier: REGULATED
     adds: [5]
+    escalate_when: null
   - id: infrastructure_platform
     label: Infrastructure/platform change
-    tier: GOVERNED
+    minimum_tier: GOVERNED
     adds: [11, 13]
+    escalate_when: REGULATED for a production-affecting Terraform or feature-flag change.
 
 # Which spec a defect fix cites — the question the corpus required an answer to and never gave.
 # `pr-governance` blocks a `fix:` PR that cites no spec path with status approved or implemented,

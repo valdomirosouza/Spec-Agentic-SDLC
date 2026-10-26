@@ -70,20 +70,20 @@ order/omission is tolerated:
    `applicability` from `phase-gates.yaml`). For a non-PYTHON language, note the canonical
    location + validation targets it maps to (see **Languages**).
 
-## Tier ↔ risk class (one mapping, W13-T6)
+## Tier ↔ risk class
 
 The DoR assigns a **risk class** (ADR-0058 Phase 0); `/deliver` takes a **tier** (ADR-0064 scope
 axis). They are different axes — risk class says *how dangerous*, tier says *how big* — and the
-tier can never go **below** the floor its risk class implies:
+tier can never go **below** the floor its risk class implies.
 
-| Risk class (DoR)          | Minimum tier | Notes                                                              |
-| ------------------------- | ------------ | ------------------------------------------------------------------ |
-| small fix                 | TRIVIAL      | may be raised to STANDARD by the ADR-0064 safety valve             |
-| normal feature            | STANDARD     |                                                                    |
-| high-risk feature         | GOVERNED     |                                                                    |
-| AI/LLM/agentic feature    | GOVERNED     | REGULATED if it touches `src/guardrails/` or the HITL gateway      |
-| security-sensitive        | REGULATED    |                                                                    |
-| infrastructure/platform   | GOVERNED     | REGULATED for production-affecting Terraform / feature-flag change |
+**Read the floor from `docs/process/gates/phase-gates.yaml` › `risk_classes`**: each class carries
+a `minimum_tier`, the phases it `adds` beyond that tier, and an `escalate_when` condition that
+raises it further. Do not work from a table written here.
+
+This section used to carry that table, headed "one mapping" — and then a second mapping was
+written into `phase-gates.yaml` and a third into the canonical narrative, because whoever wrote
+them searched for restatements of the *labels* and not for a second *mapping*. Three copies, none
+of which had been compared to the others; they agreed by luck (R15-T1).
 
 A run whose declared tier is below the floor emits `TIER_ESCALATION` at Phase 0.
 

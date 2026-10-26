@@ -55,7 +55,7 @@ The authoritative tier → phase mapping and escalation triggers live in
 | Step | Actor    | Action                                                                                                         | Output                      |
 | ---- | -------- | -------------------------------------------------------------------------------------------------------------- | --------------------------- |
 | 1    | ◈ Human  | Capture problem statement and value/user hypothesis                                                            | Backlog candidate           |
-| 2    | ⚡ Agent | Draft a one-line risk class (small fix / normal / high / AI / security / infra) and surface related specs/ADRs | Risk-class suggestion       |
+| 2    | ⚡ Agent | Draft a one-line risk class (one of the `risk_classes` labels in `docs/process/gates/phase-gates.yaml`) and surface related specs/ADRs | Risk-class suggestion       |
 | 3    | ◈ Human  | Assign risk class, owner, and priority; decide go / no-go                                                      | Prioritized item with owner |
 
 Phase 0 happens **before** an Issue exists. It sets the risk class that determines how

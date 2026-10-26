@@ -94,14 +94,19 @@ Do **not** force every change through all 15 phases. Match the path to the risk 
 which is the arbiter for that data (ADR-0095 §2). This table is the narrative for the same
 mapping, and `check-corpus.sh` C19 fails if the two stop agreeing.
 
-| Change type                    | Tier       | Beyond the tier                                            |
-| ------------------------------ | ---------- | ---------------------------------------------------------- |
-| Small bug fix                  | TRIVIAL    | —                                                          |
-| Normal feature                 | STANDARD   | —                                                          |
-| High-risk feature              | GOVERNED   | architecture, observability and release gates forced        |
-| AI/LLM/agentic feature         | GOVERNED   | **plus** the AI Safety & Agent Governance gate (Phase 10)  |
-| Security-sensitive change      | REGULATED  | **plus** threat model, stricter approval, auditability      |
-| Infrastructure/platform change | GOVERNED   | **plus** rollback plan, PRR, operational readiness review   |
+| Change type                    | Beyond the tier its class floors it at                      |
+| ------------------------------ | ----------------------------------------------------------- |
+| Small bug fix                  | —                                                           |
+| Normal feature                 | —                                                           |
+| High-risk feature              | architecture, observability and release gates forced         |
+| AI/LLM/agentic feature         | **plus** the AI Safety & Agent Governance gate (Phase 10)   |
+| Security-sensitive change      | **plus** threat model, stricter approval, auditability       |
+| Infrastructure/platform change | **plus** rollback plan, PRR, operational readiness review    |
+
+The tier each class floors at is **not** repeated here. It is data, and ADR-0095 §2 puts the data
+in `phase-gates.yaml` (`risk_classes[].minimum_tier`); this table carries the intent. An earlier
+version of it held a Tier column, which made it the third copy of a mapping that existed twice
+already (R15-T1).
 
 **No tier waives the spec.** Phase 4 is `required` in all four, and Article I is protected — it may
 be strengthened, never weakened. An earlier version of this table gave the small-bug-fix row the

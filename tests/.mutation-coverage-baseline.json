@@ -1,7 +1,7 @@
 {
   "_comment": "Mutation coverage ratchet (#75, #79). Raise it by proving more checks. Lowering it \u2014 including by deleting checks \u2014 is a deliberate act that belongs in a commit message, not a side effect.",
-  "named": 61,
-  "proved": 48,
+  "named": 62,
+  "proved": 49,
   "checks": [
     "ADR-0022 declares exactly one floor",
     "ARCHITECTURE.md still describes this repository",
@@ -27,6 +27,7 @@
     "every named check has a failing path",
     "every template is indexed, and every index entry is a template",
     "example bundle present",
+    "files this repository refuses to distribute stay out of every layer",
     "frontmatter",
     "gates: 13 blocking, 9 requiring a human",
     "links",

@@ -63,6 +63,14 @@ for i in $INTEGRATIONS; do
 done
 
 # Expand to a unique, sorted file list relative to SRC.
+# Files this repository refuses to distribute, each because it describes the corpus rather than the
+# product that adopts it: an adopter who received one would inherit a description of somebody
+# else's repository. This is a DECLARATION, read by check_layer_exclusions.py — deliberately not a
+# filter. Filtering them out of the copy would make the mistake unexpressible and therefore
+# unreportable: an author who added one to a layer list would get silence and a copy that quietly
+# disagreed with what they wrote. The gate tells them instead (R15-T2).
+NEVER_ADOPTED="ARCHITECTURE.md .corpus-origin"
+
 # The corpus verifier checks governance, and `minimal` excludes governance on purpose. Shipping it
 # there meant a fresh minimal adoption ran twenty checks against files it had deliberately declined
 # and reported seven failures for them (#107). It travels with the layer it verifies.

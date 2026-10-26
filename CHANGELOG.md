@@ -19,6 +19,18 @@ authorises them.
 
 ### Added
 
+- `scripts/python/check_layer_exclusions.py` and check C20 — `adopt.sh` declares `NEVER_ADOPTED`
+  and the check asserts those files are absent from all three layers, against what `--list`
+  actually produces. `ARCHITECTURE.md` and `.corpus-origin` were excluded by the accident of not
+  appearing in an include list; the `full` layer already names `README.md`, `CONTRIBUTING.md` and
+  `CITATION.cff`, so adding `ARCHITECTURE.md` beside them was a plausible edit no gate questioned.
+  `NEVER_ADOPTED` is deliberately a declaration and not a filter: the first version filtered the
+  files out of the copy, which defeated its own mutation proof — with the filter in place, adding
+  the file to a layer list changed nothing, so the defect could not be expressed and the check
+  could not fail. A gate that reports the mistake beats a mechanism that silently corrects it and
+  leaves the author's edit disagreeing with what was copied (R15-T2).
+- `escalate_when` on every risk class, and `tier` renamed `minimum_tier` — the class sets a floor
+  the safety valve may raise, which is what the mapping it replaced had always said (R15-T1).
 - `risk_classes` and `spec_for_defect` in `docs/process/gates/phase-gates.yaml`, plus check C19 —
   the six risk classes get ids, labels and a tier, in the file ADR-0095 §2 makes the arbiter for
   gate data. The corpus carried two unrelated classification systems with no mapping between them:
@@ -303,6 +315,24 @@ authorises them.
 
 ### Fixed
 
+- The class-to-tier mapping existed in three places, and the check written to prevent that
+  enumerated the files it would look at. `.claude/skills/deliver/SKILL.md` had carried one since
+  W13-T6 under the heading "one mapping"; the fix for #110 added a second to `phase-gates.yaml` and
+  a third to the canonical narrative, because the search was for restatements of the *labels* and
+  not for a second *mapping*. The three agreed by luck — nothing had compared them — and the new
+  declaration had silently dropped the floor semantics and three conditional escalations.
+  C19 now derives its scope by scanning instead of listing, with exemptions declared by marker; on
+  its first derived run it found two more files the hand-written list had missed, including
+  `ADR-0058`. Deriving the scope opened one gap in exchange: a label renamed in the arbiter alone
+  left every document in scope on the strength of the five labels that had not changed, so the
+  rename was invisible — the mutation proof failed exactly there. The check now also requires each
+  declared label to be used by at least one restating document. Fifth time this corpus has been
+  bitten by a set chosen by enumeration, and the first time inside the guard against the defect
+  (R15-T1).
+- C17 closed the templates index on names and left the "Filled by" column unchecked, where it
+  drifted within minutes of being written. The column is verified now, through brace expansion —
+  `templates/{plan,research}-template.md` names templates whose literal filename is absent, and a
+  naive literal search would fail the correct answer (R15-T3).
 - The risk-based flow table told an agent to skip the spec for a bug fix. Its small-bug-fix row
   read "Issue → PR → CI/security → deploy → observe", while Phase 4 is `required` in all four tiers
   and Article I (Specification First) is protected. An agent following the table walked into a

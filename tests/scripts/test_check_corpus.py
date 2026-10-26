@@ -633,6 +633,47 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                     "verified_by:\n  - nowhere/does-not-exist.py\n---\n\n# probe\n"),
             "data-quality")
 
+    def test_a_never_adopted_file_reaching_a_layer_is_caught(self):
+        """R15-T2. The FULL layer's list already names README.md, CONTRIBUTING.md and CITATION.cff,
+        so putting ARCHITECTURE.md beside them is the plausible edit — and it hands every adopter a
+        description of somebody else's repository.
+
+        The first attempt at this guard made adopt.sh filter the declared exclusions out of the
+        copy. That defeated its own proof: with the filter in place, adding ARCHITECTURE.md to the
+        FULL list changed nothing, so the defect could not be expressed and the check could not
+        fail. The filter went; the declaration stayed. A gate that reports the mistake beats a
+        mechanism that silently corrects it and leaves the author's edit disagreeing with the
+        copy."""
+        self.assert_mutation_is_caught(
+            Mutation("scripts/bash/adopt.sh", 'FULL="docs specs prompts README.md',
+                     'FULL="docs specs prompts ARCHITECTURE.md README.md'),
+            "files this repository refuses to distribute")
+
+    def test_an_index_entry_naming_the_wrong_consumer_is_caught(self):
+        """R15-T3. The half of the index a name-closure check cannot see: the row exists, the file
+        exists, and the claim about who fills it is simply untrue. It drifted this way within
+        minutes of being written."""
+        self.assert_mutation_is_caught(
+            Mutation("templates/README.md",
+                     "| `tasks-template.md`            | `/sdd-tasks`",
+                     "| `tasks-template.md`            | `/sdd-clarify`"),
+            "every template is indexed")
+
+    def test_a_second_class_to_tier_mapping_is_caught(self):
+        """R15-T1. The proof the hand-written list could not give: a file nobody added to any list
+        carries a mapping, and the check has to find it by what it contains.
+
+        This is the defect that actually happened. A whole class-to-tier table sat in
+        .claude/skills/deliver/SKILL.md under the heading "one mapping" while two more were written
+        elsewhere, because the guard enumerated the files it would look at."""
+        self.assert_mutation_is_caught(
+            NewFile("docs/mutation-probe-second-mapping.md",
+                    "<!-- adopter-paths: probe -->\n\n# probe\n\n"
+                    "| Risk class | Tier |\n| --- | --- |\n"
+                    "| Small bug fix | TRIVIAL |\n| Normal feature | STANDARD |\n"
+                    "| High-risk feature | GOVERNED |\n"),
+            "one risk-class vocabulary")
+
     def test_a_risk_class_renamed_in_one_place_is_caught(self):
         """#110. The defect was never that a word differed. It was that six classes in prose and
         four tiers in the gate data had no mapping, so four documents restated the vocabulary from

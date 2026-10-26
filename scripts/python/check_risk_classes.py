@@ -28,15 +28,28 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 GATES = os.path.join(ROOT, "docs", "process", "gates", "phase-gates.yaml")
 CANON = "docs/sdlc/agentic-spec-driven-delivery.md"
 
-# Documents that restate the vocabulary for a reader or an agent. Listed, not detected: a file that
-# happens to contain the words "small bug fix" is not thereby a restatement, and guessing which
-# files are normative from their content is the shape-based reasoning this corpus keeps rejecting.
-RESTATEMENTS = (
-    CANON,
-    "docs/process/DEFINITION_OF_READY.md",
-    ".claude/agents/asdd-phase-0-intake.md",
-    ".github/ISSUE_TEMPLATE/feature_request.md",
-)
+# The scope is DERIVED, not listed. The first version of this check carried four names written by
+# hand, and a hand-written list is complete only where someone looked: it missed
+# .claude/skills/deliver/SKILL.md, which held a whole second class-to-tier mapping under the
+# heading "one mapping" — the very duplication this check exists to prevent. That was the fifth
+# time this corpus was bitten by a set chosen by enumeration, and the first time inside the guard
+# against the defect (R15-T1).
+#
+# A file is in scope when it names at least two risk classes. Exemptions are DECLARED by the
+# marker below, never inferred from a name — deriving the scope and declaring the exemptions are
+# the two halves that have to go together, because a derived scope with no escape gets loosened
+# until it catches nothing.
+IN_SCOPE_MIN_LABELS = 2
+EXEMPT_MARKER = "risk-classes: not a restatement"
+
+# Historical spellings. A file using one of these is restating the vocabulary in the old words,
+# which is exactly what has to be caught — matching only the current labels would call a stale
+# file compliant by failing to recognise it.
+VARIANTS = ("small fix", "security-sensitive", "infrastructure/platform", "ai/llm/agentic")
+
+# The one file allowed to carry a class-to-tier mapping.
+ARBITER = "docs/process/gates/phase-gates.yaml"
+TIERS = ("TRIVIAL", "STANDARD", "GOVERNED", "REGULATED")
 
 
 def declared():
@@ -57,6 +70,29 @@ def declared():
     return classes, tiers, phases
 
 
+def in_scope():
+    """Every file that restates the vocabulary, derived — plus the ones that declared an escape."""
+    hits, exempt = [], []
+    classes, _, _ = declared()
+    labels = [l.lower() for _, l, _, _ in classes]
+    for d, dn, fn in os.walk(ROOT):
+        dn[:] = [x for x in dn if x not in (".git", ".serena", ".sdd", "node_modules")]
+        for f in fn:
+            if not f.endswith((".md", ".yaml", ".yml", ".toml")):
+                continue
+            rel = os.path.relpath(os.path.join(d, f), ROOT)
+            if rel.startswith("docs/reference/") or rel in ("CHANGELOG.md", ARBITER):
+                continue
+            with open(os.path.join(d, f), encoding="utf-8", errors="replace") as fh:
+                text = fh.read()
+            low = text.lower()
+            n = sum(1 for l in labels if l in low) + sum(1 for v in VARIANTS if v in low)
+            if n < IN_SCOPE_MIN_LABELS:
+                continue
+            (exempt if EXEMPT_MARKER in text else hits).append((rel, text))
+    return hits, exempt
+
+
 def problems():
     out = []
     classes, tiers, phases = declared()
@@ -64,39 +100,39 @@ def problems():
         return ["phase-gates.yaml declares no risk_classes"]
     for cid, label, tier, adds in classes:
         if tier not in tiers:
-            out.append(f"risk class {cid} names tier {tier}, which phase-gates.yaml does not define")
+            out.append(f"risk class {cid} names a minimum_tier {tier} that phase-gates.yaml does "
+                       f"not define")
         for p in adds:
             if p not in phases:
                 out.append(f"risk class {cid} forces phase {p}, which does not exist")
 
     labels = [label for _, label, _, _ in classes]
-    for rel in RESTATEMENTS:
-        path = os.path.join(ROOT, rel)
-        if not os.path.exists(path):
-            out.append(f"{rel}: restates the risk classes but is gone")
-            continue
-        with open(path, encoding="utf-8") as fh:
-            text = fh.read().lower()
-        absent = [l for l in labels if l.lower() not in text]
-        if absent:
-            out.append(f"{rel}: does not use the declared label(s) {', '.join(absent)}")
+    scoped, _ = in_scope()
+    for rel, text in scoped:
+        low = text.lower()
+        stale = [v for v in VARIANTS if v in low and
+                 not any(v in l.lower() for l in labels)]
+        if stale:
+            out.append(f"{rel}: uses the historical spelling(s) {', '.join(sorted(set(stale)))} "
+                       f"instead of the declared labels")
+        # A second class-to-tier mapping: the file names classes AND tiers. Only the arbiter may.
+        if sum(1 for t in TIERS if re.search(rf'\b{t}\b', text)) >= 2 and \
+                sum(1 for l in labels if l.lower() in low) >= 2:
+            out.append(f"{rel}: carries a second class-to-tier mapping — the tier a class floors "
+                       f"at is data, and {ARBITER} is its arbiter (ADR-0095 §2)")
+        if re.search(r'canonical Risk-Based Flow table', text, re.I) and rel != CANON:
+            out.append(f"{rel}: calls its own copy of the flow table canonical")
 
-    # A second copy that calls itself canonical is how the authority moved last time.
-    for d, dn, fn in os.walk(ROOT):
-        dn[:] = [x for x in dn if x not in (".git", ".serena", ".sdd", "node_modules")]
-        for f in fn:
-            if not f.endswith(".md"):
-                continue
-            rel = os.path.relpath(os.path.join(d, f), ROOT)
-            # CHANGELOG.md records what was removed, and a changelog that may not quote the
-            # sentence it deleted cannot describe the deletion. Named, with the reason, rather
-            # than widened into "files that only mention it" — the rule that fires on a quotation
-            # is the rule that gets relaxed until it fires on nothing.
-            if rel in (CANON, "CHANGELOG.md") or rel.startswith("docs/reference/"):
-                continue
-            with open(os.path.join(d, f), encoding="utf-8", errors="replace") as fh:
-                if re.search(r'canonical Risk-Based Flow table', fh.read(), re.I):
-                    out.append(f"{rel}: calls its own copy of the flow table canonical")
+    # The other direction, and it is not symmetry for its own sake. Deriving the scope from the
+    # labels means a label renamed in the arbiter alone is invisible: the documents keep the old
+    # word, the new word is nowhere, and every document stays in scope on the strength of the five
+    # labels that did not change. Requiring each declared label to be used somewhere is what makes
+    # the rename visible — the mutation proof for this check failed exactly here (R15-T1).
+    used = "\n".join(t for _, t in scoped).lower()
+    orphan = [l for l in labels if l.lower() not in used]
+    if orphan:
+        out.append(f"declared label(s) {', '.join(orphan)} appear in no document that restates "
+                   f"the vocabulary — renamed in the arbiter and nowhere else")
     return out
 
 
@@ -111,8 +147,10 @@ def main(argv=None):
             print("\n".join(probs))
         else:
             classes, tiers, _ = declared()
-            print(f"{len(classes)} risk classes, each mapped to one of {len(tiers)} tiers, "
-                  f"restated identically in {len(RESTATEMENTS)} documents")
+            scoped, exempt = in_scope()
+            extra = f", {len(exempt)} exempt by marker" if exempt else ""
+            print(f"{len(classes)} risk classes, each flooring at one of {len(tiers)} tiers, "
+                  f"restated identically in {len(scoped)} document(s) found by scanning{extra}")
     if a.check and probs:
         for p in probs:
             print(p, file=sys.stderr)

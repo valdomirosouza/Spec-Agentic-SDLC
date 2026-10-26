@@ -29,6 +29,8 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C20 every file adopt.sh declares never-adopted is absent from all three layers
+#      (scripts/python/check_layer_exclusions.py --check)
 #  C19 one risk-class vocabulary: every class maps to a tier that exists, every restatement uses
 #      the declared labels, no second copy calls itself canonical (check_risk_classes.py --check)
 #  C18 ARCHITECTURE.md describes this repository and cannot drift from it: every path exists, the
@@ -101,6 +103,7 @@ spec-kit-upstream.json
 adoption layers are closed under reference
 a fresh adoption works
 ARCHITECTURE.md still describes this repository
+files this repository refuses to distribute stay out of every layer
 open items carry a date or a named trigger
 spec registry matches disk
 spec evidence paths resolve or carry an explicit marker
@@ -376,6 +379,17 @@ if out=$(python3 scripts/python/check_risk_classes.py --check --quiet 2>&1); the
     result "one risk-class vocabulary, restated identically everywhere" ok "6 classes → 4 tiers"
 else
     result "one risk-class vocabulary, restated identically everywhere" fail
+    printf '%s\n' "$out" | head -6 | sed 's/^/      /'
+fi
+
+say "C20 declared layer exclusions"
+# Two files describe the corpus and must never reach an adopter. They were out of all three layers
+# by the accident of not appearing in an include list — an accidental property that nothing
+# asserted and any plausible edit could undo (R15-T2).
+if out=$(python3 scripts/python/check_layer_exclusions.py --check --quiet 2>&1); then
+    result "files this repository refuses to distribute stay out of every layer" ok "$(printf '%s' "$out" | head -1)"
+else
+    result "files this repository refuses to distribute stay out of every layer" fail
     printf '%s\n' "$out" | head -6 | sed 's/^/      /'
 fi
 

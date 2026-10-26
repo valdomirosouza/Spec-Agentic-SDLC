@@ -33,7 +33,7 @@ lifecycle from 13 to **15 phases (0–14)**:
 
 - **New Phase 0 — Intake & Prioritization** (before Conception): problem statement, value
   hypothesis, **risk class**, owner. No Issue, no code. The risk class selects the downstream
-  path (small fix / normal / high-risk / AI / security / infra).
+  path (the `risk_classes` labels in `docs/process/gates/phase-gates.yaml`).
 - **New Phase 10 — AI Safety & Agent Governance** (between DevSecOps and Observability): a
   **conditional** gate, required only for AI/LLM/agentic changes (under `src/agents/` or
   `src/guardrails/`). Covers prompt-injection + data-leakage tests, tool-permission review,
