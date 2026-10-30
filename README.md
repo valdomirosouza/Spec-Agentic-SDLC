@@ -18,7 +18,7 @@
 | Spec-Driven Development (spec grammar ADR-0085, registry, templates, lifecycle skill)                                   | `specs/`, `templates/`, `skills/sdlc/`, `docs/governance/spec-registry.md`                                     |
 | Agentic SDLC (15 phases, nine human gates, delivery agents, `/deliver`, `/sdd-*` commands)                              | `docs/sdlc/`, `docs/process/`, `.claude/agents/`, `.claude/skills/`                                            |
 | Compliance — LGPD, GDPR, ISO 27001, SOX, SOC 2                                                                          | `docs/compliance/`, `docs/privacy/`, `docs/sox/`, `specs/compliance/`, `skills/privacy/`, `skills/compliance/` |
-| Security — OWASP ASVS 5.0 & LLM Top 10 control matrices, threat model, SAST/SCA/DAST pipeline, secure development       | `specs/security/`, `skills/devsecops/`, `SECURITY.md`                                        |
+| Security — OWASP ASVS 5.0 & LLM Top 10 control matrices, threat model, SAST/SCA/DAST pipeline, secure development       | `specs/security/`, `skills/devsecops/`, `SECURITY.md`                                                          |
 | Observability — Golden Signals (Traffic, Errors, Saturation, Latency), logs, metrics, traces, SLOs, PRR, runbooks, DORA | `specs/observability/`, `docs/sre/`, `skills/sre/`, `skills/observability/`                                    |
 | Audit & governance — traceability matrix, release evidence package, change log, RACI, Big Four evidence map             | `docs/governance/`, `docs/change-log/`, `docs/audit/`                                                          |
 | ADRs (90, all binding)                                                                                                  | `docs/adr/`                                                                                                    |
@@ -85,9 +85,10 @@ CLAUDE.md · AGENTS.md           the detailed operating contract for agents (the
 - Documents still reference source-code paths (`src/…`, `scripts/governance/…`,
   `.github/workflows/…`, `services.yaml`) that live in the source template, not here. They
   describe where a control is implemented in a product repository that adopts this corpus.
-- spec-kit reference: github/spec-kit `d848fb4` (v1.0.6, 2026-09-10), pinned in
-  `docs/sdlc/spec-kit-upstream.json`. What was adopted, adapted or deliberately left out is
-  recorded in `docs/sdlc/spec-kit-comparison.md`; the quarterly sync procedure is
+- spec-kit reference: github/spec-kit `7370e59` (v1.2.5, 2026-10-30), pinned in
+  `docs/sdlc/spec-kit-upstream.json`; first adopted at `d848fb4` (v1.0.6). What was adopted,
+  adapted or deliberately left out is recorded in `docs/sdlc/spec-kit-comparison.md` and the
+  review log of `docs/sdlc/spec-kit-sync.md`; the monthly sync procedure is
   `docs/sdlc/spec-kit-sync.md` (`scripts/bash/spec-kit-diff.sh`).
 
 ## License
