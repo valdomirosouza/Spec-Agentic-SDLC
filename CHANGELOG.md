@@ -10,7 +10,7 @@ authorises them.
 ## [Unreleased]
 
 > **Next version:** 1.1.0 — minor. Nothing published in 1.0.0 is broken: `asdd_state.py`
-> was added _after_ that release, so nobody on 1.0.0 holds a state file its schema change
+> was added *after* that release, so nobody on 1.0.0 holds a state file its schema change
 > could invalidate. An earlier draft of this line said 2.0.0 on the strength of the word
 > BREAKING, which was a compatibility claim nobody had checked against its baseline.
 > `version.txt` is the version of record (ADR-0057) and moves when the release is cut, not
@@ -39,7 +39,7 @@ authorises them.
   no second copy to call itself canonical (#110).
 - `ARCHITECTURE.md` and check C18 — the corpus describes its own structure for the first time: what
   is a source, what is a generated copy and what regenerates it, what each adoption layer carries,
-  where the root of authority sits. Two neighbouring documents described the _adopting_
+  where the root of authority sits. Two neighbouring documents described the *adopting*
   repository's architecture and tree, and the answer to "is this file a source or a copy?" lived in
   four places at once. Checked rather than trusted: every path it names must exist, its
   rendered-copy table must match `render_commands.TARGETS`, and its measured block is regenerated
@@ -336,8 +336,8 @@ authorises them.
 - The class-to-tier mapping existed in three places, and the check written to prevent that
   enumerated the files it would look at. `.claude/skills/deliver/SKILL.md` had carried one since
   W13-T6 under the heading "one mapping"; the fix for #110 added a second to `phase-gates.yaml` and
-  a third to the canonical narrative, because the search was for restatements of the _labels_ and
-  not for a second _mapping_. The three agreed by luck — nothing had compared them — and the new
+  a third to the canonical narrative, because the search was for restatements of the *labels* and
+  not for a second *mapping*. The three agreed by luck — nothing had compared them — and the new
   declaration had silently dropped the floor semantics and three conditional escalations.
   C19 now derives its scope by scanning instead of listing, with exemptions declared by marker; on
   its first derived run it found two more files the hand-written list had missed, including
@@ -365,7 +365,7 @@ authorises them.
 - `docs/repo-structure.md` stops calling itself an auto-generated reference. Nothing generated it,
   and the sentence immediately after the claim asked a human to keep it current. A document that
   claims a guarantee it does not have is worse than one that claims none, because a reader stops
-  checking. Both it and `docs/architecture.md` now say they describe the _adopting_ repository and
+  checking. Both it and `docs/architecture.md` now say they describe the *adopting* repository and
   point at `ARCHITECTURE.md` for this one (#111).
 - The verifier could end early and look green. `common.sh` sets `errexit`, so a helper exiting
   non-zero inside a bare assignment ends `check-corpus.sh` where it stands — with no failure line
@@ -429,7 +429,7 @@ authorises them.
   breaks the shared working tree while it holds it. A failure also keeps the full verifier output
   on disk, so a rare red is diagnosable from its first occurrence (#98).
 - **The abuse-surface question is now asked by a gate, not by a template row.** Every live feature
-  spec must address it, satisfied by the posture row _or_ by a threat-surface entry — demanding the
+  spec must address it, satisfied by the posture row *or* by a threat-surface entry — demanding the
   template's shape would have rejected the spec that handles the concern best (#97).
 - **The published OpenAPI declared a `429` with none of the three rate-limit headers its own
   standard requires.** A caller could not read its budget or learn when to return, so it would
