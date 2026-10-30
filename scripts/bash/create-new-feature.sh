@@ -50,11 +50,22 @@ done
 NUM=$(printf '%03d' $((highest + 1)))
 SPEC_ID="SPEC-$DOMAIN-$NUM"
 
+# Fold accented Latin letters to ASCII before the a-z0-9 filter, so "Exportação" becomes
+# "exportacao" rather than "exporta-o" (upstream spec-kit #4780 keeps Unicode instead; here the
+# slug also names the branch, so it stays ASCII). Without python3 the plain C-locale filter runs.
+ascii_fold() {
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -I -c 'import sys,unicodedata; s=unicodedata.normalize("NFKD", sys.stdin.read()); sys.stdout.write("".join(c for c in s if not unicodedata.combining(c)))'
+    else
+        cat
+    fi
+}
+
 # Slug: lowercase, ASCII, stop words removed, ≤ 4 words.
 if [ -z "$SHORT_NAME" ]; then
     STOP='^(a|an|the|to|for|of|in|on|at|by|with|from|is|are|be|and|or|i|we|want|need|add|new|feature|implement|create)$'
     words=""; count=0
-    for w in $(printf '%s' "$DESCRIPTION" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9]/ /g'); do
+    for w in $(printf '%s' "$DESCRIPTION" | ascii_fold | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed 's/[^a-z0-9]/ /g'); do
         printf '%s' "$w" | grep -qE "$STOP" && continue
         [ ${#w} -ge 3 ] || continue
         words="$words-$w"; count=$((count + 1)); [ $count -ge 4 ] && break
@@ -62,7 +73,12 @@ if [ -z "$SHORT_NAME" ]; then
     SHORT_NAME=${words#-}
     [ -n "$SHORT_NAME" ] || SHORT_NAME="feature"
 fi
-SLUG=$(printf '%s' "$SHORT_NAME" | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed -e 's/[^a-z0-9]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+SLUG=$(printf '%s' "$SHORT_NAME" | ascii_fold | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sed -e 's/[^a-z0-9]/-/g' -e 's/--*/-/g' -e 's/^-//' -e 's/-$//')
+# A non-Latin --short-name folds to nothing; never create "SPEC-FEAT-NNN-" (upstream #4575).
+if [ -z "$SLUG" ]; then
+    echo "WARNING: short name '$SHORT_NAME' has no ASCII letters or digits; using 'feature' — pass --short-name <ascii-slug>" >&2
+    SLUG="feature"
+fi
 
 FEATURE_DIR="$FEATURES_DIR/$SPEC_ID-$SLUG"
 SPEC_FILE="$FEATURE_DIR/spec.md"
