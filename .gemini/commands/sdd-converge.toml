@@ -23,6 +23,9 @@ Review) and the natural place to confirm the FR→AC→test chain that the audit
 2. **Intent inventory**: FR-/SC- (buildable only) / `USn/ACm` keys from the spec; plan
    decisions and named touch-points; constitution articles with buildable obligations
    (tests with `requirement()` markers, PII masking, Golden Signals, audit records, HITL route).
+   Every existing task enters the inventory, whatever its checkbox state or phase: a `[X]` is a
+   completion claim, not evidence (Constitution IX). For a chain of corrective tasks, assess the
+   behaviour that results, not the superseded implementation details.
 3. **Code-scope map** from the file paths in plan.md and tasks.md plus keyword search for each
    requirement's concepts. Do not infer scope beyond the artefacts.
 4. **Assess** each inventory item against the code and classify gaps: `missing` · `partial` ·
