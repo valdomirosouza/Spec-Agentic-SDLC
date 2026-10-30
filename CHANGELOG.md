@@ -315,6 +315,11 @@ authorises them.
 
 ### Fixed
 
+- `check-corpus.sh` called `say` three lines before defining it, on the path taken only in an
+  adopted repository. On macOS that ran `/usr/bin/say`, the text-to-speech command, which exits 0;
+  on the Linux runner it exited 127 under errexit before printing a single ✗ line. C16 read the
+  exit code as "127 failure(s)", so `main` had failed "a fresh adoption works" in CI since the
+  check landed while passing on every Mac (#120).
 - The class-to-tier mapping existed in three places, and the check written to prevent that
   enumerated the files it would look at. `.claude/skills/deliver/SKILL.md` had carried one since
   W13-T6 under the heading "one mapping"; the fix for #110 added a second to `phase-gates.yaml` and
