@@ -19,6 +19,11 @@ authorises them.
 
 ### Added
 
+- `harness/pr-description-check.yml`: an advisory gate that compares the PR description with the
+  cumulative diff and reports material omissions, contradictions and stale claims, with an
+  `ALIGNED` / `NEEDS_UPDATE` / `INCONCLUSIVE` verdict. It treats the title, body and diff as
+  untrusted data and never runs contributor code. It checks the description, not the code, and
+  does not replace human review. Adapted from github/spec-kit's `pr-assess` (#4902) (#124).
 - **AI assistance** section in the default PR template and all five change-type templates (tool or
   agent, model and mode, extent), plus `CONTRIBUTING.md` §5 "AI assistance": agent-authored commits
   carry a `Co-Authored-By:` trailer, and agent comments say so. Disclosure is provenance for the
