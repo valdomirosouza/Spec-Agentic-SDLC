@@ -79,12 +79,14 @@ ROOT=$(get_repo_root); cd "$ROOT"
 # Is this the corpus itself, or a repository that adopted it? Declared by a marker file that
 # adopt.sh does not copy, never inferred: a fresh adoption reached seventeen failures and two
 # tracebacks because every self-audit check ran against a repository that is not the corpus (#106).
+# say() is defined before its first call: called earlier, macOS ran /usr/bin/say (text-to-speech,
+# exit 0) and Linux exited 127 under errexit with no ✗ line printed, in adopted repositories only.
+say() { $QUIET || echo "$@"; }
 SELF=true
 [ -f .corpus-origin ] || SELF=false
 $SELF || say "running in a repository that adopted this corpus — checks that audit the corpus governing itself are skipped"
 EXAMPLE="specs/features/SPEC-LGS-001-log-based-golden-signals"
 fails=0
-say() { $QUIET || echo "$@"; }
 # Checks that audit the corpus governing ITSELF. They are meaningless in a repository that adopted
 # the corpus — its mutation baseline, measurement series, red-team ratchet, upstream pin and
 # changelog are this project's, not the adopter's. Listed by name rather than detected by shape,
