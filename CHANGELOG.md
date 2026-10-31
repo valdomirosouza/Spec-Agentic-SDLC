@@ -19,6 +19,12 @@ authorises them.
 
 ### Added
 
+- `docs/product/templates/intake-form.md`: Phase 0 now ends in a recommended `go` /
+  `needs-clarification` / `kill` verdict. The form carries evidence for and against, each row with
+  a source and a confidence, the cost of doing nothing, concept-level options, and a handoff summary
+  for `/sdd-specify`. `asdd-phase-0-intake` fills it in and only recommends; the Product Lead
+  decides. The orchestrator stops on `kill`, which counts as a successful outcome, and treats
+  `needs-clarification` as blocked. Adapted from github/spec-kit's `assess` process (#124).
 - `harness/pr-description-check.yml`: an advisory gate that compares the PR description with the
   cumulative diff and reports material omissions, contradictions and stale claims, with an
   `ALIGNED` / `NEEDS_UPDATE` / `INCONCLUSIVE` verdict. It treats the title, body and diff as
