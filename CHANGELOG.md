@@ -19,6 +19,14 @@ authorises them.
 
 ### Added
 
+- ADR-0096 (Proposed) and `/sdd-bugfix`: a defect is worked in three stages, each writing a record
+  under `docs/bugs/BUG-<issue>/`. `assess` reproduces the bug, finds the root cause with evidence
+  and cites the violated spec per `spec_for_defect`, without editing code; unspecified behaviour
+  escalates. `fix` is the only stage that edits code, starts only after a human accepts the
+  diagnosis, and records any deviation from the assessed scope instead of widening it. `test`
+  re-runs the original reproduction and gives a `verified` / `partial` / `failed` verdict, without
+  editing code. Rendered for Copilot, Cursor, Codex and Gemini. Adapted from github/spec-kit's
+  `bug` extension; ADR-0090 §4 still refuses extensions as a mechanism (#124).
 - `docs/product/templates/intake-form.md`: Phase 0 now ends in a recommended `go` /
   `needs-clarification` / `kill` verdict. The form carries evidence for and against, each row with
   a source and a confidence, the cost of doing nothing, concept-level options, and a handoff summary

@@ -39,6 +39,8 @@
 /sdd-implement      execute tasks phase by phase, scoped runs, hard stops at every HITL trigger
 /sdd-converge       append remaining gaps as tasks; repeat until "Converged"
         ▼  human gates: code review (Phase 7) → testing, DevSecOps, AI safety, PRR, release, post-deploy (Phases 8–14, driven by /deliver)
+
+/sdd-bugfix         a defect: assess (cite the violated spec) → human accepts the diagnosis → fix → test (verified / partial / failed); ADR-0096
 ```
 
 Each command is a Claude Code skill under `.claude/skills/sdd-*/SKILL.md` (rendered for Copilot,
