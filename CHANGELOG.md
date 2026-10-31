@@ -315,6 +315,12 @@ authorises them.
 
 ### Fixed
 
+- `test_corpus_metrics.py` read and wrote the real `docs/sre/`, so three of its tests passed only
+  within seven days of the last published report and failed on `main` once the weekly report
+  stopped landing, and every local run left `corpus-metrics-<today>.md` in the working tree.
+  `corpus_metrics.py` gains `--reports-dir` and `--today`; the tests now work in a temporary
+  directory on a fixed date. Same sixteen tests, and two injected defects — drift against the
+  newest report, `--check` ignoring a missing section — are each caught (#120).
 - The class-to-tier mapping existed in three places, and the check written to prevent that
   enumerated the files it would look at. `.claude/skills/deliver/SKILL.md` had carried one since
   W13-T6 under the heading "one mapping"; the fix for #110 added a second to `phase-gates.yaml` and
