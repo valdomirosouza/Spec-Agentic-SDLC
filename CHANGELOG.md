@@ -19,6 +19,11 @@ authorises them.
 
 ### Added
 
+- **AI assistance** section in the default PR template and all five change-type templates (tool or
+  agent, model and mode, extent), plus `CONTRIBUTING.md` §5 "AI assistance": agent-authored commits
+  carry a `Co-Authored-By:` trailer, and agent comments say so. Disclosure is provenance for the
+  audit trail (Constitution VII), not a lower review bar. Adapted from github/spec-kit #4512 and
+  #4752 (#124).
 - `scripts/python/check_layer_exclusions.py` and check C20 — `adopt.sh` declares `NEVER_ADOPTED`
   and the check asserts those files are absent from all three layers, against what `--list`
   actually produces. `ARCHITECTURE.md` and `.corpus-origin` were excluded by the accident of not
