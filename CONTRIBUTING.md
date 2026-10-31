@@ -172,6 +172,23 @@ automatically. For lighter, change-type-specific templates, append
 | Security fix / vuln remediation     | `security-change.md`                        |
 | Infrastructure / pipeline / deploy  | `infrastructure-change.md`                  |
 
+### AI assistance
+
+Every PR template carries an **AI assistance** section. Fill it in whenever an AI tool touched the
+change, including an agent you ran yourself whose work the diff cannot show:
+
+- **Tool / agent**: the product or delivery subagent (`.claude/agents/`) that did the work.
+- **Model and mode**: the model id, plus the mode or settings that shaped the output (plan mode,
+  auto-accept, the autonomy tier).
+- **Extent**: what the agent drafted (code, tests, docs, PR text) and what a person wrote, rewrote
+  or verified.
+
+Commits an agent authored end with a `Co-Authored-By:` trailer naming it. Comments an agent posts
+say so in their first line. Disclosure records **provenance** for the audit trail
+(Constitution VII, `docs/audit/big-four-evidence-map.md`). It does not lower the bar: an
+agent-written change faces the same tests, gates and human review as any other. Adapted from
+github/spec-kit's contribution policy (2026-09, #4512 and #4752).
+
 ### Required reviewers
 
 | Change type                     | Required reviewers                 |

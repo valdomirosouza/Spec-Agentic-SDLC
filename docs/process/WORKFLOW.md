@@ -56,10 +56,13 @@ The authoritative tier → phase mapping and escalation triggers live in
 | ---- | -------- | -------------------------------------------------------------------------------------------------------------- | --------------------------- |
 | 1    | ◈ Human  | Capture problem statement and value/user hypothesis                                                            | Backlog candidate           |
 | 2    | ⚡ Agent | Draft a one-line risk class (one of the `risk_classes` labels in `docs/process/gates/phase-gates.yaml`) and surface related specs/ADRs | Risk-class suggestion       |
-| 3    | ◈ Human  | Assign risk class, owner, and priority; decide go / no-go                                                      | Prioritized item with owner |
+| 3    | ◈ Human  | Assign risk class, owner, and priority; decide go / needs-clarification / kill                                 | Prioritized item with owner |
 
 Phase 0 happens **before** an Issue exists. It sets the risk class that determines how
-many downstream gates apply. No code, no deploy.
+many downstream gates apply. No code, no deploy. The agent drafts
+`docs/product/FEAT-{id}/intake-form.md` (`docs/product/templates/intake-form.md`): evidence for
+and against, the cost of doing nothing, and a **recommended** verdict. The human decides. `kill`
+ends the cycle with the reasoning on record, which is a successful outcome.
 
 ---
 
