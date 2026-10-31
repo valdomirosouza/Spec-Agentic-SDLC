@@ -151,6 +151,13 @@ out=$(bash "$HERE/scripts/bash/adopt.sh" 2>&1); rc=$?
 assert_exit "missing target fails" "$rc" 1
 assert_eq "adopt never creates a git repository or branch" "$([ -d "$T/.git" ] && echo yes || echo no)" "no"
 rm -rf "$T"
+# Ignored files are machine-local: this machine's bytecode used to ship and skew every layer count (#120).
+mkdir -p "$HERE/scripts/python/__pycache__"
+probe_pyc="$HERE/scripts/python/__pycache__/zz_adopt_probe.cpython-399.pyc"; probe_tmp="$HERE/templates/zz-adopt-probe.tmp"
+: > "$probe_pyc"; : > "$probe_tmp"
+listed=$(bash "$HERE/scripts/bash/adopt.sh" --list --layer minimal /tmp/__adopt_probe | grep -c 'zz_adopt_probe\|zz-adopt-probe' || true)
+rm -f "$probe_pyc" "$probe_tmp"
+assert_eq "adopt.sh lists no file git ignores (bytecode, scratch)" "$listed" "0"
 
 echo "render-commands"
 T=$(mktemp -d)

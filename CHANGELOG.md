@@ -326,6 +326,13 @@ authorises them.
   on the Linux runner it exited 127 under errexit before printing a single ✗ line. C16 read the
   exit code as "127 failure(s)", so `main` had failed "a fresh adoption works" in CI since the
   check landed while passing on every Mac (#120).
+- `adopt.sh` copied files git ignores. `find` walked `scripts/python/__pycache__/`, so an adopter
+  received this machine's bytecode, and each layer's file count depended on which Python modules
+  had been imported before the run. `ARCHITECTURE.md` published 82 / 367 / 605 files for minimal /
+  governed / full, measured in a tree with bytecode present; a clean checkout has 68 / 352 / 590,
+  which is why C18 failed in CI and passed locally. Ignored files are now filtered via
+  `git check-ignore`, with an explicit bytecode filter when the source is not a git repository,
+  and the measured block is regenerated (#120).
 - The class-to-tier mapping existed in three places, and the check written to prevent that
   enumerated the files it would look at. `.claude/skills/deliver/SKILL.md` had carried one since
   W13-T6 under the heading "one mapping"; the fix for #110 added a second to `phase-gates.yaml` and
