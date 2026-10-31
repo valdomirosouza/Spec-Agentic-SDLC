@@ -8,6 +8,8 @@ This computes the numbers that CAN be measured here, and says plainly which cann
   --report        write docs/sre/corpus-metrics-<date>.md
   --json          print the measurements
   --quiet         only the summary line
+  --reports-dir   read and write reports in this directory instead of docs/sre
+  --today         with --drift, the date to measure baseline age from (YYYY-MM-DD)
 
 Every metric names its source and its method. Nothing is estimated: a value that cannot be derived
 from git or the GitHub API is reported as unavailable with the reason, never as a guess
@@ -382,7 +384,10 @@ def drift_rows(m):
 DEFAULT_THRESHOLD_PCT = 1.0
 DEFAULT_BASELINE_AGE_DAYS = 7
 
-REPORT_GLOB = os.path.join("docs", "sre", "corpus-metrics-*.md")
+# --reports-dir replaces it, so the tests read and write fixtures in a temporary directory: they
+# used to write today's report into docs/sre and their outcome depended on which reports existed
+# there and how old they were (#120).
+REPORTS_DIR = os.path.join(ROOT, "docs", "sre")
 _REPORT_DATE = re.compile(r"corpus-metrics-(\d{4})-(\d{2})-(\d{2})\.md$")
 
 
@@ -391,7 +396,7 @@ def dated_reports():
     name is skipped rather than guessed at."""
     import glob as _g
     out = []
-    for p in _g.glob(os.path.join(ROOT, REPORT_GLOB)):
+    for p in _g.glob(os.path.join(REPORTS_DIR, "corpus-metrics-*.md")):
         mm = _REPORT_DATE.search(p)
         if mm:
             out.append((date(*(int(x) for x in mm.groups())), p))
@@ -477,14 +482,21 @@ def main():
                     help="how old the report --drift compares against has to be")
     ap.add_argument("--body-out", default="",
                     help="with --drift, write the markdown delta to this file for an issue body")
+    ap.add_argument("--reports-dir", default="",
+                    help="directory holding corpus-metrics-<date>.md (default docs/sre)")
+    ap.add_argument("--today", type=date.fromisoformat, default=None,
+                    help="with --drift, the date baseline age is measured from (default today)")
     a = ap.parse_args()
+    global REPORTS_DIR
+    if a.reports_dir:
+        REPORTS_DIR = os.path.abspath(a.reports_dir)
     m = build()
     if a.json:
         json.dump(m, sys.stdout, indent=2)
         print()
         return 0
     if a.drift:
-        rc, body = cmd_drift(m, a.threshold, a.baseline_age_days)
+        rc, body = cmd_drift(m, a.threshold, a.baseline_age_days, a.today)
         if a.body_out and body:
             with open(a.body_out, "w", encoding="utf-8") as fh:
                 fh.write(body + "\n")
@@ -492,7 +504,7 @@ def main():
     if a.check:
         import glob as _g
         import re as _re
-        reports = sorted(_g.glob(os.path.join(ROOT, "docs", "sre", "corpus-metrics-*.md")))
+        reports = sorted(_g.glob(os.path.join(REPORTS_DIR, "corpus-metrics-*.md")))
         if not reports:
             print("no corpus-metrics report on disk")
             return 1
@@ -536,8 +548,9 @@ def main():
             print(f"{os.path.relpath(latest, ROOT)}: current")
         return 0
     if a.report:
-        rel = os.path.join("docs", "sre", f"corpus-metrics-{m['generated_at'][:10]}.md")
-        with open(os.path.join(ROOT, rel), "w", encoding="utf-8") as fh:
+        out = os.path.join(REPORTS_DIR, f"corpus-metrics-{m['generated_at'][:10]}.md")
+        rel = os.path.relpath(out, ROOT)
+        with open(out, "w", encoding="utf-8") as fh:
             fh.write(render(m))
         print(f"wrote {rel}")
     g, k, c = m["git"], m["corpus"], m["ci"]

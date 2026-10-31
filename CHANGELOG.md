@@ -315,6 +315,12 @@ authorises them.
 
 ### Fixed
 
+- `test_corpus_metrics.py` read and wrote the real `docs/sre/`, so three of its tests passed only
+  within seven days of the last published report and failed on `main` once the weekly report
+  stopped landing, and every local run left `corpus-metrics-<today>.md` in the working tree.
+  `corpus_metrics.py` gains `--reports-dir` and `--today`; the tests now work in a temporary
+  directory on a fixed date. Same sixteen tests, and two injected defects — drift against the
+  newest report, `--check` ignoring a missing section — are each caught (#120).
 - `check-corpus.sh` called `say` three lines before defining it, on the path taken only in an
   adopted repository. On macOS that ran `/usr/bin/say`, the text-to-speech command, which exits 0;
   on the Linux runner it exited 127 under errexit before printing a single ✗ line. C16 read the

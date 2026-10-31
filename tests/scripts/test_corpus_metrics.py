@@ -8,10 +8,30 @@ sys.path.insert(0, os.path.join(HERE, "scripts", "python"))
 import corpus_metrics as cm  # noqa: E402
 
 
+def metrics(*args):
+    return subprocess.run([sys.executable, SCRIPT, *args], capture_output=True, text=True,
+                          cwd=HERE, timeout=180)
+
+
 class Measurement(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.m = cm.build()
+
+    def setUp(self):
+        # Reports are read and written here, never in docs/sre: the tests used to leave today's
+        # report in the working tree, and their verdict depended on the date and on which real
+        # reports existed (#120).
+        import tempfile
+        self._tmp = tempfile.TemporaryDirectory()
+        self.reports = self._tmp.name
+        self.addCleanup(self._tmp.cleanup)
+
+    def write_report(self):
+        """Render a current report into the scratch directory; returns (path, its date)."""
+        metrics("--report", "--reports-dir", self.reports).check_returncode()
+        name = sorted(f for f in os.listdir(self.reports) if f.startswith("corpus-metrics-"))[-1]
+        return os.path.join(self.reports, name), "-".join(cm._REPORT_DATE.search(name).groups())
 
     def test_git_metrics_are_measured_not_assumed(self):
         g = self.m["git"]
@@ -90,33 +110,22 @@ class Measurement(unittest.TestCase):
 
     def test_check_mode_detects_a_stale_report(self):
         """R4-T6. There was no --check, so nothing could fail on a stale or wrong report."""
-        import shutil, tempfile
-        latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
-                        if f.startswith("corpus-metrics-"))[-1]
-        path = os.path.join(HERE, "docs", "sre", latest)
-        backup = tempfile.mktemp(); shutil.copy(path, backup)
-        try:
-            # Refresh first: this test is about what --check does, not about whether the report
-            # committed yesterday is current. Asserting the repo's freshness here made the test red
-            # every time the verifier itself gained a line, which is a false signal.
-            subprocess.run([sys.executable, SCRIPT, "--report"],
-                           capture_output=True, cwd=HERE, timeout=180, check=True)
-            self.assertEqual(subprocess.run([sys.executable, SCRIPT, "--check", "--quiet"],
-                                            capture_output=True, cwd=HERE, timeout=180).returncode, 0)
-            text = open(path, encoding="utf-8").read().replace("## 3. Corpus shape", "## 3. Removed")
-            open(path, "w", encoding="utf-8").write(text)
-            self.assertEqual(subprocess.run([sys.executable, SCRIPT, "--check", "--quiet"],
-                                            capture_output=True, cwd=HERE, timeout=180).returncode, 1)
-        finally:
-            shutil.copy(backup, path); os.unlink(backup)
+        # A fresh report first: this test is about what --check does, not about whether the report
+        # committed yesterday is current. Asserting the repo's freshness here made the test red
+        # every time the verifier itself gained a line, which is a false signal.
+        path, _ = self.write_report()
+        self.assertEqual(metrics("--check", "--quiet", "--reports-dir", self.reports).returncode, 0)
+        text = open(path, encoding="utf-8").read().replace("## 3. Corpus shape", "## 3. Removed")
+        open(path, "w", encoding="utf-8").write(text)
+        self.assertEqual(metrics("--check", "--quiet", "--reports-dir", self.reports).returncode, 1)
 
     def test_drift_refuses_when_no_baseline_is_old_enough(self):
         """R6-T1. Comparing against the NEWEST report made the scheduled job structurally unable to
         find anything: check-corpus forces that report to equal the live numbers on every commit,
         so the comparison measured a number against itself and answered `no movement`, for ever.
         With no baseline old enough the honest answer is a refusal, not an all-clear."""
-        r = subprocess.run([sys.executable, SCRIPT, "--drift"],
-                           capture_output=True, text=True, cwd=HERE, timeout=180)
+        _, published = self.write_report()
+        r = metrics("--drift", "--reports-dir", self.reports, "--today", published)
         self.assertEqual(r.returncode, 2, f"expected a refusal, got: {r.stdout}{r.stderr}")
         self.assertIn("no baseline", r.stdout)
 
@@ -124,30 +133,23 @@ class Measurement(unittest.TestCase):
         """The baseline must be old enough for something to have happened, and the comparison must
         include the numbers that move WITHOUT anyone editing a file. Those were excluded entirely,
         which left drift watching only the rows the commit gate pins."""
-        import shutil, tempfile
-        base = os.path.join(HERE, "docs", "sre", "corpus-metrics-2026-08-15.md")
-        self.assertFalse(os.path.exists(base), "fixture name must not collide with a real report")
-        latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
-                        if f.startswith("corpus-metrics-"))[-1]
-        text = open(os.path.join(HERE, "docs", "sre", latest), encoding="utf-8").read()
+        path, _ = self.write_report()
+        text = open(path, encoding="utf-8").read()
+        os.unlink(path)
         text = re.sub(r"^\| ADRs \| [0-9]+ \|", "| ADRs | 1 |", text, count=1, flags=re.M)
         text = re.sub(r"^\| Commits on the default branch \| [0-9]+ \|",
                       "| Commits on the default branch | 1 |", text, count=1, flags=re.M)
-        body = tempfile.mktemp(suffix=".md")
-        try:
-            open(base, "w", encoding="utf-8").write(text)
-            r = subprocess.run([sys.executable, SCRIPT, "--drift", "--body-out", body],
-                               capture_output=True, text=True, cwd=HERE, timeout=180)
-            self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
-            self.assertIn("ADRs", r.stdout, "a structural row must still be compared")
-            self.assertIn("Commits on the default branch", r.stdout,
-                          "an activity row is the whole reason a periodic comparison exists")
-            self.assertIn("| Metric | Published | Live | Move |",
-                          open(body, encoding="utf-8").read())
-        finally:
-            for f in (base, body):
-                if os.path.exists(f):
-                    os.unlink(f)
+        # The only report, exactly the minimum age old on the date this run claims to be.
+        base = os.path.join(self.reports, "corpus-metrics-2026-08-15.md")
+        open(base, "w", encoding="utf-8").write(text)
+        body = os.path.join(self.reports, "body.md")
+        r = metrics("--drift", "--reports-dir", self.reports, "--today", "2026-08-22",
+                    "--body-out", body)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("ADRs", r.stdout, "a structural row must still be compared")
+        self.assertIn("Commits on the default branch", r.stdout,
+                      "an activity row is the whole reason a periodic comparison exists")
+        self.assertIn("| Metric | Published | Live | Move |", open(body, encoding="utf-8").read())
 
     def test_the_baseline_is_the_newest_report_old_enough_not_the_newest_overall(self):
         import datetime
@@ -161,11 +163,8 @@ class Measurement(unittest.TestCase):
         # Regenerate first. This test file counts toward `Test lines`, so asserting against the
         # committed report made the test fail whenever it grew — a fact about the repository, not
         # about the behaviour under test. Same trap as the stale-report case above.
-        subprocess.run([sys.executable, SCRIPT, "--report"],
-                       capture_output=True, cwd=HERE, timeout=180, check=True)
-        latest = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
-                        if f.startswith("corpus-metrics-"))[-1]
-        on_disk = open(os.path.join(HERE, "docs", "sre", latest), encoding="utf-8").read()
+        path, _ = self.write_report()
+        on_disk = open(path, encoding="utf-8").read()
         self.assertIn(f"**{cm.DEFAULT_THRESHOLD_PCT}%**", on_disk)
         self.assertIn(f"**{cm.DEFAULT_BASELINE_AGE_DAYS} days**", on_disk)
         m = cm.build()
