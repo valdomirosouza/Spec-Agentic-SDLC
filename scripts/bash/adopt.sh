@@ -79,8 +79,16 @@ EXCLUDE=""
 
 files=$(for p in $paths; do
     if [ -d "$SRC/$p" ]; then (cd "$SRC" && find "$p" -type f); elif [ -f "$SRC/$p" ]; then echo "$p"; fi
-done | grep -v '/\.DS_Store$' | sort -u)
+done | grep -v '/\.DS_Store$' | grep -v '/__pycache__/' | grep -v '\.pyc$' | sort -u)
 for x in $EXCLUDE; do files=$(printf '%s\n' "$files" | grep -vFx "$x"); done
+# Whatever git ignores is machine-local (bytecode, scratch, editor state), not corpus content. `find`
+# walked it anyway, so an adopter received this machine's __pycache__ and every layer's file count
+# depended on which Python modules had been imported before the run (#120). Unlike NEVER_ADOPTED
+# this is a filter: nobody authors an ignored file into a layer list, so there is no mistake to report.
+if git -C "$SRC" rev-parse --git-dir >/dev/null 2>&1; then
+    ignored=$(printf '%s\n' "$files" | git -C "$SRC" check-ignore --stdin 2>/dev/null || true)
+    [ -n "$ignored" ] && files=$(printf '%s\n' "$files" | grep -vFx -f <(printf '%s\n' "$ignored"))
+fi
 
 if $LIST; then printf '%s\n' "$files"; exit 0; fi
 
