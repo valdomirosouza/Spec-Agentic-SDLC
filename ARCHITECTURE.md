@@ -87,7 +87,7 @@ because its suite is the guard.
 | `sdd-*` commands rendered to four tools | 10 |
 | Files in the `minimal` layer | 68 |
 | Files in the `governed` layer | 352 |
-| Files in the `full` layer | 590 |
+| Files in the `full` layer | 591 |
 <!-- /generated -->
 
 ## What this corpus is not
