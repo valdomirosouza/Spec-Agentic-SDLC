@@ -37,6 +37,7 @@ if [ -f "$FEATURE_SPEC" ]; then SPEC_ID=$(fm_field "$FEATURE_SPEC" id); SPEC_STA
 if ! $PATHS_ONLY; then
     $REQ_SPEC  && [ ! -f "$FEATURE_SPEC" ] && { echo "ERROR: spec.md missing in $FEATURE_DIR — run /sdd-specify" >&2; exit 1; }
     $REQ_PLAN  && [ ! -f "$IMPL_PLAN" ]    && { echo "ERROR: plan.md missing — run /sdd-plan" >&2; exit 1; }
+    $REQ_PLAN  && [ ! -s "$IMPL_PLAN" ]    && { echo "ERROR: plan.md is empty in $FEATURE_DIR — populate it, or remove it and rerun /sdd-plan" >&2; exit 1; }
     $REQ_TASKS && [ ! -f "$TASKS" ]        && { echo "ERROR: tasks.md missing — run /sdd-tasks" >&2; exit 1; }
     if $REQ_APPROVED; then
         case "$SPEC_STATUS" in

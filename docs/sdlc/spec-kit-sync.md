@@ -2,14 +2,15 @@
 
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
 
-> **Owner:** Tech Lead · **Cadence:** quarterly (next review in `docs/sdlc/spec-kit-upstream.json`)
+> **Owner:** Tech Lead · **Cadence:** monthly (next review in `docs/sdlc/spec-kit-upstream.json`)
 > · **ADRs:** ADR-0090 (what was adopted and why), ADR-0091 (adoption script, per-agent copies)
 
 The `/sdd-*` commands, the feature-bundle templates and the helper scripts were adapted from
 [github/spec-kit](https://github.com/github/spec-kit) at the revision pinned in
 `docs/sdlc/spec-kit-upstream.json`. Upstream moves fast (eight releases between 2026-08-19 and
-2026-09-10); this page is the procedure that keeps the corpus deliberately, not accidentally,
-behind or ahead of it.
+2026-09-10, then v1.0.6 → v1.2.5 and 343 commits by 2026-10-30 — which is why the cadence is
+monthly, not quarterly); this page is the procedure that keeps the corpus deliberately, not
+accidentally, behind or ahead of it.
 
 ## 1. What is tracked
 
@@ -20,13 +21,13 @@ behind or ahead of it.
 | `templates/commands/<name>.md`    | `.claude/skills/sdd-<name>/SKILL.md`           | Same procedure shape; this repository's gates, Refs grammar and escalation are kept |
 | `templates/<name>-template.md`    | `templates/<name>-template.md`                 | Section additions are considered; §7 governance, §8 Golden Signals, §9 AC table and the coverage footer never leave |
 | `scripts/bash/<name>.sh`          | `scripts/bash/<name>.sh`                       | Ported to bash 3.2, SPEC-ID grammar, no git side effects              |
-| `docs/reference/integrations.md`  | `scripts/python/render_commands.py`            | New agent layouts are added to the renderer, not hand-written          |
+| `docs/integrations/index.md`      | `scripts/python/render_commands.py`            | New agent layouts are added to the renderer, not hand-written          |
 | `spec-driven.md`                  | `docs/sdlc/spec-kit-comparison.md`             | Philosophy changes are discussed in the comparison, not copied         |
 
 Deliberately **not** tracked: extensions, presets, bundles, the workflow engine and the
 `specify` CLI (ADR-0090 §4, ADR-0091).
 
-## 2. Quarterly procedure
+## 2. Monthly procedure
 
 1. **Diff.** Run `scripts/bash/spec-kit-diff.sh` (needs `gh`). It lists the tracked files that
    changed between the pinned commit and upstream `main`, and the latest release tag. Use
@@ -51,6 +52,7 @@ Deliberately **not** tracked: extensions, presets, bundles, the workflow engine 
 | Date       | Upstream range        | Files changed | Adopted | Adapted | Refused | PRs / notes                        |
 | ---------- | --------------------- | ------------- | ------- | ------- | ------- | ---------------------------------- |
 | 2026-09-12 | — → `d848fb4` (v1.0.6) | (baseline)    | 14 rows of `spec-kit-comparison.md` §2 | see §2 | ADR-0090 §4 | initial adoption, ADR-0090; `/sdd-taskstoissues` added (#10) |
+| 2026-10-30 | `d848fb4` → `7370e59` (v1.2.5) | 8 changed, 1 moved | `clarify.md` (deferral limited to method/stack/task breakdown) · `converge.md` (`[X]` is a claim, not evidence) · `check-prerequisites.sh` (empty `plan.md` rejected, #4962) · `setup-plan.sh` (missing/empty template creates nothing, #4962) | `create-new-feature.sh` (#4780, #4575: accents folded to ASCII instead of kept, since the slug names the branch; empty slug falls back to `feature`) · `docs/reference/integrations.md` moved to `docs/integrations/index.md` (#5034), pin repointed | `specify.md` (`resolve-template` composes preset layers — ADR-0090 §4) · `taskstoissues.md` (deprecated in favour of the `github` extension; no extensions here) · `common.sh` `SPECKIT_PYTHON_EXECUTABLE` (local `common.sh` runs no Python) | **Deferred, not refused:** `SPECIFY_FEATURE_NO_PERSIST` (#4128) for parallel `/deliver` subagents writing `.sdd/feature.json`. Cadence moved to monthly |
 
 ## 4. What a reviewer checks before merging a sync PR
 

@@ -27,7 +27,9 @@ Adapted from spec-kit `/speckit.clarify`. Runs between Phase 4 (Specification) a
    testability · placeholders (`TODO`, `[NEEDS CLARIFICATION]`, vague adjectives).
 3. **Question queue** (max five, ranked by impact × uncertainty). Each question must be
    answerable by a short multiple choice (2–5 options) or ≤ 5 words. Skip anything already
-   answered, stylistic, or better deferred to `/sdd-plan`.
+   answered or stylistic. Defer to `/sdd-plan` only an item that is specifically about
+   implementation method, tech-stack comparison or task breakdown — a requirement gap is never
+   deferred because the plan could absorb it.
 4. **Ask one at a time**: `**Question:** <full interrogative>? (FR-NN)` · one "Why it matters"
    sentence · `**Recommended:** Option X — reason` · options table · "reply with a letter, 'yes'
    to accept, or your own short answer". Never reveal queued questions. Stop at five, at
@@ -47,7 +49,8 @@ Adapted from spec-kit `/speckit.clarify`. Runs between Phase 4 (Specification) a
 ## Completion report
 
 Questions asked/answered · sections touched · checklist before/after · coverage table
-(Resolved / Deferred / Clear / Outstanding) · escalations raised · next command (`/sdd-plan`
+(Resolved / Deferred — over the five-question quota, or implementation method, stack or task
+breakdown only / Clear / Outstanding) · escalations raised · next command (`/sdd-plan`
 after approval, or `/sdd-clarify` again).
 
 ## Done when

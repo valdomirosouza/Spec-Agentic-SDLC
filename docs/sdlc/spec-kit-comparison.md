@@ -2,7 +2,8 @@
 
 # Spec-Agentic-SDLC × github/spec-kit — comparison and adopted improvements
 
-> **Compared on:** 2026-09-12 · spec-kit at commit `d848fb4` (2026-09-11, v1.0.x) ·
+> **Compared on:** 2026-09-12 · spec-kit at commit `d848fb4` (2026-09-11, v1.0.x); re-synced
+> 2026-10-30 to `7370e59` (v1.2.5) — per-file decisions in `spec-kit-sync.md` §3 ·
 > this repository's documentation as copied from Repository-Template-v2 (Waves 11–15).
 > Purpose: name what each side does better, then record exactly what was adopted here and how
 > it was adapted to the 15-phase Agentic SDLC (ADR-0058), the HITL model (ADR-0011) and the

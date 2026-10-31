@@ -511,6 +511,21 @@ authorises them.
 - `CLAUDE.md` 2.9.0 (2026-09-12): §3 now maps each subsection to the constitution article it
   condenses and states the constitution's precedence; `CLAUDE_SESSION_INIT.md` rewritten for
   the corpus (identity, corpus-vs-adopter paths, critical paths, `/sdd-*` quick reference) (#4).
+- spec-kit sync `d848fb4` → `7370e59`, decisions in `docs/sdlc/spec-kit-sync.md` §3:
+  - `create-new-feature.sh` folds accented letters to ASCII before building the slug —
+    "Exportação de relatórios" gave `exporta-o-relat-rios`, now `exportacao-relatorios` — and a
+    `--short-name` with no ASCII letters falls back to `feature` with a warning instead of
+    creating `SPEC-FEAT-NNN-` (upstream #4780, #4575, adapted: upstream keeps Unicode).
+  - `setup-plan.sh` creates nothing from a missing or empty template; `check-prerequisites.sh
+--require-plan` rejects an empty `plan.md` (upstream #4962).
+  - `/sdd-clarify` defers to `/sdd-plan` only items about implementation method, stack or task
+    breakdown; `/sdd-converge` re-verifies `[X]` tasks — a checkbox is a claim, not evidence.
+  - The sync cadence is monthly; the pin tracks `docs/integrations/index.md`, which replaced the
+    removed `docs/reference/integrations.md` (upstream #5034).
+
+### Upstream reference
+
+- github/spec-kit pinned at commit `7370e59` (2026-10-30, latest release v1.2.5 of 2026-10-28).
 
 ## [1.0.0] — 2026-09-12
 

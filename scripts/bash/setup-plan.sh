@@ -15,8 +15,13 @@ QUICKSTART="$FEATURE_DIR/quickstart.md"
 CONTRACTS="$FEATURE_DIR/contracts"
 [ -f "$FEATURE_DIR/spec.md" ] || { echo "ERROR: spec.md missing — run /sdd-specify" >&2; exit 1; }
 
-copy_if_absent() { # template target
-    if [ ! -f "$2" ]; then cp "$ROOT/templates/$1" "$2"; fi
+copy_if_absent() { # template target — a missing or empty template creates nothing (upstream spec-kit #4962)
+    [ -f "$2" ] && return 0
+    if [ ! -s "$ROOT/templates/$1" ]; then
+        echo "ERROR: templates/$1 is missing or empty; $(basename "$2") was not created. Restore the template and rerun setup-plan.sh." >&2
+        exit 1
+    fi
+    cp "$ROOT/templates/$1" "$2"
 }
 copy_if_absent plan-template.md "$IMPL_PLAN"
 copy_if_absent research-template.md "$RESEARCH"
