@@ -492,6 +492,16 @@ authorises them.
 
 ### Changed
 
+- `docs/quickstart/contract-driven-dev.md` gains "Before generating: agree the contract", adapted
+  from spec-kit's contract-driven guide (#126). It covers one owner per interface, the semantics
+  a schema cannot express (retries, ordering, errors), provider and consumer verification, and
+  provider-first rollout. Each point cites the decision the corpus already took (ADR-0022,
+  ADR-0024, SPEC-API-002) instead of restating it.
+- `docs/sdlc/spec-persistence-model.md` separates delivery from what is kept after it, adapted
+  from spec-kit's evolving-specs guide (#126). No command reconciles `spec.md`, `plan.md` and
+  `tasks.md`: `/sdd-analyze` only reports and `/sdd-converge` only appends, so a person revises
+  the derived files in the same change. Code is evidence, not the contract, and a discovery made
+  during delivery reaches the spec, through review, before code is written against it.
 - `adopt.sh` no longer ships `check-corpus.sh` in the `minimal` layer. The layer excludes
   governance deliberately, and the verifier checks governance: a fresh minimal adoption ran twenty
   checks against files it had declined and reported seven failures for them. The verifier travels
