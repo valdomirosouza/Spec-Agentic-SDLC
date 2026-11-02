@@ -14,6 +14,7 @@ docs/product/
 ├── state-template.yaml  ← Template for per-feature state manifests (copy into FEAT-{id}/)
 └── FEAT-{id}/
     ├── state.yaml       ← Machine-readable feature state (phase, approvals, gates, allowed actions)
+    ├── intake-form.md    ← Phase 0: evidence, cost of doing nothing, go / needs-clarification / kill
     ├── discovery.md      ← Phase 1: Agent-generated Discovery Primer; reviewed by Product + Tech Lead
     ├── nfr.md            ← Phase 2: NFR doc; Security Lead approval mandatory
     ├── decisions.log     ← Chronological log of key decisions made during discovery
@@ -33,6 +34,7 @@ templates for features intended as reusable products live under `docs/gtm/` (see
 
 | Template                              | Purpose                                            |
 | ------------------------------------- | -------------------------------------------------- |
+| `templates/intake-form.md`            | Phase 0 verdict: go / needs-clarification / kill   |
 | `templates/problem-framing-canvas.md` | Evidence the problem before specifying a solution  |
 | `templates/personas.md`               | User persona vs buyer persona                      |
 | `templates/user-story-map.md`         | Story map + AC → test → observability mapping      |

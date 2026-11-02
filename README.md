@@ -13,7 +13,7 @@
 
 | Area                                                                                                                    | Where                                                                                                          |
 | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Harness (Claude Code PR-review gates: code, doc, release, staging, business value)                                      | `harness/*.yml`                                                                                                |
+| Harness (Claude Code PR-review gates: code, doc, release, staging, business value, PR alignment)                        | `harness/*.yml`                                                                                                |
 | Guardrails & AI governance (HITL/HOTL, autonomy levels, OWASP LLM Top 10, EU AI Act, NIST AI RMF, model card)           | `specs/ai/`, `docs/ai-governance/`, `skills/ai/`, `.claude/hooks/`                                             |
 | Spec-Driven Development (spec grammar ADR-0085, registry, templates, lifecycle skill)                                   | `specs/`, `templates/`, `skills/sdlc/`, `docs/governance/spec-registry.md`                                     |
 | Agentic SDLC (15 phases, nine human gates, delivery agents, `/deliver`, `/sdd-*` commands)                              | `docs/sdlc/`, `docs/process/`, `.claude/agents/`, `.claude/skills/`                                            |
@@ -39,6 +39,8 @@
 /sdd-implement      execute tasks phase by phase, scoped runs, hard stops at every HITL trigger
 /sdd-converge       append remaining gaps as tasks; repeat until "Converged"
         ▼  human gates: code review (Phase 7) → testing, DevSecOps, AI safety, PRR, release, post-deploy (Phases 8–14, driven by /deliver)
+
+/sdd-bugfix         a defect: assess (cite the violated spec) → human accepts the diagnosis → fix → test (verified / partial / failed); ADR-0096
 ```
 
 Each command is a Claude Code skill under `.claude/skills/sdd-*/SKILL.md` (rendered for Copilot,
@@ -65,7 +67,7 @@ docs/sre/ docs/runbooks/        SLOs, CUJs, PRR, runbooks, capacity, backup/reco
 docs/ai-governance/             AI safety checklist, autonomy boundaries, EU AI Act, NIST AI RMF, model card
 skills/                         plain-Markdown skills (load ≤ 2 per task — ADR-0060); .claude/skills/ is the /-command layer
 .claude/agents/                 asdd-orchestrator + 15 phase agents + phase-executor
-harness/                        code / doc / release / staging / business-value check specs
+harness/                        code / doc / release / staging / business-value / pr-description check specs
 CLAUDE.md · AGENTS.md           the detailed operating contract for agents (the constitution is its normative core)
 ```
 

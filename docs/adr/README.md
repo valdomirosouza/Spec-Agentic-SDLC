@@ -167,6 +167,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0093](ADR-0093-eu-ai-act-role-and-risk-classification.md)            | EU AI Act role (provider + deployer), high-risk by default with Art. 6(3) derogation, obligations and dates | Accepted   | 2026-09-13 |
 | [ADR-0094](ADR-0094-data-residency-and-sovereignty.md)                    | Residency per data class; a prompt is a transfer; sovereignty distinguished from residency | Accepted   | 2026-09-13 |
 | [ADR-0095](ADR-0095-single-delivery-entrypoint-and-the-branch-exception.md) | One delivery entrypoint; agents may create only a local feature branch, enforced in vcs.sh | Accepted   | 2026-09-13 |
+| [ADR-0096](ADR-0096-bug-fix-path-assess-fix-test.md) | Bug-fix path: assess → fix → test, diagnosis accepted by a human before code changes, verdict from the re-run reproduction | Proposed   | 2026-10-31 |
 
 ### AI Agents Module _(opt-in)_
 

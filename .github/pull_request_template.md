@@ -30,6 +30,16 @@ _Confirm the mandatory 10-step SDD cycle was followed before code was written:_
 
 Closes #<!-- issue number -->
 
+## AI assistance
+
+<!-- Disclose any AI involvement (CONTRIBUTING.md §5 "AI assistance", Constitution VII). Disclosure
+     is provenance, not a lower bar: the same evidence and review apply. -->
+
+- [ ] No AI tool was used for this change
+- **Tool / agent:** <!-- e.g. Claude Code, GitHub Copilot, Cursor; or a delivery subagent from .claude/agents/ -->
+- **Model and mode:** <!-- the model id and the mode or settings that shaped the output (plan mode, auto-accept, autonomy tier) -->
+- **Extent:** <!-- what the agent drafted (code, tests, docs, PR text) and what a human wrote, rewrote or verified -->
+
 ## Referenced Spec
 
 <!-- Path to the spec governing this change, e.g. specs/api/rest-api-design.md -->

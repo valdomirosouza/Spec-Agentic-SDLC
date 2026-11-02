@@ -1,0 +1,91 @@
+# generated from .claude/skills/sdd-bugfix/SKILL.md by scripts/python/render_commands.py — edit the source, then re-render (ADR-0091)
+description = "Work one defect through three separated stages (ADR-0096) — assess (diagnose and cite the violated spec, no code edits), fix (the only stage that edits code, within the accepted diagnosis), test (re-run the original reproduction and record verified / partial / failed, no code edits) — each writing one record under docs/bugs/BUG-<issue>/. Trigger on \"bug\", \"fix this bug\", \"diagnose\", \"regression\". Usage — /sdd-bugfix assess <issue | report text> · /sdd-bugfix fix BUG-<issue> · /sdd-bugfix test BUG-<issue>."
+
+prompt = """
+<!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
+
+# /sdd-bugfix — diagnose, repair, verify, in that order
+
+Adapted from the `bug` extension of github/spec-kit (assess → fix → test). Decided in ADR-0096.
+A defect follows `spec_for_defect` in `docs/process/gates/phase-gates.yaml`. Its risk class
+(`small_bug_fix` or higher) and tier still decide which ADR-0058 phases apply. This command
+produces the defect's records. It does not replace code review (Phase 7) and does not create
+branches, commits or PRs.
+
+## User input
+
+```text
+{{args}}
+```
+
+The first word is the stage: `assess`, `fix` or `test`. Run them one at a time, and let a person
+read each record before the next stage starts. `BUG-<issue>` is the GitHub issue number of the
+bug report (`.github/ISSUE_TEMPLATE/bug_report.md`); create the issue first if none exists
+(CLAUDE.md §2, Pre-0d).
+
+## Stage 1 — `assess` (no code edits)
+
+1. Read the bug report: symptom, reproduction steps, expected behaviour, environment. A report
+   that describes a missing capability rather than broken behaviour is not a bug. Say so and stop;
+   it belongs in Phase 0 intake.
+2. **Reproduce** the bug, or state exactly why it could not be reproduced and what is missing.
+3. **Find the root cause** in the code, citing file:line and the evidence: the failing call, the
+   log, the test. A plausible cause with no evidence is recorded as a hypothesis, not as the
+   cause (Constitution IX).
+4. **Cite the spec** (`spec_for_defect`):
+   - _regression_: the approved or implemented spec, plus the FR/AC, that the behaviour violates;
+   - _unspecified behaviour_: no spec covers it. Emit `[HITL-ESCALATE]` (CLAUDE.md §14.2) and stop.
+     Writing the missing spec section or choosing a `REM-NNN` is a human decision.
+5. **Propose the remediation**: the smallest change that restores the specified behaviour, the
+   files it touches, and the regression test that will fail before the fix and pass after it.
+6. **Escalate instead of proposing** when the cause or the remediation touches a CLAUDE.md §14.1
+   trigger: the adopting repository's `src/guardrails/` or HITL gateway, a feature flag, more than
+   three ADRs, or a conflict with an ADR or an approved spec.
+7. Write `docs/bugs/BUG-<issue>/assessment.md`: report summary · reproduction (steps, observed vs
+   expected, or why it could not be reproduced) · root cause with evidence · cited spec and FR/AC ·
+   remediation and scope (files) · regression test · risks · a **Decision** table
+   (`| Decided by | Date | accepted / rejected | Note |`) left for a person to fill. Prepend the
+   Agent-Disclosure Header (`docs/product/README.md`).
+
+## Stage 2 — `fix` (the only stage that edits code)
+
+1. **Preconditions — stop if any fails:**
+   - `assessment.md` exists, and its Decision table reads `accepted`;
+   - the cited spec's frontmatter `status` is `approved` or `implemented` (Constitution I), or the
+     assessment names the `REM-NNN` a person chose;
+   - the current branch is `fix/<SPEC-ID>-<desc>` (CLAUDE.md §6). Creating it is a human step.
+2. **Write the regression test first** and watch it fail against the unfixed code. Reference
+   the requirement (`requirement("<SPEC-ID>/FR-NN")`, Constitution II).
+3. **Apply the assessed remediation**, and nothing else. When the work needs a change outside the
+   assessed files, or new evidence contradicts the diagnosis, record a **deviation** in `fix.md`
+   (what, why, evidence) and stop for a decision. Do not widen the repair
+   (`skills/engineering/change-discipline.md`).
+4. Run the regression test and the suites covering the touched files. All CLAUDE.md §3 rules and
+   §14.1 hard stops apply. Never weaken, skip or delete a test.
+5. Write `docs/bugs/BUG-<issue>/fix.md`: files changed · the regression test (path, and its
+   failing-then-passing evidence) · deviations, or "none" · `SPEC_DEVIATION` markers, if any.
+
+## Stage 3 — `test` (no code edits)
+
+1. **Re-run the original reproduction** from `assessment.md`, then the regression test and the
+   suites for the touched files. Use the repository's own gates; do not invent commands.
+2. **Verdict:**
+
+   | Verdict    | When                                                   | Next                                                      |
+   | ---------- | ------------------------------------------------------ | --------------------------------------------------------- |
+   | `verified` | The reproduction no longer fails, and every run passes | Open the PR for Phase 7 review, linking the three records |
+   | `partial`  | Some verification could not run (environment, data)    | Name what is missing; supply it and run `test` again      |
+   | `failed`   | The reproduction still fails, or a run fails           | Back to `assess` or `fix`, with the evidence              |
+
+   A passing suite whose original reproduction was never exercised is `partial`, not `verified`.
+
+3. Write `docs/bugs/BUG-<issue>/test.md`: what was run, with the exact commands · results, quoting
+   failures verbatim · the verdict and its reason. Never edit code in this stage to turn a failure
+   into a pass (Constitution II).
+
+## Done when
+
+- [ ] `assessment.md` cites an approved spec (or the escalation is recorded) and has a human decision
+- [ ] `fix.md` lists the regression test and every deviation; no code changed outside the assessed scope
+- [ ] `test.md` records the re-run reproduction and a verdict; the PR links all three for Phase 7
+"""

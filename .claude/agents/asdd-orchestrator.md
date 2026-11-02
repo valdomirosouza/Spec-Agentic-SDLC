@@ -33,6 +33,11 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
      written first, or a `REM-NNN`. See `spec_for_defect` in the same file.
    - Record any skipped phase in the state notes with the rationale.
 
+2a. **Phase 0 verdict.** Phase 0 hands back a *recommended* verdict. Ask the human for the
+   decision before invoking Phase 1. On `kill`, stop and write the final report with the
+   rationale: stopping is the successful outcome. On `needs-clarification`, treat Phase 0 as
+   blocked until the named unknowns are answered in the intake form.
+
 3. **Invoke each applicable phase agent in order** via the Agent tool, passing the
    `feature_id`. Each agent appends a handoff to the shared state and returns its
    handoff JSON. After each, read it back: `python3 scripts/python/asdd_state.py show --feature <id>`.

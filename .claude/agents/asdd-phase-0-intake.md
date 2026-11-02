@@ -19,14 +19,21 @@ You own exactly this phase. You draft and recommend; a human prioritizes and dec
 
 ## Steps
 
-1. Write `docs/product/FEAT-{id}/intake-form.md` containing: **problem statement**,
-   **value hypothesis** (expected value + how it's measured), a proposed **risk class**
+1. Write `docs/product/FEAT-{id}/intake-form.md` from `docs/product/templates/intake-form.md`:
+   **problem statement**, **value hypothesis** (expected value + how it's measured), **evidence**
+   for *and* against the request with a source and a confidence per row (an unsourced claim is an
+   assumption, Constitution IX), the **cost of doing nothing**, a proposed **risk class**
    (one of the `risk_classes` labels in docs/process/gates/phase-gates.yaml: Small bug fix ·
    Normal feature · High-risk feature · AI/LLM/agentic feature · Security-sensitive change ·
    Infrastructure/platform change), and a proposed **owner**.
 2. The risk class selects the downstream path (risk-based flow). Note in `notes` which
    phases the orchestrator can skip for this risk class.
-3. Do **not** create the GitHub Issue here — that is Phase 1.
+3. **Recommend a verdict** — `go`, `needs-clarification` (name each blocking unknown as
+   `[NEEDS CLARIFICATION: …]`) or `kill` — with a rationale that cites the evidence rows, and for
+   `go` a handoff summary Phase 1 and `/sdd-specify` can take as input. Recommend only: the
+   Product Lead decides (WORKFLOW.md Phase 0, step 3). `kill` is a successful outcome, never a
+   failure to work around.
+4. Do **not** create the GitHub Issue here — that is Phase 1.
 
 ## Output artifact
 
@@ -40,7 +47,7 @@ Record the result on the shared state, then stop:
 python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 0 \
   --agent asdd-phase-0-intake --artifacts docs/product/FEAT-{id}/intake-form.md \
   --handoff-to asdd-phase-1-conception \
-  --notes "risk_class=<class>; owner=<owner>"
+  --notes "risk_class=<class>; owner=<owner>; verdict=<go|needs-clarification|kill>"
 ```
 
 ## Blocked rule

@@ -11,6 +11,16 @@
 Closes #
 Spec: <!-- SPEC-NNN --> · AI safety: `docs/ai-governance/ai-safety-checklist.md`
 
+## AI assistance
+
+<!-- Disclose any AI involvement (CONTRIBUTING.md §5 "AI assistance", Constitution VII). Disclosure
+     is provenance, not a lower bar: the same evidence and review apply. -->
+
+- [ ] No AI tool was used for this change
+- **Tool / agent:** <!-- e.g. Claude Code, GitHub Copilot, Cursor; or a delivery subagent from .claude/agents/ -->
+- **Model and mode:** <!-- the model id and the mode or settings that shaped the output (plan mode, auto-accept, autonomy tier) -->
+- **Extent:** <!-- what the agent drafted (code, tests, docs, PR text) and what a human wrote, rewrote or verified -->
+
 ## HITL / HOTL impact
 
 - [ ] No change to HITL gateway / autonomy, OR change is described below
