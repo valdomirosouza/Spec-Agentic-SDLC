@@ -24,6 +24,45 @@ infrastructure/message-broker/schema-registry/avro/
 
 ---
 
+## Before generating: agree the contract
+
+Generation makes both sides match a contract file. It does not make the file a good agreement.
+The contract is what lets a provider and a consumer be built without depending on each other's
+internals, so it is agreed before either side implements assumptions about the other. Adapted
+from spec-kit's _Contract-Driven Development_ guide.
+
+**1. One owner per interface.** The side that exposes the interface owns its authoritative file;
+consumers take part in agreeing a change but do not edit their own copy. In this monorepo, every
+consumer generates from the files above; there is never a second editable definition. A consumer
+in another repository pins an exact version or commit of the file and records its source.
+
+**2. The schema is not the whole agreement.** A request shape does not say whether retrying it
+creates a second order. Write down, in the spec or the contract's descriptions:
+
+- inputs, outputs and validation rules, including every error response
+  (`docs/api/error-model.md`);
+- side effects, and whether a retry repeats them: idempotency keys for POST endpoints follow
+  SPEC-API-002;
+- for events, ordering, delivery guarantees and what a consumer does with a duplicate;
+- the version, and how it is deprecated (ADR-0024).
+
+Database structures and implementation choices stay out unless they are genuinely part of the
+interface.
+
+**3. Verify both sides.** A consumer test against a mock shows the consumer meets its own
+expectation, not that the provider does. Plan both in `/sdd-tasks`, contract tests first,
+including the negative cases. ADR-0022 chose the approach: consumer-driven Pact files in
+`tests/contract/pacts/` and provider verification in CI, plus an integration test of the real path.
+
+**4. Change it deliberately.** A problem found during implementation is fixed at the
+authoritative file and reviewed there, never by editing a generated file or a pinned copy. A
+compatible change ships provider first: deploy the provider supporting old and new consumers,
+then enable the consumers' use of it; roll back in the reverse order. A breaking change gets a
+new major version and an overlap period (ADR-0024: `Deprecation` and `Sunset` headers for REST,
+a dual-publish period for Kafka topics) before the old behaviour is removed.
+
+---
+
 ## 1. REST — OpenAPI
 
 ### View the spec interactively
