@@ -84,5 +84,77 @@ class SddGate(unittest.TestCase):
         self.assertTrue(any("high-risk-action-guard.py" in h["command"] for m in pre for h in m["hooks"]))
 
 
+
+def bug(root, decision_rows, spec_line="**Spec:** specs/api/SPEC-ZZ-002-x.md", spec_status="approved"):
+    """docs/bugs/BUG-7/assessment.md in `root`, citing a spec of `spec_status` (ADR-0096)."""
+    os.makedirs(os.path.join(root, "specs", "api"), exist_ok=True)
+    open(os.path.join(root, "specs", "api", "SPEC-ZZ-002-x.md"), "w").write(
+        f"---\nid: SPEC-ZZ-002\nstatus: {spec_status} # draft | approved\n---\n# x\n")
+    d = os.path.join(root, "docs", "bugs", "BUG-7")
+    os.makedirs(d, exist_ok=True)
+    rows = "".join(f"| {r} |\n" for r in decision_rows)
+    open(os.path.join(d, "assessment.md"), "w").write(
+        f"# BUG-7 assessment\n\n{spec_line}\n\n## Root cause\n\nx\n\n## Decision\n\n"
+        f"| Decided by | Date | accepted / rejected | Note |\n| --- | --- | --- | --- |\n{rows}")
+
+
+ACCEPTED = "Tech Lead | 2026-11-07 | accepted | ok"
+
+
+class BugfixFixGate(unittest.TestCase):
+    """ADR-0096: `/sdd-bugfix fix` starts only from an accepted diagnosis citing an approved spec."""
+
+    def gate(self, prompt="/sdd-bugfix fix BUG-7", **kw):
+        t = scratch(with_feature=False)
+        self.addCleanup(shutil.rmtree, t)
+        if kw.pop("assessment", True):
+            bug(t, **kw)
+        return run(t, prompt)
+
+    def test_accepted_diagnosis_and_approved_spec_pass(self):
+        rc, out, err = self.gate(decision_rows=[ACCEPTED])
+        self.assertEqual(rc, 0, err); self.assertIn("SPEC-ZZ-002-x.md is approved", out)
+
+    def test_missing_assessment_blocks(self):
+        rc, out, err = self.gate(assessment=False)
+        self.assertEqual(rc, 2); self.assertIn("assessment.md does not exist", err)
+
+    def test_unfilled_decision_blocks(self):
+        rc, out, err = self.gate(decision_rows=["{…} | {…} | accepted / rejected | {…}"])
+        self.assertEqual(rc, 2); self.assertIn("no decision recorded", err)
+
+    def test_rejected_diagnosis_blocks(self):
+        rc, out, err = self.gate(decision_rows=[ACCEPTED, "Tech Lead | 2026-11-08 | rejected | wrong cause"])
+        self.assertEqual(rc, 2); self.assertIn("'rejected'", err)
+
+    def test_the_last_decision_wins(self):
+        rc, out, err = self.gate(decision_rows=["Tech Lead | 2026-11-06 | rejected | x", ACCEPTED])
+        self.assertEqual(rc, 0, err)
+
+    def test_unapproved_spec_blocks(self):
+        rc, out, err = self.gate(decision_rows=[ACCEPTED], spec_status="draft")
+        self.assertEqual(rc, 2); self.assertIn("status 'draft'", err); self.assertIn("Constitution I", err)
+
+    def test_missing_spec_line_blocks(self):
+        rc, out, err = self.gate(decision_rows=[ACCEPTED], spec_line="")
+        self.assertEqual(rc, 2); self.assertIn("no `**Spec:**` line", err)
+
+    def test_a_spec_outside_specs_is_not_accepted(self):
+        rc, out, err = self.gate(decision_rows=[ACCEPTED], spec_line="**Spec:** ../../etc/passwd")
+        self.assertEqual(rc, 2)
+
+    def test_a_rem_id_stands_in_for_the_spec(self):
+        rc, out, err = self.gate(decision_rows=[ACCEPTED], spec_line="**Spec:** REM-012")
+        self.assertEqual(rc, 0, err); self.assertIn("REM-012", out)
+
+    def test_assess_and_test_stages_are_not_gated(self):
+        for p in ("/sdd-bugfix assess #7", "/sdd-bugfix test BUG-7"):
+            rc, out, err = self.gate(prompt=p, assessment=False)
+            self.assertEqual((rc, out, err), (0, "", ""), p)
+
+    def test_fix_without_a_bug_id_fails_open_with_context(self):
+        rc, out, err = self.gate(prompt="/sdd-bugfix fix", assessment=False)
+        self.assertEqual(rc, 0); self.assertIn("no BUG-<issue> given", out)
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
