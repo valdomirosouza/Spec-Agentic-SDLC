@@ -19,6 +19,13 @@ authorises them.
 
 ### Added
 
+- The `sdd-gate` hook blocks `/sdd-bugfix fix BUG-<issue>` (exit 2) until three things hold:
+  `docs/bugs/BUG-<issue>/assessment.md` exists, the last filled row of its Decision table reads
+  `accepted`, and its new `**Spec:**` line names a spec under `specs/` that is `approved` or
+  `implemented`, or a `REM-NNN` (#132). These were the ADR-0096 preconditions that only the
+  command's procedure enforced. The `assess` and `test` stages are not gated. The branch check
+  stays procedural, because the hook never runs git. Eleven tests in `tests/hooks/test_sdd_gate.py`
+  (11 → 22); nine fail on the previous hook.
 - ADR-0096 (Proposed) and `/sdd-bugfix`: a defect is worked in three stages, each writing a record
   under `docs/bugs/BUG-<issue>/`. `assess` reproduces the bug, finds the root cause with evidence
   and cites the violated spec per `spec_for_defect`, without editing code; unspecified behaviour

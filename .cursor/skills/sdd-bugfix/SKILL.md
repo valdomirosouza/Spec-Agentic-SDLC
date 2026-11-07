@@ -48,12 +48,16 @@ bug report (`.github/ISSUE_TEMPLATE/bug_report.md`); create the issue first if n
    expected, or why it could not be reproduced) · root cause with evidence · cited spec and FR/AC ·
    remediation and scope (files) · regression test · risks · a **Decision** table
    (`| Decided by | Date | accepted / rejected | Note |`) left for a person to fill. Prepend the
-   Agent-Disclosure Header (`docs/product/README.md`).
+   Agent-Disclosure Header (`docs/product/README.md`). Put the cited spec on a line of its own,
+   `**Spec:** specs/<path>.md`, or `**Spec:** REM-NNN` once a person has chosen one; the sdd-gate
+   hook reads that line.
 
 ## Stage 2 — `fix` (the only stage that edits code)
 
-1. **Preconditions — stop if any fails:**
-   - `assessment.md` exists, and its Decision table reads `accepted`;
+1. **Preconditions — stop if any fails.** The `sdd-gate` hook (`.claude/hooks/sdd-gate.py`) blocks
+   a prompt that starts with `/sdd-bugfix fix BUG-<issue>` when the first two fail; the branch is
+   checked here, because the hook never runs git:
+   - `assessment.md` exists, and the last filled row of its Decision table reads `accepted`;
    - the cited spec's frontmatter `status` is `approved` or `implemented` (Constitution I), or the
      assessment names the `REM-NNN` a person chose;
    - the current branch is `fix/<SPEC-ID>-<desc>` (CLAUDE.md §6). Creating it is a human step.
