@@ -346,6 +346,8 @@ authorises them.
 
 ### Fixed
 
+- **`AGENTS.md` counts 11 `/sdd-*` commands** (#134). The per-tool table said (10) for all five
+  tools; `/sdd-bugfix` (ADR-0096) made it 11, in `.claude/skills/` and in every rendered tree.
 - `corpus_metrics.py` counts the files git tracks, not every file on disk. Untracked files had
   made a local report differ from CI, 575 markdown files against 545, and every report had to
   be regenerated in a clean worktree (#130). Outside a git checkout it still walks the tree, and
