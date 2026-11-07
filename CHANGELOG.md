@@ -339,6 +339,12 @@ authorises them.
 
 ### Fixed
 
+- `corpus_metrics.py` counts the files git tracks, not every file on disk. Untracked files had
+  made a local report differ from CI, 575 markdown files against 545, and every report had to
+  be regenerated in a clean worktree (#130). Outside a git checkout it still walks the tree, and
+  the report names which method it used. `--report` now counts the report it is writing, so one
+  run, including the scheduled `corpus-measure.yml` run, produces a report that `--check`
+  accepts once it is committed.
 - The ADR count in `README.md`, `CLAUDE.md` §0.1 and `docs/sdlc/spec-kit-comparison.md` reads 96
   (ADR-0001 … ADR-0096) instead of 89 or 90, and no longer calls every ADR binding: one is
   Proposed, one Deprecated and one Superseded, so the Accepted ones bind (#128).
