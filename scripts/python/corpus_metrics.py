@@ -109,27 +109,63 @@ def ci_metrics():
     }
 
 
-def corpus_metrics():
-    md_files = md_lines = 0
+_SKIP_DIRS = (".git", ".serena", ".sdd", "node_modules", ".agent")
+
+
+def tracked_files():
+    """Paths git tracks, relative to ROOT, or None outside a git checkout.
+
+    A walk of the working tree counted untracked files too: a local checkout carrying generated
+    copies published different numbers from CI, and a report had to be regenerated in a clean
+    worktree to pass --check (#120, #130).
+    """
+    try:
+        r = subprocess.run(["git", "ls-files", "-z"], capture_output=True, cwd=ROOT, timeout=90)
+    except Exception:
+        return None
+    if r.returncode != 0:
+        return None
+    return [x for x in r.stdout.decode("utf-8", "replace").split("\0") if x]
+
+
+def corpus_files():
+    """(relative paths, method) — git-tracked files when possible, else a walk of the tree."""
+    tracked = tracked_files()
+    if tracked is not None:
+        paths = [x for x in tracked if not set(x.split("/")[:-1]) & set(_SKIP_DIRS)
+                 and os.path.isfile(os.path.join(ROOT, x))]
+        return paths, "files git tracks (git ls-files), excluding .serena, .sdd, .agent and node_modules"
+    paths = []
     for d, dirs, files in os.walk(ROOT):
-        dirs[:] = [x for x in dirs if x not in (".git", ".serena", ".sdd", "node_modules", ".agent")]
-        for f in files:
-            if f.endswith(".md"):
-                md_files += 1
-                try:
-                    md_lines += sum(1 for _ in open(os.path.join(d, f), encoding="utf-8", errors="replace"))
-                except OSError:
-                    pass
-    def count_lines(patterns):
-        n = 0
-        for pat in patterns:
-            base = os.path.join(ROOT, pat)
-            if os.path.isdir(base):
-                for d, _, files in os.walk(base):
-                    for f in files:
-                        if f.endswith((".sh", ".py")):
-                            n += sum(1 for _ in open(os.path.join(d, f), encoding="utf-8", errors="replace"))
-        return n
+        dirs[:] = [x for x in dirs if x not in _SKIP_DIRS]
+        paths += [os.path.relpath(os.path.join(d, f), ROOT) for f in files]
+    return paths, "file walk excluding .git, .serena, .sdd, .agent and node_modules (not a git checkout)"
+
+
+def _line_count(rel, pending):
+    if rel in pending:
+        return len(pending[rel].splitlines())
+    try:
+        with open(os.path.join(ROOT, rel), encoding="utf-8", errors="replace") as fh:
+            return sum(1 for _ in fh)
+    except OSError:
+        return 0
+
+
+def corpus_metrics(pending=None):
+    """Measure the corpus. `pending` maps a relative path to text about to be written there, so
+    a report counts itself: it is not tracked yet when it is generated, and a report that leaves
+    itself out is stale by one file the moment it is committed."""
+    pending = pending or {}
+    paths, method = corpus_files()
+    paths = sorted(set(paths) | set(pending))
+    md = [x for x in paths if x.endswith(".md")]
+    md_files = len(md)
+    md_lines = sum(_line_count(x, pending) for x in md)
+
+    def count_lines(prefixes):
+        return sum(_line_count(x, pending) for x in paths
+                   if x.endswith((".sh", ".py")) and any(x.startswith(p + "/") for p in prefixes))
     exec_lines = count_lines(["scripts", ".claude/hooks"])
     test_lines = count_lines(["tests"])
     # Count the DISTINCT C-labels that run, not the lines that happen to start with `say "C`.
@@ -147,9 +183,9 @@ def corpus_metrics():
         "verification_lines": exec_lines + test_lines,
         "prose_to_verification_ratio": round(md_lines / (exec_lines + test_lines), 1) if (exec_lines + test_lines) else None,
         "check_families": checks,
-        "adrs": len([f for f in os.listdir(os.path.join(ROOT, "docs", "adr"))
-                     if f.startswith("ADR-") and f[4:8].isdigit()]),
-        "method": "file walk excluding .git, .serena, .sdd, .agent and node_modules",
+        "adrs": len([x for x in paths if x.startswith("docs/adr/ADR-")
+                     and x[len("docs/adr/ADR-"):][:4].isdigit() and "/" not in x[len("docs/adr/"):]]),
+        "method": method,
     }
 
 
@@ -550,8 +586,19 @@ def main():
     if a.report:
         out = os.path.join(REPORTS_DIR, f"corpus-metrics-{m['generated_at'][:10]}.md")
         rel = os.path.relpath(out, ROOT)
+        text = render(m)
+        if not rel.startswith(".."):
+            # The report counts itself, so one run produces a report --check accepts once it is
+            # committed. Its line count does not depend on the numbers it prints, so a second
+            # pass reaches the fixed point; the loop only guards that assumption.
+            for _ in range(3):
+                m["corpus"] = corpus_metrics({rel: text})
+                again = render(m)
+                if again == text:
+                    break
+                text = again
         with open(out, "w", encoding="utf-8") as fh:
-            fh.write(render(m))
+            fh.write(text)
         print(f"wrote {rel}")
     g, k, c = m["git"], m["corpus"], m["ci"]
     if not a.quiet:

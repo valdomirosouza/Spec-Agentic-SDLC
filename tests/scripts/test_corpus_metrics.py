@@ -184,5 +184,56 @@ class Measurement(unittest.TestCase):
         self.assertTrue(reports, "the corpus should carry at least one measurement")
 
 
+
+class CountsTrackedFiles(unittest.TestCase):
+    """#130. A walk of the working tree counted untracked files, so a local checkout published
+    different numbers from CI and a report had to be regenerated in a clean worktree."""
+
+    def setUp(self):
+        import tempfile
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.root = self._tmp.name
+        self.write("scripts/bash/check-corpus.sh", 'say "C1 one"\n')
+        self.write("docs/adr/ADR-0001-x.md", "# ADR\n")
+        self.write("docs/a.md", "one\ntwo\n")
+        git = ["git", "-C", self.root, "-c", "user.name=t", "-c", "user.email=t@example.invalid"]
+        subprocess.run(git[:3] + ["init", "-q"], check=True)
+        subprocess.run(git[:3] + ["add", "-A"], check=True)
+        subprocess.run(git + ["commit", "-qm", "init"], check=True)
+        saved = cm.ROOT
+        cm.ROOT = self.root
+        self.addCleanup(setattr, cm, "ROOT", saved)
+
+    def write(self, rel, text):
+        path = os.path.join(self.root, rel)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        open(path, "w", encoding="utf-8").write(text)
+
+    def test_an_untracked_file_is_not_counted(self):
+        before = cm.corpus_metrics()
+        self.write("docs/untracked.md", "x\n" * 50)
+        self.write("docs/adr/ADR-0002-draft.md", "# draft\n")
+        self.write("scripts/python/scratch.py", "print(1)\n")
+        after = cm.corpus_metrics()
+        for field in ("markdown_files", "markdown_lines", "executable_lines", "adrs"):
+            self.assertEqual(after[field], before[field], field)
+        self.assertEqual(after["markdown_files"], 2)
+        self.assertIn("git ls-files", after["method"])
+
+    def test_the_report_being_written_counts_itself(self):
+        rel = "docs/sre/corpus-metrics-2026-01-01.md"
+        k = cm.corpus_metrics({rel: "a\nb\nc\n"})
+        self.assertEqual(k["markdown_files"], 3)
+        self.assertEqual(k["markdown_lines"], 1 + 2 + 3)
+
+    def test_outside_a_git_checkout_it_falls_back_to_a_walk(self):
+        import shutil
+        shutil.rmtree(os.path.join(self.root, ".git"))
+        self.write("docs/untracked.md", "x\n")
+        k = cm.corpus_metrics()
+        self.assertEqual(k["markdown_files"], 3)
+        self.assertIn("not a git checkout", k["method"])
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
