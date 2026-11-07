@@ -339,6 +339,9 @@ authorises them.
 
 ### Fixed
 
+- The ADR count in `README.md`, `CLAUDE.md` §0.1 and `docs/sdlc/spec-kit-comparison.md` reads 96
+  (ADR-0001 … ADR-0096) instead of 89 or 90, and no longer calls every ADR binding: one is
+  Proposed, one Deprecated and one Superseded, so the Accepted ones bind (#128).
 - `test_corpus_metrics.py` read and wrote the real `docs/sre/`, so three of its tests passed only
   within seven days of the last published report and failed on `main` once the weekly report
   stopped landing, and every local run left `corpus-metrics-<today>.md` in the working tree.
