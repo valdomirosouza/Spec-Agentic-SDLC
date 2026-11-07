@@ -59,6 +59,7 @@ outside the model's reach.
 | Execute a real-world action without approval    | HITL gateway; autonomy defaults to `NONE`                       |
 | Push, merge, release or deploy from a subagent  | `PreToolUse` high-risk-action guard — denies, does not ask      |
 | Start code work on an unapproved specification  | `UserPromptSubmit` sdd-gate — blocks the prompt (ADR-0092)      |
+| Fix a bug before a person accepts its diagnosis | `UserPromptSubmit` sdd-gate — blocks `/sdd-bugfix fix` (ADR-0096) |
 | Call a tool that is not registered              | Zero-trust tool registry (ADR-0048)                             |
 | Weaken a guardrail or a protected constitutional article | Constitution; check-corpus invariants; dual approval    |
 | Reduce the abuse-case count                     | Test-integrity ratchet (ADR-0050, ADR-0065)                     |

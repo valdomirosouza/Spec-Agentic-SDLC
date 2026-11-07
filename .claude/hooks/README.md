@@ -60,6 +60,20 @@ A `UserPromptSubmit` hook that runs only when the prompt **starts** with `/sdd-p
 It never edits files and never runs git. It is the spec-kit `before_<command>` hook shape adopted
 by ADR-0092; the `after_` shape (a `Stop` hook that forces the agent to continue) was refused.
 
+**`/sdd-bugfix fix BUG-<issue>`** (ADR-0096, #132), the only bug-fix stage that edits code, is gated
+on `docs/bugs/BUG-<issue>/assessment.md`:
+
+| Situation                                                                         | Result                                   |
+| --------------------------------------------------------------------------------- | ---------------------------------------- |
+| assessment missing                                                                | **exit 2** — run `/sdd-bugfix assess` first |
+| last filled Decision row is not `accepted` (unfilled, `rejected`)                 | **exit 2** — a person accepts the diagnosis first |
+| `**Spec:**` line missing, outside `specs/`, or naming a spec not `approved`/`implemented` | **exit 2** — Constitution I              |
+| accepted, and the spec is approved/implemented or the line names a `REM-NNN`      | exit 0 — a one-line confirmation as context |
+| `/sdd-bugfix fix` with no `BUG-<issue>`; `assess` and `test` stages                | exit 0 — fails open / silent             |
+
+The hook checks that the Decision row says `accepted`, not who wrote it; the PR that carries the
+assessment is where the decider is reviewed.
+
 **Test it**
 
 ```bash

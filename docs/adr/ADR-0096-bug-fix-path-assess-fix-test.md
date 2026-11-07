@@ -73,10 +73,12 @@ one record under `docs/bugs/BUG-{issue}/`:
 
 - Three records for a one-line fix. The records are short by design, and a trivial bug pays a
   few minutes for the diagnosis review, which is the step this ADR adds.
-- The preconditions (an approved cited spec, an accepted diagnosis) are enforced by the command's
-  own procedure, not by a hook. `sdd-gate.py` gates only feature commands, whose spec it resolves
-  from the feature directory. A bug's spec is named inside its assessment. A deterministic
-  gate is a follow-up if the procedure turns out to be skipped in practice.
+- Two preconditions, an accepted diagnosis and an approved cited spec (or a `REM-NNN`), are
+  enforced by `sdd-gate.py` when a prompt starts with `/sdd-bugfix fix BUG-<issue>` (#132). It
+  reads the assessment's `**Spec:**` line and the last filled row of its Decision table. It checks
+  that a row says `accepted`, not who wrote it: the identity of the decider is left to the PR
+  review that carries the assessment. The `fix/<SPEC-ID>-<desc>` branch stays a procedural check,
+  because the hook never runs git.
 - `docs/bugs/` is a new directory that an adopting repository has to keep.
 
 ## Alternatives Considered

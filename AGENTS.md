@@ -26,7 +26,8 @@ The rendered copies are generated from `.claude/skills/sdd-*/SKILL.md` by
 `scripts/bash/render-commands.sh`; never edit a copy (`check-corpus.sh` C9 rejects drift).
 Agents without the two hooks must apply §5 themselves: the PreToolUse guard denies
 push/merge/release/deploy for subagents and asks in the main session, and the sdd-gate blocks
-`/sdd-plan`, `/sdd-tasks`, `/sdd-implement` and `/sdd-taskstoissues` on an unapproved spec — other
+`/sdd-plan`, `/sdd-tasks`, `/sdd-implement` and `/sdd-taskstoissues` on an unapproved spec, and
+`/sdd-bugfix fix` without an accepted diagnosis citing an approved spec (ADR-0096) — other
 tools have no equivalent enforcement here.
 
 ## 2. Repository orientation
