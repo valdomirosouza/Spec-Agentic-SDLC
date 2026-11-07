@@ -18,7 +18,7 @@ measured*, and one data point is what separates the two.
 | Commits on the default branch | 127 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 10 (span 57 days) | — |
 | Commits per active day | 12.7 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-11-07T15:57:52 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-11-07T18:40:01 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -29,10 +29,10 @@ against.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Completed CI runs | 94 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
+| Completed CI runs | 98 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
 | Failed runs | 20 | — |
-| Change failure rate | 21.3% | failed ÷ completed |
-| Median run duration | 33 s | — |
+| Change failure rate | 20.4% | failed ÷ completed |
+| Median run duration | 35 s | — |
 | Recoveries observed | 20, median 2789 s | gap from a failed run to the next success |
 
 ## 3. Corpus shape
@@ -40,7 +40,7 @@ against.
 | Metric | Value |
 | --- | --- |
 | Markdown files | 546 |
-| Markdown lines | 62441 |
+| Markdown lines | 62443 |
 | Executable lines (scripts + hooks) | 6055 |
 | Test lines | 2960 |
 | Verification lines (scripts + hooks + tests) | 9015 |
@@ -75,9 +75,9 @@ two reports is the signal to stop writing and start checking.
 | Metric | Value | Method |
 | --- | --- | --- |
 | Commits on the default branch | 127 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 1336.7 h | first commit to last |
+| Elapsed wall-clock | 1339.4 h | first commit to last |
 | Commits per elapsed hour | 0.1 | — |
-| Cumulative diff | 500 files changed, 22613 insertions(+), 1586 deletions(-) | `git diff --shortstat` from the first commit |
+| Cumulative diff | 500 files changed, 22615 insertions(+), 1586 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of
