@@ -7,6 +7,11 @@ Claude Code is canonical. Layouts follow github/spec-kit v1.0.6 integrations:
   codex    .agents/skills/<name>/SKILL.md      ($ARGUMENTS kept)
   gemini   .gemini/commands/<name>.toml        (description = "…", prompt = \"\"\"…\"\"\", $ARGUMENTS → {{args}})
 
+A source with `disable-model-invocation: true` (the sdd-gate commands, #138) keeps the key in the
+Copilot and Cursor copies, which read it from the frontmatter. For Codex the renderer also writes
+.agents/skills/<name>/agents/openai.yaml with `policy.allow_implicit_invocation: false`, its
+equivalent. Gemini TOML commands run only when a person calls them.
+
   --render [--out DIR]   write the files (default: repository root)
   --check                render to a temp dir and fail if the committed copies differ
 """
@@ -22,6 +27,7 @@ TARGETS = {
 }
 NOTE_MD = "<!-- generated from {src} by scripts/python/render_commands.py — edit the source, then re-render (ADR-0091) -->"
 NOTE_TOML = "# generated from {src} by scripts/python/render_commands.py — edit the source, then re-render (ADR-0091)"
+CODEX_POLICY = ".agents/skills/{name}/agents/openai.yaml"
 
 def split_frontmatter(text):
     if not text.startswith("---\n"):
@@ -36,6 +42,12 @@ def split_frontmatter(text):
 def description(fm):
     m = re.search(r"^description:\s*(.*)$", fm, re.M)
     return m.group(1).strip() if m else ""
+
+def model_invocation_disabled(fm):
+    return re.search(r"^disable-model-invocation:\s*true\s*$", fm, re.M) is not None
+
+def render_codex_policy(src_rel):
+    return f"{NOTE_TOML.format(src=src_rel)}\npolicy:\n  allow_implicit_invocation: false\n"
 
 def render_md(src_rel, text):
     fm, body = split_frontmatter(text)
@@ -60,6 +72,12 @@ def render_all(out_root):
             os.makedirs(os.path.dirname(out), exist_ok=True)
             content = render_md(src_rel, text) if kind == "md" else render_toml(src_rel, text)
             open(out, "w", encoding="utf-8").write(content)
+            written.append(rel)
+        if model_invocation_disabled(split_frontmatter(text)[0]):
+            rel = CODEX_POLICY.format(name=name)
+            out = os.path.join(out_root, rel)
+            os.makedirs(os.path.dirname(out), exist_ok=True)
+            open(out, "w", encoding="utf-8").write(render_codex_policy(src_rel))
             written.append(rel)
     return written
 
@@ -100,6 +118,11 @@ def main():
             base = pattern.split("{name}")[0]
             for p in glob.glob(os.path.join(ROOT, base, "sdd-*" + ("" if kind == "md" else ".toml"))):
                 rel = os.path.relpath(p if kind == "toml" else os.path.join(p, "SKILL.md"), ROOT)
+                if rel not in w:
+                    extra.append(rel)
+        if "codex" in installed:
+            for p in glob.glob(os.path.join(ROOT, CODEX_POLICY.format(name="sdd-*"))):
+                rel = os.path.relpath(p, ROOT)
                 if rel not in w:
                     extra.append(rel)
         if stale or extra:

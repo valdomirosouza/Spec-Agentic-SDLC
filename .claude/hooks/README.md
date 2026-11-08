@@ -74,6 +74,15 @@ on `docs/bugs/BUG-<issue>/assessment.md`:
 The hook checks that the Decision row says `accepted`, not who wrote it; the PR that carries the
 assessment is where the decider is reviewed.
 
+**Only a typed command reaches the hook.** `UserPromptSubmit` sees what a person submits, not a
+skill the model invokes itself through the Skill tool, so "implement the tasks" could otherwise
+start `sdd-implement` with no gate. The five gated skills (`sdd-plan`, `sdd-tasks`,
+`sdd-implement`, `sdd-taskstoissues`, `sdd-bugfix`) therefore carry
+`disable-model-invocation: true`: they run only when typed as `/sdd-<name>` (#138). The rendered
+Copilot and Cursor copies keep the key. Codex gets `agents/openai.yaml` with
+`policy.allow_implicit_invocation: false`. `tests/hooks/test_sdd_gate.py` fails when a gated
+command loses the flag.
+
 **Test it**
 
 ```bash

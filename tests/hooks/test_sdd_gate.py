@@ -156,5 +156,21 @@ class BugfixFixGate(unittest.TestCase):
         rc, out, err = self.gate(prompt="/sdd-bugfix fix", assessment=False)
         self.assertEqual(rc, 0); self.assertIn("no BUG-<issue> given", out)
 
+
+class GatedSkillsAreUserInvoked(unittest.TestCase):
+    """The hook sees only what a person types; a skill the model invokes itself skips it (#138)."""
+
+    def gated(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("sdd_gate", HOOK)
+        mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+        return list(mod.COMMANDS) + ["sdd-bugfix"]
+
+    def test_every_gated_command_disables_model_invocation(self):
+        for name in self.gated():
+            text = open(os.path.join(HERE, ".claude", "skills", name, "SKILL.md"), encoding="utf-8").read()
+            fm = text.split("\n---", 1)[0]
+            self.assertIn("\ndisable-model-invocation: true", fm, name)
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)

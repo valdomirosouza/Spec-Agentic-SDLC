@@ -1,6 +1,7 @@
 ---
 name: sdd-tasks
 description: Generate the dependency-ordered tasks.md for the active feature from plan.md and spec.md — Setup, Foundational, one phase per user story in priority order, Polish — with [P] parallel markers, exact file paths, FR/AC references and tests-first ordering. Trigger on "tasks", "break down the plan", "task list". Usage — /sdd-tasks [scope or emphasis].
+disable-model-invocation: true
 ---
 
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->

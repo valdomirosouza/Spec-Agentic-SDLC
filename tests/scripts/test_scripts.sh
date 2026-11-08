@@ -162,7 +162,8 @@ assert_eq "adopt.sh lists no file git ignores (bytecode, scratch)" "$listed" "0"
 echo "render-commands"
 T=$(mktemp -d)
 out=$(python3 "$HERE/scripts/python/render_commands.py" --render --out "$T")
-assert_contains "renders 4 files per sdd-* skill" "$out" "rendered $(( $(ls -d "$HERE"/.claude/skills/sdd-* | wc -l) * 4 )) file(s)"
+assert_contains "renders 4 files per sdd-* skill, plus a Codex policy per user-invoked one" "$out" "rendered $(( $(ls -d "$HERE"/.claude/skills/sdd-* | wc -l) * 4 + $(grep -l '^disable-model-invocation: true' "$HERE"/.claude/skills/sdd-*/SKILL.md | wc -l) )) file(s)"
+assert_eq "a user-invoked skill keeps the key and gets a Codex policy; others get neither" "$(grep -c '^disable-model-invocation: true' "$T/.github/skills/sdd-implement/SKILL.md"):$(grep -c 'allow_implicit_invocation: false' "$T/.agents/skills/sdd-implement/agents/openai.yaml"):$([ -e "$T/.agents/skills/sdd-specify/agents/openai.yaml" ] && echo y || echo n)" "1:1:n"
 assert_eq "gemini toml has description and prompt" "$(grep -c '^description = \|^prompt = """' "$T/.gemini/commands/sdd-specify.toml")" "2"
 assert_eq "gemini toml uses {{args}}, not \$ARGUMENTS" "$(grep -c '{{args}}' "$T/.gemini/commands/sdd-specify.toml"):$(grep -c 'ARGUMENTS' "$T/.gemini/commands/sdd-specify.toml")" "1:0"
 assert_eq "copilot/cursor/codex copies keep frontmatter and \$ARGUMENTS" "$(head -1 "$T/.github/skills/sdd-specify/SKILL.md"):$(grep -c 'ARGUMENTS' "$T/.cursor/skills/sdd-specify/SKILL.md"):$(grep -c '^name: sdd-specify' "$T/.agents/skills/sdd-specify/SKILL.md")" "---:1:1"

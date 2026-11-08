@@ -346,6 +346,12 @@ authorises them.
 
 ### Fixed
 
+- **A model-invoked `/sdd-*` skill no longer skips the sdd-gate** (#138). `sdd-gate.py` is a
+  `UserPromptSubmit` hook, so it saw only typed commands. The model could start `sdd-implement`
+  or `sdd-bugfix fix` from "implement the tasks" without it. The five gated skills now carry
+  `disable-model-invocation: true` (upstream spec-kit #4919, #5118). `render_commands.py` keeps the
+  key in the Copilot and Cursor copies, and writes the Codex equivalent:
+  `agents/openai.yaml` with `policy.allow_implicit_invocation: false`.
 - **`AGENTS.md` counts 11 `/sdd-*` commands** (#134). The per-tool table said (10) for all five
   tools; `/sdd-bugfix` (ADR-0096) made it 11, in `.claude/skills/` and in every rendered tree.
 - `corpus_metrics.py` counts the files git tracks, not every file on disk. Untracked files had

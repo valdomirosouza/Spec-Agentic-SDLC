@@ -1,6 +1,7 @@
 ---
 name: sdd-plan
 description: Produce the implementation plan for an approved feature spec (Phase 5 — Architecture & Technical Design): plan.md with a Constitution Check gate, research.md, data-model.md, contracts/ and quickstart.md, plus the ADR / threat-model / DPIA decisions this repository requires. Trigger on "plan", "technical design", "architecture for the spec". Usage — /sdd-plan <stack, architecture and constraints>.
+disable-model-invocation: true
 ---
 
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
