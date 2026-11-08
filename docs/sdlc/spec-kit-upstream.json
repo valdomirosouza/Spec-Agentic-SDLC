@@ -1,11 +1,11 @@
 {
   "$comment": "Machine-readable pin of the github/spec-kit revision this corpus's /sdd-* primitives were adapted from (ADR-0090, ADR-0091). Procedure: docs/sdlc/spec-kit-sync.md. Diff against upstream: scripts/bash/spec-kit-diff.sh.",
   "repository": "github/spec-kit",
-  "commit": "7370e59",
-  "release": "v1.2.5",
-  "release_date": "2026-10-28",
-  "compared_on": "2026-10-30",
-  "next_review_due": "2026-11-30",
+  "commit": "c438494",
+  "release": "v1.3.2",
+  "release_date": "2026-11-06",
+  "compared_on": "2026-11-08",
+  "next_review_due": "2026-12-08",
   "tracked_paths": [
     "templates/spec-template.md",
     "templates/plan-template.md",
@@ -21,7 +21,6 @@
     "templates/commands/analyze.md",
     "templates/commands/implement.md",
     "templates/commands/converge.md",
-    "templates/commands/taskstoissues.md",
     "scripts/bash/common.sh",
     "scripts/bash/create-new-feature.sh",
     "scripts/bash/check-prerequisites.sh",
@@ -40,6 +39,7 @@
     "optional tests in tasks (Constitution II)",
     "agent-created git branches (Constitution V)",
     "numeric-only feature ids 001-slug (ADR-0085)",
-    "specify CLI / PyPI distribution (ADR-0091)"
+    "specify CLI / PyPI distribution (ADR-0091)",
+    "removal of taskstoissues from core (v1.3.0, #5053): /sdd-taskstoissues stays as a local command with no upstream counterpart"
   ]
 }
