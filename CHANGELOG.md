@@ -510,6 +510,9 @@ authorises them.
 
 ### Changed
 
+- **ADR-0096 is Accepted** (#136). The bug-fix path (`/sdd-bugfix` assess → fix → test, with the
+  fix stage gated by `sdd-gate.py`) is now binding. Its Compliance & Risk section states the
+  review checklist's autonomy, control-matrix and data-classification impact: none.
 - `docs/quickstart/contract-driven-dev.md` gains "Before generating: agree the contract", adapted
   from spec-kit's contract-driven guide (#126). It covers one owner per interface, the semantics
   a schema cannot express (retries, ordering, errors), provider and consumer verification, and

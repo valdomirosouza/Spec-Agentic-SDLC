@@ -2,7 +2,7 @@
 
 # ADR-0096 — A Bug-Fix Path That Separates Diagnosis, Repair and Verification
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-31
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — delivery process; the defect rule it applies is `spec_for_defect` in `docs/process/gates/phase-gates.yaml`
@@ -98,3 +98,6 @@ Constitution I (spec first: the cited spec, or an escalation), II (a regression 
 weakened to pass), V (the diagnosis acceptance is a human decision) and IX (the root cause has to
 cite evidence, not plausibility). A bug whose cause lies in a guardrail or the HITL gateway
 triggers CLAUDE.md §14.1 at the `assess` stage, before any edit.
+
+No autonomy impact (ADR-0015): the command changes how an agent works a defect, not which
+actions it may take. No control-matrix or data-classification change.
