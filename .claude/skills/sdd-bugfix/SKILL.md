@@ -1,6 +1,7 @@
 ---
 name: sdd-bugfix
 description: Work one defect through three separated stages (ADR-0096) — assess (diagnose and cite the violated spec, no code edits), fix (the only stage that edits code, within the accepted diagnosis), test (re-run the original reproduction and record verified / partial / failed, no code edits) — each writing one record under docs/bugs/BUG-<issue>/. Trigger on "bug", "fix this bug", "diagnose", "regression". Usage — /sdd-bugfix assess <issue | report text> · /sdd-bugfix fix BUG-<issue> · /sdd-bugfix test BUG-<issue>.
+disable-model-invocation: true
 ---
 
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->

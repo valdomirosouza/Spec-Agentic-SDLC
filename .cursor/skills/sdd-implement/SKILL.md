@@ -1,6 +1,7 @@
 ---
 name: sdd-implement
 description: Execute tasks.md for the active feature (Phase 6 — Development) phase by phase, tests first, marking tasks [X], respecting [P] markers, checklist gates and every human gate of ADR-0058; scope a run to a phase, a story or a task range to stay inside the context window. Trigger on "implement", "execute the tasks", "build the feature". Usage — /sdd-implement [only phase N | only US1 | T001-T010 | delegate [P] tasks to sub-agents].
+disable-model-invocation: true
 ---
 
 <!-- generated from .claude/skills/sdd-implement/SKILL.md by scripts/python/render_commands.py — edit the source, then re-render (ADR-0091) -->

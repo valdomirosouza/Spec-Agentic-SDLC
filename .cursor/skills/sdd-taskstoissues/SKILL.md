@@ -1,6 +1,7 @@
 ---
 name: sdd-taskstoissues
 description: Create one GitHub issue per open task in the active feature's tasks.md, titled "<SPEC-ID> T010: …", with phase, story, Refs and bundle links in the body, and write the issue number back into tasks.md; skips [X] tasks and tasks that already have an issue; refuses a spec that is not approved. Trigger on "tasks to issues", "open issues for the tasks", "create issues from tasks.md". Usage — /sdd-taskstoissues [--dry-run] [--label <name>] [--assignee <login>] [--limit N].
+disable-model-invocation: true
 ---
 
 <!-- generated from .claude/skills/sdd-taskstoissues/SKILL.md by scripts/python/render_commands.py — edit the source, then re-render (ADR-0091) -->
