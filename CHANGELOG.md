@@ -586,7 +586,8 @@ authorises them.
 
 ### Upstream reference
 
-- github/spec-kit pinned at commit `7370e59` (2026-10-30, latest release v1.2.5 of 2026-10-28).
+- github/spec-kit pinned at commit `c438494` (2026-11-08, latest release v1.3.2 of 2026-11-06).
+  Decisions for the 7370e59 → c438494 range are in `docs/sdlc/spec-kit-sync.md` §3 (#140).
 
 ## [1.0.0] — 2026-09-12
 
