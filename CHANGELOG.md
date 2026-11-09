@@ -19,6 +19,18 @@ authorises them.
 
 ### Added
 
+- **Adoption profiles and declared `n/a` checks** (#156, ADR-0098).
+  - `applicability-matrix.yml` takes `adoption_profile` (`service` or `batch-data`) and
+    `not_applicable:`, where each entry gives a check, a reason, an owner and a `review_by` date.
+  - `phase-gates.yaml` › `adoption_profiles` sets the profile defaults.
+  - `scripts/python/not_applicable.py` reads the declarations. In `check-corpus.sh`, an active
+    declaration prints that check's failure as `n/a: <reason>` and does not count it, and an
+    expired one counts again.
+  - The new C21 fails on a refused declaration: the 21 checks that enforce Articles I, II, V and VII
+    or the verifier itself. It also fails on an unknown name, a malformed entry or an unknown
+    profile.
+  - C3's `n/a` is no longer reported as a failure.
+  - 13 unit tests and 2 mutation cases. `SETUP.md` §2 documents it.
 - **C3 checks the corpus and adopter ADR ranges separately** (#154, ADR-0097). `check-corpus.sh`
   C3 moved into `scripts/python/check_adr_index.py`, with the same output.
   - ADR-0001–0999 must be contiguous from 1, and ADR-1000+ contiguous from 1000.

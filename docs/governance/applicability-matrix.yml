@@ -8,6 +8,23 @@
 # case (private / non-US-listed) and document each scope decision with a rationale.
 version: 1
 
+# ── Adoption profile and declared not-applicable checks (ADR-0098) ───────────
+# The profile describes the repository (tiers describe a change): `service` (default) or
+# `batch-data`. Its defaults for the applicability conditions are in
+# docs/process/gates/phase-gates.yaml › adoption_profiles.
+#
+# A check that does not apply to this repository is DECLARED here, never silenced: name it exactly
+# as scripts/bash/check-corpus.sh prints it. Its failure is then shown as `n/a: <reason>` and not
+# counted until `review_by`, after which it counts again. Checks that enforce a protected
+# Constitution article (I, II, V, VII, IX) are refused (scripts/python/not_applicable.py).
+#   not_applicable:
+#     - check: "throttled responses name the caller's budget"
+#       reason: "batch-data: no HTTP API, so no rate-limited responses"
+#       owner: "platform-team"
+#       review_by: "2027-03-31"
+adoption_profile: service
+not_applicable: []
+
 regulatory_scope:
   sox:
     in_scope: false # true ONLY for U.S.-listed public companies / SEC-regulated entities

@@ -134,6 +134,14 @@ spec_for_defect:
     which `pr-governance` accepts in place of a spec path — for a defect whose correct behaviour is
     not a product decision anyone has made yet.
 
+# Adoption profiles (ADR-0098): the defaults a repository's shape gives the conditions below. The
+# profile is declared in docs/governance/applicability-matrix.yml › adoption_profile. A profile never
+# changes the tiers or which phases are control phases; a delivery still evaluates each condition.
+adoption_profiles:
+  service: {} # the default: every condition is evaluated per delivery, as before
+  batch-data:
+    deploys_prod: false # no long-running service is rolled out; a run is not a canary deployment
+
 # Condition keys referenced by a phase's `applicability.condition` (used for `conditional` tiers).
 applicability_conditions:
   processes_data: Change reads, stores, or transmits personal data (ADR-0012, CLAUDE.md §3.1).
