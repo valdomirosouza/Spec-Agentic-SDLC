@@ -19,6 +19,12 @@ authorises them.
 
 ### Added
 
+- **ADR-0100 (Proposed): systems of record are read-only to dev-time agents** (#150).
+  - The adopter declares its CRM and ERP systems in `docs/governance/systems-of-record.yaml`.
+  - `high-risk-action-guard.py` asks before a write to a declared system, or denies it in a
+    subagent. Reads pass.
+  - A read-only-by-default client in the adopter's code is the main control.
+  - The guard, the schema and the tests follow acceptance.
 - **ADR-0099 (Proposed): a retro-spec for code already in production** (#148).
   - A retro-spec is an ordinary spec with `origin: retro`.
   - Its FRs state the intended behaviour and cite evidence.
