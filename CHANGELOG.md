@@ -516,6 +516,10 @@ authorises them.
 
 ### Changed
 
+- **SPEC-LGS-001 system spec `approved`** via Spec-as-PR (#142). ADR-0066–0069 and the approved
+  feature spec derived from it had rested on a `draft`. Its four §15 open questions now name what
+  answered them: ADR-0069, ADR-0067, ADR-0068 §2 and the topology header. `new_adrs_required` is
+  empty, and `governing_adrs` gains ADR-0067–0069. The registry was rebuilt.
 - **ADR-0096 is Accepted** (#136). The bug-fix path (`/sdd-bugfix` assess → fix → test, with the
   fix stage gated by `sdd-gate.py`) is now binding. Its Compliance & Risk section states the
   review checklist's autonomy, control-matrix and data-classification impact: none.

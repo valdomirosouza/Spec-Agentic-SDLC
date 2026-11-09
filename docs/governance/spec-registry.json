@@ -1045,15 +1045,12 @@
       "path": "specs/system/SPEC-LGS-001-log-based-golden-signals.md",
       "id": "SPEC-LGS-001",
       "kind": "spec",
-      "status": "draft",
+      "status": "approved",
       "owner": "valdomirosouza",
       "issue": null,
-      "last_updated": "2026-09-12",
+      "last_updated": "2026-11-08",
       "governing_adrs": [],
-      "new_adrs_required": [
-        "redis-as-timeseries-store",
-        "golden-signal-extraction-rules"
-      ],
+      "new_adrs_required": [],
       "implemented_by": [],
       "verified_by": [],
       "related_specs": [
