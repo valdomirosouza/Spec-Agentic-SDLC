@@ -86,8 +86,8 @@ because its suite is the guard.
 | Checks containing logic, all proved | 44 |
 | `sdd-*` commands rendered to four tools | 11 |
 | Files in the `minimal` layer | 69 |
-| Files in the `governed` layer | 356 |
-| Files in the `full` layer | 600 |
+| Files in the `governed` layer | 357 |
+| Files in the `full` layer | 601 |
 <!-- /generated -->
 
 ## What this corpus is not
