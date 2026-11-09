@@ -19,6 +19,13 @@ authorises them.
 
 ### Added
 
+- **C3 checks the corpus and adopter ADR ranges separately** (#154, ADR-0097). `check-corpus.sh`
+  C3 moved into `scripts/python/check_adr_index.py`, with the same output.
+  - ADR-0001–0999 must be contiguous from 1, and ADR-1000+ contiguous from 1000.
+  - A corpus-range duplicate passes only when one of the two files is `Superseded by ADR-1NNN` and
+    that successor exists.
+  - 12 tests in `tests/scripts/test_check_adr_index.py`.
+  - `SETUP.md` §4 and `docs/adr/README.md` tell adopters to number from 1000.
 - **ADR-0100 (Proposed): systems of record are read-only to dev-time agents** (#150).
   - The adopter declares its CRM and ERP systems in `docs/governance/systems-of-record.yaml`.
   - `high-risk-action-guard.py` asks before a write to a declared system, or denies it in a

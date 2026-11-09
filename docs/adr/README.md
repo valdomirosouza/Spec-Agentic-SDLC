@@ -33,6 +33,12 @@ Copy [`ADR-TEMPLATE.md`](ADR-TEMPLATE.md) to `docs/adr/ADR-NNNN-<kebab-title>.md
 add a row to the master index below. Before moving an ADR `Proposed → Accepted`, run through
 [`adr-review-checklist.md`](adr-review-checklist.md).
 
+**Numbering ([ADR-0097](ADR-0097-adopter-adrs-are-numbered-from-1000.md)).** ADR-0001 to ADR-0999 belong to
+this corpus. A repository that adopted it numbers its own ADRs from ADR-1000 and indexes them in a
+separate "Local ADRs (1000+)" table. `check-corpus.sh` C3 checks each range for gaps on its own.
+A local ADR that already collides with a corpus number is restated in the 1000+ range, and the old
+file is marked `Superseded by ADR-1NNN`. It is never renamed.
+
 The minimal skeleton (the template adds an optional Compliance & Risk section and guidance):
 
 ```markdown
