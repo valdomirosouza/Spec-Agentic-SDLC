@@ -539,6 +539,14 @@ authorises them.
 
 ### Changed
 
+- **ADR-0097 to ADR-0100 are Accepted** (#152):
+  - adopter ADR numbering from 1000;
+  - adoption profiles and a declared `n/a`;
+  - the retro-spec;
+  - systems of record read-only to dev-time agents.
+
+  The change touched four ADRs, so it went through a CLAUDE.md §14.1 escalation, which the Tech
+  Lead resolved with a single acceptance PR. Each ADR's implementation follows separately.
 - **SPEC-LGS-001 system spec `approved`** via Spec-as-PR (#142). ADR-0066–0069 and the approved
   feature spec derived from it had rested on a `draft`. Its four §15 open questions now name what
   answered them: ADR-0069, ADR-0067, ADR-0068 §2 and the topology header. `new_adrs_required` is
