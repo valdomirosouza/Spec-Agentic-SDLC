@@ -9,9 +9,13 @@ authorises them.
 
 ## [Unreleased]
 
+### Added
+
+- ADR-0101 (Proposed): a batch run record and run SLOs for the `batch-data` profile. A run gets an ID and the commit it executes before its first step, and appends its record even on failure. It is measured with the four Golden Signals and held to `run_success`, `freshness` and `duration` objectives, with budgets counted in runs (#166).
+
 ### Fixed
 
-- `SETUP.md` §4 and `CLAUDE_SESSION_INIT.md` cited the spec-kit pin as `d848fb4` (v1.0.6), stale since the re-pin in #141. Both now name `docs/sdlc/spec-kit-upstream.json` as the source of record and gives the current pin, `c438494` (v1.3.2).
+- `SETUP.md` §4 and `CLAUDE_SESSION_INIT.md` cited the spec-kit pin as `d848fb4` (v1.0.6), stale since the re-pin in #141. Both now name `docs/sdlc/spec-kit-upstream.json` as the source of record and give the current pin, `c438494` (v1.3.2).
 
 ## [1.1.0] — 2026-11-09
 
