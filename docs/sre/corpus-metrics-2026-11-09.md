@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 140 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 142 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 12 (span 59 days) | — |
-| Commits per active day | 11.67 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-11-09T08:24:41 | — |
+| Commits per active day | 11.83 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-11-09T08:27:35 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -40,7 +40,7 @@ against.
 | Metric | Value |
 | --- | --- |
 | Markdown files | 553 |
-| Markdown lines | 63365 |
+| Markdown lines | 63366 |
 | Executable lines (scripts + hooks) | 6580 |
 | Test lines | 3264 |
 | Verification lines (scripts + hooks + tests) | 9844 |
@@ -74,10 +74,10 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 140 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Commits on the default branch | 142 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
 | Elapsed wall-clock | 1377.2 h | first commit to last |
 | Commits per elapsed hour | 0.1 | — |
-| Cumulative diff | 521 files changed, 24455 insertions(+), 1599 deletions(-) | `git diff --shortstat` from the first commit |
+| Cumulative diff | 521 files changed, 24456 insertions(+), 1599 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of

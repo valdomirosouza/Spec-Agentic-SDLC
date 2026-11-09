@@ -25,6 +25,7 @@ authorises them.
   - `verify-high-risk-guard.py` gets 12 cases run against the sample: a write asks or is denied, a read passes, and a malformed file fails open. It also reports a malformed declaration as a wiring failure in C5.
   - `templates/system-of-record-client-template.md` gives the contract for a read-only-by-default client, the main control, and a CI test template.
   - `.claude/hooks/README.md` gets a section on systems of record.
+  - `scripts/bash/adopt.sh` adds both declaration files to the `minimal` layer, because the guard reads them (`SETUP.md` §1).
 - **Retro-spec for code already in production** (ADR-0099, #158):
   - `specs/SPEC-TEMPLATE.md` gets optional `origin: retro` / `describes_commit:` frontmatter and a `## Divergence register` block. Each row gets one decision: `specify`, `fix` or `defer`.
   - `scripts/python/build_spec_registry.py` refuses an unknown `origin`, a retro-spec without a commit sha or a register, and an approved retro-spec with a row that is undecided, has no reference, or is deferred with no owner or tracking issue. The refusal fails C13.
