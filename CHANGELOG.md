@@ -9,13 +9,13 @@ authorises them.
 
 ## [Unreleased]
 
-> **Next version:** 1.1.0 — minor. Nothing published in 1.0.0 is broken: `asdd_state.py`
-> was added *after* that release, so nobody on 1.0.0 holds a state file its schema change
-> could invalidate. An earlier draft of this line said 2.0.0 on the strength of the word
-> BREAKING, which was a compatibility claim nobody had checked against its baseline.
-> `version.txt` is the version of record (ADR-0057) and moves when the release is cut, not
-> before; `check_changelog.py --version` derives the claim from the repository state at the
-> last release rather than from a word.
+## [1.1.0] — 2026-11-09
+
+> **Minor.** Nothing published in 1.0.0 is broken: `asdd_state.py` was added *after* that
+> release, so nobody on 1.0.0 holds a state file its schema change could invalidate
+> (`check_changelog.py --version` derives this from the repository state at 1.0.0). An earlier
+> draft said 2.0.0 on the strength of the word BREAKING, a compatibility claim nobody had checked
+> against its baseline.
 
 ### Added
 
