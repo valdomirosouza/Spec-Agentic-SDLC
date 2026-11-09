@@ -19,6 +19,12 @@ authorises them.
 
 ### Added
 
+- **ADR-0099 (Proposed): a retro-spec for code already in production** (#148).
+  - A retro-spec is an ordinary spec with `origin: retro`.
+  - Its FRs state the intended behaviour and cite evidence.
+  - Before approval, every row of its divergence register is decided `specify`, `fix` or `defer`.
+  - A "code prevails" clause is not allowed.
+  - The template, schema and check changes follow acceptance.
 - **ADR-0098 (Proposed): adoption profiles and a declared "not applicable"** (#146).
   - An adopter declares a profile, `service` or `batch-data`, beside the ADR-0064 tiers.
   - A check that does not apply is listed as `n/a`, with a reason, an owner and a `review_by`
