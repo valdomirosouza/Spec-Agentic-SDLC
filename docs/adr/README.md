@@ -169,6 +169,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0095](ADR-0095-single-delivery-entrypoint-and-the-branch-exception.md) | One delivery entrypoint; agents may create only a local feature branch, enforced in vcs.sh | Accepted   | 2026-09-13 |
 | [ADR-0096](ADR-0096-bug-fix-path-assess-fix-test.md) | Bug-fix path: assess → fix → test, diagnosis accepted by a human before code changes, verdict from the re-run reproduction | Accepted   | 2026-10-31 |
 | [ADR-0097](ADR-0097-adopter-adrs-are-numbered-from-1000.md) | Adopter ADRs numbered from 1000; the corpus keeps 0001–0999, collisions restated, never renamed | Proposed   | 2026-11-09 |
+| [ADR-0098](ADR-0098-adoption-profiles-and-declared-not-applicable.md) | Adoption profiles (`service`, `batch-data`) beside the tiers; a declared, expiring `n/a` instead of a permanent failure; the control floor is never `n/a` | Proposed   | 2026-11-09 |
 
 ### AI Agents Module _(opt-in)_
 

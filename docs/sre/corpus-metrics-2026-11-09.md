@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 132 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 133 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 11 (span 58 days) | — |
-| Commits per active day | 12.0 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-11-08T21:22:44 | — |
+| Commits per active day | 12.09 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-11-08T21:47:22 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -30,23 +30,23 @@ against.
 | Metric | Value | Method |
 | --- | --- | --- |
 | Completed CI runs | 99 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
-| Failed runs | 19 | — |
-| Change failure rate | 19.2% | failed ÷ completed |
-| Median run duration | 69 s | — |
-| Recoveries observed | 19, median 2789 s | gap from a failed run to the next success |
+| Failed runs | 18 | — |
+| Change failure rate | 18.2% | failed ÷ completed |
+| Median run duration | 71 s | — |
+| Recoveries observed | 18, median 3017 s | gap from a failed run to the next success |
 
 ## 3. Corpus shape
 
 | Metric | Value |
 | --- | --- |
-| Markdown files | 549 |
-| Markdown lines | 62825 |
+| Markdown files | 550 |
+| Markdown lines | 62936 |
 | Executable lines (scripts + hooks) | 6078 |
 | Test lines | 2977 |
 | Verification lines (scripts + hooks + tests) | 9055 |
-| Prose to verification ratio | 6.9 : 1 |
+| Prose to verification ratio | 7.0 : 1 |
 | Check families in `check-corpus.sh` | 20 |
-| ADRs | 97 |
+| ADRs | 98 |
 
 ### What the periodic comparison can see
 
@@ -58,12 +58,12 @@ computing this table, and at 2% a newly added ADR was invisible (R6-T1).
 
 | Metric | Value | Smallest move this threshold can see |
 | --- | ---: | ---: |
-| Markdown files | 549 | 5 |
+| Markdown files | 550 | 6 |
 | Executable lines (scripts + hooks) | 6078 | 61 |
 | Test lines | 2977 | 30 |
 | Verification lines (scripts + hooks + tests) | 9055 | 91 |
 | Check families in `check-corpus.sh` | 20 | 1 |
-| ADRs | 97 | 1 |
+| ADRs | 98 | 1 |
 
 **Why the ratio is a metric and not trivia.** The maturity assessment named governance mass
 outgrowing verification as a structural risk. Tracking the ratio makes that visible: it
@@ -74,10 +74,10 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 132 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 1366.1 h | first commit to last |
+| Commits on the default branch | 133 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 1366.6 h | first commit to last |
 | Commits per elapsed hour | 0.1 | — |
-| Cumulative diff | 508 files changed, 23057 insertions(+), 1594 deletions(-) | `git diff --shortstat` from the first commit |
+| Cumulative diff | 509 files changed, 23168 insertions(+), 1594 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of

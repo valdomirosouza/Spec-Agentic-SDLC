@@ -19,6 +19,12 @@ authorises them.
 
 ### Added
 
+- **ADR-0098 (Proposed): adoption profiles and a declared "not applicable"** (#146).
+  - An adopter declares a profile, `service` or `batch-data`, beside the ADR-0064 tiers.
+  - A check that does not apply is listed as `n/a`, with a reason, an owner and a `review_by`
+    date, instead of failing permanently.
+  - The protected Constitution articles and the control floor cannot be declared `n/a`.
+  - The schema and the `check-corpus.sh` reader follow acceptance.
 - **ADR-0097 (Proposed): adopter ADRs are numbered from 1000** (#144). The corpus keeps
   ADR-0001–0999. An existing collision, such as an adopter's own ADR-0096, is restated in the 1000+
   range, and the old file is marked `Superseded by`: nothing is renamed (ADR-0059). The C3 change
