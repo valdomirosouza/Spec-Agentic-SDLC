@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 142 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 141 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 12 (span 59 days) | — |
-| Commits per active day | 11.83 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-11-09T09:40:25 | — |
+| Commits per active day | 11.75 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-11-09T10:55:25 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -29,11 +29,11 @@ against.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Completed CI runs | 100 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
+| Completed CI runs | 99 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
 | Failed runs | 18 | — |
-| Change failure rate | 18.0% | failed ÷ completed |
-| Median run duration | 374 s | — |
-| Recoveries observed | 17, median 3017 s | gap from a failed run to the next success |
+| Change failure rate | 18.2% | failed ÷ completed |
+| Median run duration | 424 s | — |
+| Recoveries observed | 18, median 4549 s | gap from a failed run to the next success |
 
 ## 3. Corpus shape
 
@@ -74,8 +74,8 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 142 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 1378.4 h | first commit to last |
+| Commits on the default branch | 141 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 1379.7 h | first commit to last |
 | Commits per elapsed hour | 0.1 | — |
 | Cumulative diff | 521 files changed, 24468 insertions(+), 1599 deletions(-) | `git diff --shortstat` from the first commit |
 
