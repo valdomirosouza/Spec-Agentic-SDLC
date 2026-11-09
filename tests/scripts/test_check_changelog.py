@@ -135,9 +135,19 @@ class NextVersion(unittest.TestCase):
         self.assertEqual(rc, 0)
 
     def test_a_contract_absent_at_the_release_cannot_break_anyone(self):
-        breaks, notes = cc.derived_breaks()
-        self.assertEqual(breaks, [], "nothing published in 1.0.0 has changed value")
-        self.assertTrue(any("did not exist at the last release" in n for n in notes))
+        """Asserted against the real release commit until 1.1.0, when both contracts started to
+        exist at the release. A path that cannot exist there keeps the branch exercised."""
+        breaks, _ = cc.derived_breaks()
+        self.assertEqual(breaks, [], "nothing published at the last release has changed value")
+        real = cc.CONTRACTS
+        cc.CONTRACTS = real + (("scripts/python/added_after_the_release.py", r"^X\s*=\s*(\S+)"),)
+        try:
+            breaks, notes = cc.derived_breaks()
+        finally:
+            cc.CONTRACTS = real
+        self.assertEqual(breaks, [])
+        self.assertTrue(any("added_after_the_release.py did not exist at the last release" in n
+                            for n in notes), notes)
 
 
 class DerivedContracts(unittest.TestCase):

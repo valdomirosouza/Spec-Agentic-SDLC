@@ -332,8 +332,10 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
         word. A contract added after the release cannot break anyone on it — which is what made
         the BREAKING label here, and the 2.0.0 it forced, an overstatement of my own."""
         self.assert_mutation_is_caught(
-            Mutation("CHANGELOG.md", "### Fixed",
-                     "### Fixed\n\n- **BREAKING: an invented incompatibility.**"),
+            # Into [Unreleased] itself: a release moves every `### Fixed` below a release heading,
+            # where a BREAKING entry no longer counts (1.1.0 did, and the mutation went quiet).
+            Mutation("CHANGELOG.md", "## [Unreleased]\n",
+                     "## [Unreleased]\n\n- **BREAKING: an invented incompatibility.**\n"),
             "compatibility claims match")
 
     def test_neutering_a_check_into_an_unconditional_pass_is_caught(self):

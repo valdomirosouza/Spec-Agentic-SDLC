@@ -12,7 +12,7 @@
 
 ```bash
 git clone https://github.com/valdomirosouza/Spec-Agentic-SDLC.git && cd Spec-Agentic-SDLC
-cat version.txt                                        # 1.0.0
+cat version.txt                                        # 1.1.0
 scripts/bash/create-new-feature.sh --json --dry-run "Add cursor pagination to the requests list"
 SDD_FEATURE_DIRECTORY=specs/features/SPEC-LGS-001-log-based-golden-signals \
   scripts/bash/check-prerequisites.sh --require-spec --require-plan --require-tasks --include-tasks
