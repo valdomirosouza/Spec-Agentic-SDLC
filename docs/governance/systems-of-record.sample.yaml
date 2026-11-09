@@ -1,0 +1,18 @@
+# A sample declaration for docs/governance/systems-of-record.yaml (ADR-0100). The names are
+# placeholders. .claude/hooks/verify-high-risk-guard.py runs the guard against this file, so a
+# change here is a change to the guard's test cases.
+version: 1
+systems:
+  - name: "crm"
+    owner: "sales-ops"
+    binaries: [sf]
+    targets: []
+    reads:
+      - '^sf\s+(data\s+query|org\s+display|sobject\s+describe)\b'
+  - name: "erp"
+    owner: "finance-systems"
+    binaries: [psql]
+    targets: [erp-prod, erp.example.internal]
+    reads:
+      - '^psql\b.*\s-c\s+["'']?\s*(SELECT|EXPLAIN|SHOW)\b'
+      - '^curl\b(?!.*\s(-X|--request)\s*(POST|PUT|PATCH|DELETE)\b)(?!.*\s(-d|--data\S*)\s)'

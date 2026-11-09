@@ -1,0 +1,21 @@
+# Systems of record — read-only to dev-time agents (ADR-0100)
+#
+# A system of record holds the authoritative business record (CRM, ERP, billing ledger). List
+# each one this repository's agents can reach. .claude/hooks/high-risk-action-guard.py then
+# treats a Bash command that reaches one as high-risk (ask in the main session, deny in a
+# subagent) unless the command is a declared read.
+#
+# Each entry:
+#   name      the system, as people call it
+#   owner     who answers for its data
+#   binaries  CLIs that reach only this system; with no `targets`, any command they lead counts
+#   targets   connection or profile names, hosts or URL fragments; named anywhere, they count
+#   reads     regular expressions (single-quoted) for a command segment that only reads
+#
+# The format, a worked example and what each field matches: systems-of-record.sample.yaml.
+# Never put a credential here, only names and patterns (CLAUDE.md §3.2). The hook sees command
+# strings, not what a program does once it runs: the read-only client in your code is the main
+# control (templates/system-of-record-client-template.md). Nothing declared changes nothing, and a
+# malformed file is ignored: the guard fails open, and its suite has a case that shows it.
+version: 1
+systems: []
