@@ -7,7 +7,7 @@
 > this file or its JSON companion disagrees with disk, which is what let the registry drift
 > to 50 of 58 entries before issue #47.
 
-**58 specs** · approved: 50 · draft: 4 · implemented: 3 · superseded: 1
+**58 specs** · approved: 51 · draft: 3 · implemented: 3 · superseded: 1
 
 | Spec | Kind | Status | Owner | Issue | Path | Governing ADRs | Impl | Verif |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -47,7 +47,7 @@
 | SPEC-LGS-001 | feature-spec | superseded | valdomirosouza |  | `specs/features/SPEC-LGS-001-golden-signals-feature-spec.md` | ADR-0003, ADR-0011, ADR-0012, ADR-0020, ADR-0026, ADR-0066, ADR-0067 | 0 | 0 |
 | SPEC-LGS-001 | feature-spec | approved | valdomirosouza |  | `specs/features/SPEC-LGS-001-log-based-golden-signals/spec.md` | ADR-0003, ADR-0011, ADR-0012, ADR-0020, ADR-0025, ADR-0026, ADR-0029, ADR-0066, ADR-0067, ADR-0068, ADR-0069 | 0 | 0 |
 | SPEC-LGS-001 | threat-model | draft | Security Lead |  | `specs/security/threat-model-SPEC-LGS-001-golden-signals.md` | ADR-0011, ADR-0012, ADR-0019, ADR-0020, ADR-0026, ADR-0066, ADR-0067, ADR-0068, ADR-0069 | 0 | 0 |
-| SPEC-LGS-001 | spec | draft | valdomirosouza |  | `specs/system/SPEC-LGS-001-log-based-golden-signals.md` | — | 0 | 0 |
+| SPEC-LGS-001 | spec | approved | valdomirosouza |  | `specs/system/SPEC-LGS-001-log-based-golden-signals.md` | — | 0 | 0 |
 | SPEC-OBS-001 | spec | approved | SRE Lead |  | `specs/observability/agent-performance.md` | ADR-0004 | 1 (1 unmarked) | 1 (1 unmarked) |
 | SPEC-OBS-002 | spec | approved | unassigned |  | `specs/observability/agent-supervision.md` | — | 1 (1 unmarked) | 0 |
 | SPEC-OBS-003 | spec | approved | SRE Lead |  | `specs/observability/dora-metrics.md` | ADR-0028 | 2 (2 unmarked) | 0 |

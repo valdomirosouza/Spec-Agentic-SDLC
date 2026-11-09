@@ -7,7 +7,7 @@
 id: SPEC-LGS-001
 title: Log-Based Golden Signals — Ingestion & Predictive Analytics Infrastructure
 version: 0.1.0
-status: draft # draft | in-review | approved | implemented | superseded
+status: approved # draft | in-review | approved | implemented | superseded
 owner: valdomirosouza
 created: 2026-06-07
 source: >-
@@ -25,15 +25,18 @@ governing_adrs:
     ADR-0026,
     ADR-0029,
     ADR-0066,
+    ADR-0067,
+    ADR-0068,
+    ADR-0069,
   ]
-new_adrs_required: [redis-as-timeseries-store, golden-signal-extraction-rules]
+new_adrs_required: [] # redis-as-timeseries-store → ADR-0067, golden-signal-extraction-rules → ADR-0068
 related_specs: [specs/ai/, specs/privacy/, specs/security/threat-model.md]
 slo_ref: docs/sre/slo/slo.yaml
 kind: spec
 issue: null # GitHub issue number that delivered/owns this spec
 implemented_by: []
 verified_by: []
-last_updated: 2026-09-12
+last_updated: 2026-11-08
 ---
 
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
@@ -362,10 +365,10 @@ agent-facing analytics surface.
 
 <!-- Anything that must be resolved at a HITL gate rather than assumed. -->
 
-1. Queue implementation: in-JVM virtual-thread/bounded queue, Redis stream, or external broker (Kafka)? (Default per the delivery's architecture phase: in-JVM bounded executor, honouring ADR-0003; Redis Streams stays rejected _as a queue_.)
-2. Single-node Redis acceptable for initial scope, or is HA required from day one?
-3. Exact saturation threshold + unit, and whether it is per-path or global.
-4. Topology: register in this monorepo's `services.yaml`, or generate a standalone repo? (see §1.4)
+1. Queue implementation: in-JVM virtual-thread/bounded queue, Redis stream, or external broker (Kafka)? (Default per the delivery's architecture phase: in-JVM bounded executor, honouring ADR-0003; Redis Streams stays rejected _as a queue_.) **Resolved:** ADR-0069, an in-JVM bounded `ArrayBlockingQueue` drained by a virtual-thread worker.
+2. Single-node Redis acceptable for initial scope, or is HA required from day one? **Resolved:** ADR-0067, single-node Redis behind a `MetricStore` interface.
+3. Exact saturation threshold + unit, and whether it is per-path or global. **Resolved:** ADR-0068 §2.
+4. Topology: register in this monorepo's `services.yaml`, or generate a standalone repo? (see §1.4) **Resolved:** `deployment_topology: monorepo-services` in the metadata header.
 
 ---
 
