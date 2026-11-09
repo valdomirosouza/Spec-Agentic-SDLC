@@ -17,6 +17,8 @@ governing_adrs: [] # e.g. [ADR-0003, ADR-0011, ADR-0012] — reused, binding dec
 new_adrs_required: [] # short slugs for ADRs the Architecture phase must author
 related_specs: [] # e.g. [specs/privacy/, specs/security/threat-model.md]
 slo_ref: docs/sre/slo/slo.yaml # where this feature's SLOs are/were recorded
+# origin: retro # only for a retro-spec of code already in production (ADR-0099)
+# describes_commit: <sha> # the commit the retro-spec describes; required with origin: retro
 ---
 
 <!-- adopter-paths: names paths or commands provided by the adopting product repository — see docs/reference/adopter-provided-paths.md -->
@@ -198,6 +200,21 @@ record any deviation as a new ADR in `new_adrs_required`.>
 | # | Assumption | Owner | Resolve by (phase) | Status (open / confirmed / rejected) |
 | - | ---------- | ----- | ------------------ | ------------------------------------ |
 | A1 |            |       | 4 — Specification  | open                                 |
+
+## Divergence register _(retro-specs only)_
+
+<!-- Only with `origin: retro` (ADR-0099); delete this section otherwise. One row per place where
+     the code does not do what the owner wants. Each FR in §5 states the INTENDED behaviour and
+     cites the code that shows the current one (file:line); this table records where they differ.
+     Never add a clause saying the implementation prevails: every known difference is a row here.
+     The spec cannot move to `approved` while a row is undecided (build_spec_registry.py, C13):
+       specify  the current behaviour is correct; Reference names the FR that states it
+       fix      the code is wrong; Reference names the bug, worked through /sdd-bugfix (ADR-0096)
+       defer    kept open; Reference names the tracking issue (#N) and Owner is set -->
+
+| # | Current behaviour (evidence) | Intended behaviour | Decision (specify / fix / defer) | Reference (FR / bug / issue) | Owner |
+| - | ---------------------------- | ------------------ | -------------------------------- | ---------------------------- | ----- |
+| D1 |                             |                    |                                  |                              |       |
 
 ## 17. References
 

@@ -77,6 +77,31 @@ stay in sync. A diverging implementation without a spec update is a compliance v
 
 ---
 
+## Retro-spec — code already in production (ADR-0099)
+
+Code that predates the corpus gets a **retro-spec**: an ordinary spec, written from the code, that
+settles every divergence between the code and its intended behaviour before it is approved.
+
+1. **Frontmatter.** `origin: retro` and `describes_commit: <sha>`, the commit you read. Same `id`,
+   `kind` and status grammar as any spec (ADR-0085).
+2. **Requirements state the intended behaviour, with evidence.** Each FR and AC is what the owner
+   wants, and cites the code, log or runbook showing what happens today (`file:line`). A behaviour
+   you inferred with no evidence goes to §15 Open Questions, not to §5. The agent drafts from the
+   code; only the business owner decides intent.
+3. **Divergence register.** Every place the code does not do what the owner wants is a row of
+   `## Divergence register` (`specs/SPEC-TEMPLATE.md`). At approval each row gets one decision:
+   `specify` (the code is right; cite the FR), `fix` (the code is wrong; cite the bug, worked
+   through `/sdd-bugfix`, ADR-0096) or `defer` (open, with an owner and a tracking issue).
+   `build_spec_registry.py` refuses an `approved` retro-spec with an undecided row (C13).
+4. **No "code prevails" clause.** The implementation never wins by default; that makes the code
+   the contract again (`docs/sdlc/spec-persistence-model.md`). A divergence found after approval
+   is a defect against the spec (`spec_for_defect: regression`).
+5. **Until approval**, a change to that code follows `spec_for_defect` as before: the missing
+   section first, or a `REM-NNN`. After approval the spec is ordinary; `origin: retro` stays as
+   history.
+
+---
+
 ## Spec → Code → Test Traceability
 
 Every implementation file must reference its governing spec in the module docstring:

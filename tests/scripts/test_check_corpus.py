@@ -455,6 +455,13 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             Mutation("docs/governance/spec-registry.json", '"count": 58', '"count": 57'),
             "spec registry matches disk")
 
+    def test_an_approved_retro_spec_without_its_register_is_caught(self):
+        """ADR-0099: a retro-spec is not approved until every divergence has a decision."""
+        self.assert_mutation_is_caught(
+            Mutation("specs/system/SPEC-LGS-001-log-based-golden-signals.md",
+                     "status: approved # draft", "origin: retro\nstatus: approved # draft"),
+            "spec registry matches disk")
+
     def test_an_upstream_pin_missing_a_field_is_caught(self):
         """The pin records which spec-kit commit this corpus was compared against; without the
         commit it records nothing that can be checked."""

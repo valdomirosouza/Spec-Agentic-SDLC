@@ -13,6 +13,9 @@ itself from it.
 
 A spec is any specs/**/*.md with ADR-0085 frontmatter carrying an `id`. READMEs and templates are
 not specs and are skipped by the same rule check_control_matrix and check-corpus use.
+
+A retro-spec (`origin: retro`, ADR-0099) is refused without `describes_commit` or a
+`## Divergence register`, and, once approved, while a row of that register is undecided.
 """
 import argparse
 import glob
@@ -29,7 +32,8 @@ MD_PATH = "docs/governance/spec-registry.md"
 ID_RE = re.compile(r"^SPEC-[A-Z][A-Z0-9]{1,5}-[0-9]{3}$")
 LIST_FIELDS = ("governing_adrs", "new_adrs_required", "implemented_by", "verified_by",
                "related_specs", "requirement_tests")
-SCALAR_FIELDS = ("id", "kind", "status", "owner", "issue", "superseded_by", "last_updated")
+SCALAR_FIELDS = ("id", "kind", "status", "owner", "issue", "superseded_by", "last_updated",
+                 "origin", "describes_commit")
 
 
 def is_spec_file(path):
@@ -75,6 +79,12 @@ def parse_frontmatter(text):
 
 KINDS = ("spec", "policy", "feature-spec", "threat-model")
 STATUSES = ("draft", "in-review", "approved", "implemented", "superseded")
+# A spec written first carries no `origin`. A retro-spec describes code already in production and
+# carries `origin: retro` and the commit it describes (ADR-0099).
+ORIGINS = ("retro",)
+SHA_RE = re.compile(r"^[0-9a-f]{7,40}$")
+REGISTER = "## Divergence register"
+DECISIONS = ("specify", "fix", "defer")
 
 
 def validate(entry):
@@ -88,6 +98,54 @@ def validate(entry):
         errs.append(f"{entry['path']}: kind {entry.get('kind')!r} not in {KINDS}")
     if entry.get("status") not in STATUSES:
         errs.append(f"{entry['path']}: status {entry.get('status')!r} not in {STATUSES}")
+    if "origin" in entry and entry["origin"] not in ORIGINS:
+        errs.append(f"{entry['path']}: origin {entry['origin']!r} not in {ORIGINS}")
+    return errs
+
+
+def register_rows(text):
+    """The rows of the `## Divergence register` table as lists of cells, or None without one."""
+    start = text.find("\n" + REGISTER)
+    if start == -1:
+        return None
+    body = text[start + len(REGISTER) + 1:]
+    nxt = re.search(r"^## ", body, re.M)
+    rows = []
+    for line in (body[:nxt.start()] if nxt else body).split("\n"):
+        if not line.startswith("|"):
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if cells[0] in ("#", "") or set(cells[0]) <= set("-: "):
+            continue
+        rows.append(cells)
+    return rows
+
+
+def retro_problems(entry, text):
+    """ADR-0099: a retro-spec names the commit it describes and keeps a divergence register, and
+    is not approved while a row of that register is undecided. Row cells, in template order:
+    #, current behaviour (evidence), intended behaviour, decision, reference, owner."""
+    if entry.get("origin") != "retro" or entry.get("status") == "superseded":
+        return []
+    path, errs = entry["path"], []
+    if not SHA_RE.match(entry.get("describes_commit", "")):
+        errs.append(f"{path}: a retro-spec names the commit it describes (describes_commit: <sha>)")
+    rows = register_rows(text)
+    if rows is None:
+        errs.append(f"{path}: a retro-spec keeps a {REGISTER!r} section")
+        return errs
+    if entry.get("status") not in ("approved", "implemented"):
+        return errs
+    for cells in rows:
+        cells += [""] * (6 - len(cells))
+        row, decision, ref, owner = cells[0], cells[3].lower(), cells[4], cells[5]
+        if decision not in DECISIONS:
+            errs.append(f"{path}: divergence {row} is undecided; an approved retro-spec decides "
+                        f"every row ({' / '.join(DECISIONS)})")
+        elif not ref:
+            errs.append(f"{path}: divergence {row} ({decision}) cites no FR, bug or issue")
+        elif decision == "defer" and (not owner or not re.search(r"#\d+", ref)):
+            errs.append(f"{path}: divergence {row} is deferred without an owner and a tracking issue")
     return errs
 
 
@@ -154,6 +212,8 @@ def problems(specs):
     errs = []
     for e in specs:
         errs += validate(e)
+        if e.get("origin") == "retro":
+            errs += retro_problems(e, open(os.path.join(ROOT, e["path"]), encoding="utf-8").read())
     live = [e for e in specs if e.get("status") != "superseded"]
     seen = {}
     for e in live:

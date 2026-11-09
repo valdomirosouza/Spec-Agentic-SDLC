@@ -162,6 +162,64 @@ class Drift(unittest.TestCase):
         self.assertEqual(a, b)
 
 
+class RetroSpec(unittest.TestCase):
+    """ADR-0099: a retro-spec is not approved while a divergence is undecided."""
+
+    HEAD = ("---\nid: SPEC-OTC-001\nkind: spec\nstatus: {status}\norigin: retro\n"
+            "describes_commit: {sha}\n---\n\n# SPEC-OTC-001\n\n")
+    REG = ("## Divergence register\n\n"
+           "| # | Current behaviour (evidence) | Intended behaviour | Decision | Reference | Owner |\n"
+           "| - | --- | --- | --- | --- | --- |\n{rows}\n## 17. References\n")
+
+    def check(self, rows="", status="approved", sha="c8bbc8f", register=True):
+        text = self.HEAD.format(status=status, sha=sha) + (self.REG.format(rows=rows) if register else "")
+        entry = {"path": "specs/x.md", **reg.parse_frontmatter(text)}
+        return reg.validate(entry) + reg.retro_problems(entry, text)
+
+    def test_every_row_decided_passes(self):
+        rows = ("| D1 | retries 3x (`src/a.py:10`) | retries 5x | fix | #12 | |\n"
+                "| D2 | rounds half-up (`src/b.py:4`) | same | specify | FR-003 | |\n"
+                "| D3 | no audit row (`src/c.py:9`) | audit row | defer | #13 | data-team |\n")
+        self.assertEqual(self.check(rows), [])
+
+    def test_an_undecided_row_blocks_approval(self):
+        errs = self.check("| D1 | retries 3x (`src/a.py:10`) | retries 5x | | | |\n")
+        self.assertTrue(any("D1 is undecided" in e for e in errs), errs)
+
+    def test_an_undecided_row_is_fine_in_a_draft(self):
+        self.assertEqual(self.check("| D1 | x | y | | | |\n", status="draft"), [])
+
+    def test_a_decision_without_a_reference_fails(self):
+        errs = self.check("| D1 | x | y | fix | | |\n")
+        self.assertTrue(any("cites no FR, bug or issue" in e for e in errs), errs)
+
+    def test_a_defer_needs_an_owner_and_a_tracking_issue(self):
+        for rows in ("| D1 | x | y | defer | #13 | |\n", "| D1 | x | y | defer | later | data-team |\n"):
+            errs = self.check(rows)
+            self.assertTrue(any("deferred without an owner" in e for e in errs), (rows, errs))
+
+    def test_a_retro_spec_without_a_register_fails(self):
+        errs = self.check(register=False, status="draft")
+        self.assertTrue(any("Divergence register" in e for e in errs), errs)
+
+    def test_a_retro_spec_names_its_commit(self):
+        errs = self.check(sha="HEAD", status="draft")
+        self.assertTrue(any("describes_commit" in e for e in errs), errs)
+
+    def test_an_unknown_origin_fails(self):
+        entry = {"path": "specs/x.md", "id": "SPEC-OTC-001", "kind": "spec", "status": "draft",
+                 "origin": "legacy"}
+        self.assertTrue(any("origin 'legacy'" in e for e in reg.validate(entry)))
+
+    def test_a_spec_written_first_is_untouched(self):
+        entry = {"path": "specs/x.md", "id": "SPEC-OTC-001", "kind": "spec", "status": "approved"}
+        self.assertEqual(reg.validate(entry) + reg.retro_problems(entry, ""), [])
+
+    def test_the_template_register_parses(self):
+        rows = reg.register_rows(open(os.path.join(HERE, "specs", "SPEC-TEMPLATE.md")).read())
+        self.assertEqual([r[0] for r in rows], ["D1"])
+
+
 class RealCorpus(unittest.TestCase):
     def test_registry_matches_disk(self):
         r = subprocess.run([sys.executable, SCRIPT, "--check", "--quiet"], capture_output=True,
