@@ -561,6 +561,25 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      r'^(\s*)resolve_by: "2026-\d\d-\d\d"\n', "", regex=True),
             "open items carry a date")
 
+    def test_a_refused_not_applicable_declaration_is_caught(self):
+        """ADR-0098 §3: a check that enforces a protected article can never be declared n/a."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/governance/applicability-matrix.yml", "not_applicable: []\n",
+                     'not_applicable:\n  - check: "verify-high-risk-guard"\n    reason: "probe"\n'
+                     '    owner: "probe"\n    review_by: "2099-01-01"\n'),
+            "declared n/a are valid")
+
+    def test_an_active_declaration_reports_a_failure_as_not_applicable(self):
+        """ADR-0098 §2: the failure is shown as n/a, with its reason, and is not counted."""
+        with NewFile("docs/mutation-probe.md",
+                     "<!-- adopter-paths: probe -->\n\n# probe\n\n[dead](./does-not-exist.md)\n"), \
+             Mutation("docs/governance/applicability-matrix.yml", "not_applicable: []\n",
+                      'not_applicable:\n  - check: "links"\n    reason: "mutation probe"\n'
+                      '    owner: "probe"\n    review_by: "2099-01-01"\n'):
+            rc, out = run_check()
+        self.assertIn("· links — n/a: mutation probe", out)
+        self.assertFalse([l for l in out.split("\n") if l.lstrip().startswith("✗ links")], out[-800:])
+
     def test_an_unindexed_adr_is_caught(self):
         self.assert_mutation_is_caught(
             NewFile("docs/adr/ADR-9999-mutation-probe.md",

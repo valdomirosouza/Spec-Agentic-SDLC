@@ -60,6 +60,14 @@ commands are referenced throughout `docs/`, `specs/`, `skills/` and `CLAUDE.md` 
 belongs to, and `docs/reference/adopter-provided-paths.md` is the generated inventory of every
 file that names one (each such file carries an `adopter-paths` marker; `check-corpus.sh` C7).
 
+**Declare your shape, and what does not apply (ADR-0098).** In
+`docs/governance/applicability-matrix.yml`, set `adoption_profile` to `service` (the default) or
+`batch-data`. If a `check-corpus.sh` check cannot apply to your repository, list it under
+`not_applicable:` with its exact name, a `reason`, an `owner` and a `review_by` date. Its failure
+is then shown as `n/a: <reason>` and is not counted until that date. Do not leave it failing, and
+do not stop running it: a permanently red run hides the next real failure. Checks that enforce a
+protected Constitution article are refused; C21 lists every declaration on each run.
+
 ## 3. Wire the Claude Code layer
 
 1. `.claude/settings.json` registers the `PreToolUse` high-risk-action guard. If you already

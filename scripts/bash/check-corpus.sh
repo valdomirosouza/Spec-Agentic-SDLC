@@ -30,6 +30,10 @@
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
+#  C21 declared not-applicable checks (ADR-0098): docs/governance/applicability-matrix.yml names a
+#      known profile, and no declaration is refused, unknown or malformed
+#      (scripts/python/not_applicable.py --check). An active declaration prints that check's
+#      failure as n/a instead of counting it; an expired one counts again
 #  C20 every file adopt.sh declares never-adopted is absent from all three layers
 #      (scripts/python/check_layer_exclusions.py --check)
 #  C19 one risk-class vocabulary: every class maps to a tier that exists, every restatement uses
@@ -116,6 +120,7 @@ tests/scripts/test_corpus_measure_workflow.py
 tests/scripts/test_check_changelog.py
 tests/scripts/test_check_open_items.py
 tests/scripts/test_check_adr_index.py
+tests/scripts/test_not_applicable.py
 "
 
 is_corpus_only() { printf '%s' "$CORPUS_ONLY" | grep -Fxq "$1"; }
@@ -128,8 +133,18 @@ result() { # name status detail — ok | note | fail
     case "$2" in
         ok)   say "  ✓ $1${3:+ — $3}" ;;
         note) echo "  ! $1${3:+ — $3}" ;;   # alert severity: visible, does not fail the build
-        *)    echo "  ✗ $1${3:+ — $3}"; fails=$((fails+1)) ;;
+        *)    na=$(na_reason "$1")
+              if [ -n "$na" ]; then echo "  · $1 — n/a: $na"; return 0; fi
+              echo "  ✗ $1${3:+ — $3}"; fails=$((fails+1)) ;;
     esac
+}
+
+# Declared not-applicable checks (ADR-0098). An active declaration turns that check's failure into
+# a visible n/a line. Refused, expired and malformed declarations never do; C21 reports them.
+NA_TSV=$(python3 scripts/python/not_applicable.py --tsv 2>/dev/null) || NA_TSV=""
+na_reason() {
+    [ -n "$NA_TSV" ] || return 0
+    printf '%s\n' "$NA_TSV" | awk -F'\t' -v c="$1" '$1=="active" && $2==c {print $3 " (owner " $4 ", review by " $5 ")"; exit}'
 }
 
 say "C1 internal links"
@@ -173,7 +188,8 @@ if [ "$c2_bad" = 0 ]; then result "frontmatter" ok "$c2_n specs valid"; else res
 say "C3 ADR index"
 C3=$(python3 scripts/python/check_adr_index.py) || true
 c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p) || true
-if [ "$c3_bad" = 0 ]; then result "adr-index" ok "$c3_n ADRs, contiguous, all indexed"; else result "adr-index" fail "$c3_bad problems"; printf '%s\n' "$C3" | sed -n '3,$p' | sed 's/^/      /'; fi
+if [ "${C3#n/a:}" != "$C3" ]; then say "  · adr-index — $C3"
+elif [ "$c3_bad" = 0 ]; then result "adr-index" ok "$c3_n ADRs, contiguous, all indexed"; else result "adr-index" fail "$c3_bad problems"; printf '%s\n' "$C3" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C4 scripts"
 syn_bad=0
@@ -606,6 +622,7 @@ if $SMOKE && $SUITES; then
     if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_open_items.py 2>&1); then result "tests/scripts/test_check_open_items.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_open_items.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_adr_index.py 2>&1); then result "tests/scripts/test_check_adr_index.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_adr_index.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+    if out=$(python3 tests/scripts/test_not_applicable.py 2>&1); then result "tests/scripts/test_not_applicable.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_not_applicable.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then result "tests/scripts/test_check_changelog.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_changelog.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_mutation_coverage.py 2>&1); then result "tests/scripts/test_mutation_coverage.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_mutation_coverage.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_corpus_measure_workflow.py 2>&1); then result "tests/scripts/test_corpus_measure_workflow.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_measure_workflow.py" fail "the scheduled job is mis-wired"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -5 | sed 's/^/      /'; fi
@@ -633,6 +650,15 @@ fi
 if $HOOK; then
     say "C5 high-risk-action guard"
     if out=$(python3 .claude/hooks/verify-high-risk-guard.py 2>&1); then result "verify-high-risk-guard" ok; else result "verify-high-risk-guard" fail; printf '%s\n' "$out" | tail -5 | sed 's/^/      /'; fi
+fi
+
+say "C21 declared not-applicable checks"
+if out=$(python3 scripts/python/not_applicable.py --check 2>&1); then
+    result "declared n/a are valid" ok "$(printf '%s' "$out" | head -1)"
+    printf '%s\n' "$out" | sed -n '2,$p' | sed 's/^/    /'
+else
+    result "declared n/a are valid" fail "$(printf '%s' "$out" | head -1)"
+    printf '%s\n' "$out" | sed -n '2,15p' | sed 's/^/      /'
 fi
 
 if [ "$fails" = 0 ]; then say "check-corpus: all checks green"; else echo "check-corpus: $fails check(s) failed"; fi
