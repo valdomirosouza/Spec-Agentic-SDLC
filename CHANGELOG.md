@@ -19,6 +19,11 @@ authorises them.
 
 ### Added
 
+- **Retro-spec for code already in production** (ADR-0099, #158):
+  - `specs/SPEC-TEMPLATE.md` gets optional `origin: retro` / `describes_commit:` frontmatter and a `## Divergence register` block. Each row gets one decision: `specify`, `fix` or `defer`.
+  - `scripts/python/build_spec_registry.py` refuses an unknown `origin`, a retro-spec without a commit sha or a register, and an approved retro-spec with a row that is undecided, has no reference, or is deferred with no owner or tracking issue. The refusal fails C13.
+  - `skills/sdlc/spec-lifecycle.md` gets a retro-spec section.
+  - New unit tests and a mutation case.
 - **Adoption profiles and declared `n/a` checks** (#156, ADR-0098).
   - `applicability-matrix.yml` takes `adoption_profile` (`service` or `batch-data`) and
     `not_applicable:`, where each entry gives a check, a reason, an owner and a `review_by` date.
