@@ -13,7 +13,8 @@
 #   C2 spec frontmatter: every specs/**/spec-like file has id/kind/status; id matches
 #      ^SPEC-[A-Z][A-Z0-9]{1,5}-[0-9]{3}$ (ADR-0085 domain codes include K8S); kind and status in the schema enums; superseded needs superseded_by
 #   C3 ADR index: every docs/adr/ADR-NNNN-*.md is linked from docs/adr/README.md, every link
-#      resolves, numbering is contiguous from 0001
+#      resolves, numbering is contiguous in each range: 0001-0999 corpus, 1000+ adopter (ADR-0097;
+#      scripts/python/check_adr_index.py)
 #   C4 bash -n on scripts/bash/*.sh; smoke: create-new-feature --dry-run, check-prerequisites and
 #      tasks-to-issues --dry-run on the worked example bundle
 #   C5 high-risk-action guard self-test (.claude/hooks/verify-high-risk-guard.py)
@@ -114,6 +115,7 @@ tests/scripts/test_mutation_coverage.py
 tests/scripts/test_corpus_measure_workflow.py
 tests/scripts/test_check_changelog.py
 tests/scripts/test_check_open_items.py
+tests/scripts/test_check_adr_index.py
 "
 
 is_corpus_only() { printf '%s' "$CORPUS_ONLY" | grep -Fxq "$1"; }
@@ -169,28 +171,7 @@ c2_n=$(printf '%s\n' "$C2" | sed -n 1p); c2_bad=$(printf '%s\n' "$C2" | sed -n 2
 if [ "$c2_bad" = 0 ]; then result "frontmatter" ok "$c2_n specs valid"; else result "frontmatter" fail "$c2_bad invalid"; printf '%s\n' "$C2" | sed -n '3,$p' | sed 's/^/      /'; fi
 
 say "C3 ADR index"
-C3=$(python3 - <<'PY'
-import re,glob,os,sys
-files=sorted(glob.glob('docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md'))
-# A repository that adopted the corpus may carry no ADRs and no index. That is a check which does
-# not apply, and it used to be an unhandled FileNotFoundError on the third line of a fresh
-# adoption — the first thing anyone saw of this tool (#106).
-if not files or not os.path.isfile('docs/adr/README.md'):
-    print('n/a: no docs/adr index in this repository')
-    sys.exit(0)
-nums=sorted(int(os.path.basename(f)[4:8]) for f in files)
-bad=[]
-if nums!=list(range(1,len(nums)+1)): bad.append(f"numbering not contiguous: {[n for n in range(1,max(nums)+1) if n not in nums]} missing, duplicates {[n for n in set(nums) if nums.count(n)>1]}")
-idx=open('docs/adr/README.md',encoding='utf-8').read()
-linked=set(re.findall(r'\]\((ADR-[0-9]{4}-[^)]+\.md)\)',idx))
-for f in files:
-    b=os.path.basename(f)
-    if b not in linked: bad.append(f"not in docs/adr/README.md: {b}")
-for l in sorted(linked):
-    if not os.path.exists('docs/adr/'+l): bad.append(f"index links a missing file: {l}")
-print(len(files)); print(len(bad)); print("\n".join(bad))
-PY
-) || true
+C3=$(python3 scripts/python/check_adr_index.py) || true
 c3_n=$(printf '%s\n' "$C3" | sed -n 1p); c3_bad=$(printf '%s\n' "$C3" | sed -n 2p) || true
 if [ "$c3_bad" = 0 ]; then result "adr-index" ok "$c3_n ADRs, contiguous, all indexed"; else result "adr-index" fail "$c3_bad problems"; printf '%s\n' "$C3" | sed -n '3,$p' | sed 's/^/      /'; fi
 
@@ -624,6 +605,7 @@ if $SMOKE && $SUITES; then
     if out=$(python3 tests/scripts/test_check_corpus.py 2>&1); then result "tests/scripts/test_check_corpus.py (mutation)" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1) · $(( $(date +%s) - mut_t0 ))s wall clock"; else result "tests/scripts/test_check_corpus.py (mutation)" fail "a check stayed green under its own defect"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -8 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_asdd_state.py 2>&1); then result "tests/scripts/test_asdd_state.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_asdd_state.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_open_items.py 2>&1); then result "tests/scripts/test_check_open_items.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_open_items.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
+    if out=$(python3 tests/scripts/test_check_adr_index.py 2>&1); then result "tests/scripts/test_check_adr_index.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_adr_index.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_check_changelog.py 2>&1); then result "tests/scripts/test_check_changelog.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_check_changelog.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_mutation_coverage.py 2>&1); then result "tests/scripts/test_mutation_coverage.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_mutation_coverage.py" fail; printf '%s\n' "$out" | grep -E 'FAIL|Error' | head -5 | sed 's/^/      /'; fi
     if out=$(python3 tests/scripts/test_corpus_measure_workflow.py 2>&1); then result "tests/scripts/test_corpus_measure_workflow.py" ok "$(printf '%s' "$out" | grep -E '^Ran' | head -1)"; else result "tests/scripts/test_corpus_measure_workflow.py" fail "the scheduled job is mis-wired"; printf '%s\n' "$out" | grep -E '^FAIL:' | head -5 | sed 's/^/      /'; fi

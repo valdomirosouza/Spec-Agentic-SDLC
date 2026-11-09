@@ -80,6 +80,10 @@ file that names one (each such file carries an `adopter-paths` marker; `check-co
 - The spec-kit primitives are pinned to github/spec-kit `d848fb4` (v1.0.6) in
   `docs/sdlc/spec-kit-upstream.json`; the adoption decisions are in ADR-0090 and
   `docs/sdlc/spec-kit-comparison.md`, the sync procedure in `docs/sdlc/spec-kit-sync.md`.
+- Number your own ADRs from **ADR-1000** (ADR-0097): ADR-0001–0999 belong to the corpus, so a
+  sync never collides with yours. Index them in a "Local ADRs (1000+)" table in
+  `docs/adr/README.md`. A local ADR that already collides is restated as ADR-1NNN, and the old file
+  is marked `Superseded by ADR-1NNN`, never renamed.
 - Copilot, Cursor, Codex and Gemini CLI receive the rendered `sdd-*` commands (`--integration`,
   ADR-0091); `AGENTS.md` §1 says what each agent does and does not get.
 
