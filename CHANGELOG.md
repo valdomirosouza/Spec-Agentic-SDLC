@@ -19,6 +19,11 @@ authorises them.
 
 ### Added
 
+- **ADR-0097 (Proposed): adopter ADRs are numbered from 1000** (#144). The corpus keeps
+  ADR-0001–0999. An existing collision, such as an adopter's own ADR-0096, is restated in the 1000+
+  range, and the old file is marked `Superseded by`: nothing is renamed (ADR-0059). The C3 change
+  and its tests follow acceptance. The ADR counts in `README.md`, `CLAUDE.md` and
+  `spec-kit-comparison.md` read 97.
 - The `sdd-gate` hook blocks `/sdd-bugfix fix BUG-<issue>` (exit 2) until three things hold:
   `docs/bugs/BUG-<issue>/assessment.md` exists, the last filled row of its Decision table reads
   `accepted`, and its new `**Spec:**` line names a spec under `specs/` that is `approved` or
