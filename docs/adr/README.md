@@ -178,6 +178,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0098](ADR-0098-adoption-profiles-and-declared-not-applicable.md) | Adoption profiles (`service`, `batch-data`) beside the tiers; a declared, expiring `n/a` instead of a permanent failure; the control floor is never `n/a` | Accepted   | 2026-11-09 |
 | [ADR-0099](ADR-0099-retro-spec-for-code-already-in-production.md) | Retro-spec for code already in production: intended behaviour with evidence, a divergence register decided at approval, no "code prevails" clause | Accepted   | 2026-11-09 |
 | [ADR-0100](ADR-0100-systems-of-record-are-read-only-to-dev-time-agents.md) | Systems of record read-only to dev-time agents: declared systems, the guard asks before a write, a read-only client in code | Accepted   | 2026-11-09 |
+| [ADR-0101](ADR-0101-batch-run-record-and-run-slos.md) | Batch run record and run SLOs: a run ID and commit at start, a record written even on failure, Golden Signals per run, budgets counted in runs | Proposed   | 2026-11-09 |
 
 ### AI Agents Module _(opt-in)_
 
