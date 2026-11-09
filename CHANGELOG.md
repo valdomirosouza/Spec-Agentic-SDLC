@@ -19,6 +19,13 @@ authorises them.
 
 ### Added
 
+- **Systems of record are read-only to dev-time agents** (ADR-0100, #160):
+  - `docs/governance/systems-of-record.yaml` declares the adopter's CRM, ERP and similar systems. It is empty in the corpus. Each entry has a name, an owner, `binaries` and `targets` (how a command reaches the system) and `reads` (regular expressions). A worked example is in `systems-of-record.sample.yaml`.
+  - `.claude/hooks/high-risk-action-guard.py` asks before a Bash command that reaches a declared system, or denies it in a subagent, unless every segment of the command is a declared read or a read-only inspector. An absent or malformed declaration adds nothing, so the guard still fails open.
+  - `verify-high-risk-guard.py` gets 12 cases run against the sample: a write asks or is denied, a read passes, and a malformed file fails open. It also reports a malformed declaration as a wiring failure in C5.
+  - `templates/system-of-record-client-template.md` gives the contract for a read-only-by-default client, the main control, and a CI test template.
+  - `.claude/hooks/README.md` gets a section on systems of record.
+  - `scripts/bash/adopt.sh` adds both declaration files to the `minimal` layer, because the guard reads them (`SETUP.md` §1).
 - **Retro-spec for code already in production** (ADR-0099, #158):
   - `specs/SPEC-TEMPLATE.md` gets optional `origin: retro` / `describes_commit:` frontmatter and a `## Divergence register` block. Each row gets one decision: `specify`, `fix` or `defer`.
   - `scripts/python/build_spec_registry.py` refuses an unknown `origin`, a retro-spec without a commit sha or a register, and an approved retro-spec with a row that is undecided, has no reference, or is deferred with no owner or tracking issue. The refusal fails C13.

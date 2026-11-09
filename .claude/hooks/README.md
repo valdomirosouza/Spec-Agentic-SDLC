@@ -45,6 +45,29 @@ echo '{"tool_name":"Bash","tool_input":{"command":"git push"},"agent_type":"phas
 # → {"hookSpecificOutput": {... "permissionDecision": "deny" ...}}
 ```
 
+### Systems of record (ADR-0100)
+
+An adopting repository declares its systems of record in
+[`docs/governance/systems-of-record.yaml`](../../docs/governance/systems-of-record.yaml):
+CRM, ERP, billing, and any other system whose data is the business record. Each entry gives a
+name, an owner, how a command reaches the system (`binaries`, `targets`) and which operations are
+reads (`reads`, as regular expressions). The schema is in the file, and a worked example is in
+[`systems-of-record.sample.yaml`](../../docs/governance/systems-of-record.sample.yaml).
+
+A Bash command that reaches a declared system gets the policy above (`ask` / `deny`), unless
+every segment of it is a declared read or a read-only inspector (`grep`, `head`, …). Splitting
+at `;`, `&&` and `|` is deliberate. In `psql -c "SELECT 1; DELETE FROM t"`, the `DELETE` segment
+matches no read, so the command asks. A command that has an extra segment, such as
+`cd x && psql … -c "SELECT …"`, also asks. Asking too often is the safe direction.
+
+What this does **not** do: the hook sees command strings. A write inside a script, an SDK call or
+a program the agent starts does not look like a write to it. The main control is the read-only
+client in the adopter's code ([`templates/system-of-record-client-template.md`](../../templates/system-of-record-client-template.md)).
+
+The corpus declares nothing (`systems: []`), so the guard behaves exactly as before. A malformed
+declaration is ignored, because the guard fails open. `verify-high-risk-guard.py` then reports it
+as a wiring failure, so the gap shows up in C5 instead of passing silently.
+
 ## `sdd-gate.py` — UserPromptSubmit gate for the code-producing `/sdd-*` commands (ADR-0092, #22)
 
 A `UserPromptSubmit` hook that runs only when the prompt **starts** with `/sdd-plan`, `/sdd-tasks`,

@@ -16,20 +16,25 @@ Exit 0 = all checks pass; exit 1 = a failure (use as a regression gate).
 
 from __future__ import annotations
 
+import importlib.util
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
 GUARD = _HERE / "high-risk-action-guard.py"
 SETTINGS = _HERE.parent / "settings.json"
+SOR_DECLARATION = _HERE.parents[1] / "docs" / "governance" / "systems-of-record.yaml"
+SOR_SAMPLE = SOR_DECLARATION.with_name("systems-of-record.sample.yaml")
 
 
-def _decide(payload: object) -> str:
+def _decide(payload: object, guard: Path = GUARD) -> str:
     """Run the guard with `payload` on stdin; return ask|deny|defer|ERROR:<…>."""
     proc = subprocess.run(  # noqa: S603 — fixed argv (this interpreter + a trusted in-repo script), self-authored test JSON on stdin
-        [sys.executable, str(GUARD)],
+        [sys.executable, str(guard)],
         input=json.dumps(payload),
         capture_output=True,
         text=True,
@@ -126,6 +131,56 @@ CASES: list[tuple[str, object, str]] = [
 ]
 
 
+# Systems of record (ADR-0100). Each case runs a copy of the guard in a scratch tree whose
+# docs/governance/systems-of-record.yaml is the sample, a malformed file, or nothing.
+_MALFORMED = "version: 1\nsystems:\n  - name: erp\n    binaries: [psql]\n"  # no owner
+SOR_CASES: list[tuple[str, object, str, str]] = [
+    ("sor · declared read passes", _bash('sf data query -q "SELECT Id FROM Account"'), "defer", "sample"),
+    ("sor · write via binary asks", _bash("sf data delete record -s Account -i 1"), "ask", "sample"),
+    ("sor · write via target asks", _bash('psql service=erp-prod -c "UPDATE t SET x=1"'), "ask", "sample"),
+    ("sor · SELECT then DELETE asks", _bash('psql -h erp-prod -c "SELECT 1; DELETE FROM t"'), "ask", "sample"),
+    ("sor · read piped to head passes", _bash('psql -h erp-prod -c "SELECT 1" | head -5'), "defer", "sample"),
+    ("sor · POST to the ERP API asks", _bash("curl -X POST https://erp.example.internal/api/o"), "ask", "sample"),
+    ("sor · undeclared database is free", _bash('psql -h localhost -c "DELETE FROM t"'), "defer", "sample"),
+    ("sor · grep for a target is a read", _bash("grep -n erp-prod config.yml"), "defer", "sample"),
+    ("sor · subagent write denied", _bash("sf data delete record -i 1", agent="phase-executor"), "deny", "sample"),
+    ("sor · subagent read passes", _bash("sf org display", agent="phase-executor"), "defer", "sample"),
+    # The guard fails open: a malformed declaration adds nothing. This case makes that visible.
+    ("sor · malformed file fails open", _bash("sf data delete record -i 1"), "defer", "malformed"),
+    ("sor · nothing declared, nothing new", _bash("sf data delete record -i 1"), "defer", "none"),
+]
+
+
+def _decide_with_declaration(payload: object, declaration: str) -> str:
+    with tempfile.TemporaryDirectory() as root:
+        hooks = Path(root) / ".claude" / "hooks"
+        hooks.mkdir(parents=True)
+        guard = hooks / GUARD.name
+        shutil.copy(GUARD, guard)
+        if declaration != "none":
+            target = Path(root) / "docs" / "governance" / SOR_DECLARATION.name
+            target.parent.mkdir(parents=True)
+            text = SOR_SAMPLE.read_text(encoding="utf-8") if declaration == "sample" else _MALFORMED
+            target.write_text(text, encoding="utf-8")
+        return _decide(payload, guard)
+
+
+def _check_declaration() -> list[str]:
+    """The guard ignores a malformed declaration; this is where it gets reported."""
+    failures: list[str] = []
+    spec = importlib.util.spec_from_file_location("high_risk_action_guard", GUARD)
+    guard = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(guard)
+    for path in (SOR_DECLARATION, SOR_SAMPLE):
+        if not path.is_file():
+            continue
+        try:
+            guard._parse_systems(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            failures.append(f"{path.name} is malformed, so the guard ignores it: {exc}")
+    return failures
+
+
 def _check_wiring() -> list[str]:
     """Return a list of wiring failures (empty = OK)."""
     failures: list[str] = []
@@ -148,7 +203,7 @@ def _check_wiring() -> list[str]:
 def main() -> int:
     print("F7 high-risk-action guard — verification\n" + "=" * 42)
 
-    wiring = _check_wiring()
+    wiring = _check_wiring() + _check_declaration()
     for f in wiring:
         print(f"  FAIL  wiring: {f}")
     if not wiring:
@@ -161,8 +216,13 @@ def main() -> int:
         ok = got == expected
         failures += not ok
         print(f"  {'PASS' if ok else 'FAIL'}  {desc:<40} expected={expected:<6} got={got}")
+    for desc, payload, expected, declaration in SOR_CASES:
+        got = _decide_with_declaration(payload, declaration)
+        ok = got == expected
+        failures += not ok
+        print(f"  {'PASS' if ok else 'FAIL'}  {desc:<40} expected={expected:<6} got={got}")
 
-    total = len(CASES)
+    total = len(CASES) + len(SOR_CASES)
     print("-" * 42)
     print(
         f"{total - failures}/{total} decision checks passed; "

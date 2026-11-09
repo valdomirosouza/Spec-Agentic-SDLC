@@ -16,7 +16,7 @@ Decision policy (PreToolUse `permissionDecision`):
 The guard fails OPEN on ANY error (parse, wrong types, regex) — it must never
 brick or block a session by malfunctioning.
 
-Covers two vectors:
+Covers three vectors:
   1. Bash commands: push / PR-merge / release / cluster or `make` deploy &
      rollback / shell writes into the feature-flag dir. The binary may carry a
      path prefix (`/usr/bin/git`) and global options before the subcommand
@@ -24,6 +24,9 @@ Covers two vectors:
      subshell / `eval` (`$(git push)`); all are matched.
   2. Edit/Write to governance-controlled paths (CLAUDE.md §8 dual-approval and
      §14 triggers): guardrails, the HITL gateway/store, and feature-flag config.
+  3. Bash commands that reach a system of record the adopter declared in
+     docs/governance/systems-of-record.yaml, unless the command is a declared read
+     (ADR-0100). Nothing declared, or a malformed file, adds nothing (fail open).
 
 Read-only variants (git status, git tag -l, helm list, kubectl get) are not
 matched. See CLAUDE.md §3 / §14 and ADR-0011 / ADR-0015 / ADR-0034.
@@ -34,6 +37,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from pathlib import Path
 
 # A high-risk invocation =  <boundary> <optional path/> <binary> <global opts>* <subcommand>
 #   boundary : start-of-string OR any char that is not part of a path/word token
@@ -163,10 +167,113 @@ SENSITIVE_PATH = re.compile(
     r")"
 )
 
+# --- Systems of record (ADR-0100) ------------------------------------------------------------
+# The adopter declares the systems whose data is the business record, how a command reaches each,
+# and which operations are reads. A command that reaches one is risky unless every segment is a
+# read-only inspector or matches a declared read: `psql -h crm -c "SELECT 1; DELETE …"` splits at
+# the `;`, and the `DELETE …` segment matches no read, so it asks. The hook sees only the command
+# string; the read-only client in the adopter's code is the main control.
+SYSTEMS_OF_RECORD = Path(__file__).resolve().parents[2] / "docs" / "governance" / "systems-of-record.yaml"
+_SOR_LISTS = ("binaries", "targets", "reads")
+
+
+def _sor_value(raw: str) -> str:
+    raw = raw.strip()
+    if len(raw) >= 2 and raw[0] == raw[-1] == "'":
+        return raw[1:-1].replace("''", "'")  # YAML single quotes: no escapes but ''
+    if len(raw) >= 2 and raw[0] == raw[-1] == '"':
+        return raw[1:-1]
+    return raw.split(" #", 1)[0].strip()
+
+
+def _sor_list(raw: str) -> list[str]:
+    inner = raw.strip()
+    if not (inner.startswith("[") and inner.endswith("]")):
+        raise ValueError(f"expected an inline list, got {raw!r}")
+    return [_sor_value(x) for x in inner[1:-1].split(",") if x.strip()]
+
+
+def _parse_systems(text: str) -> list[dict]:
+    """The declared systems, each validated. Raises on anything malformed; callers fail open."""
+    systems: list[dict] = []
+    key = None
+    for line in text.split("\n"):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        # A system starts at a dash indented 0-2; a list element (`reads:` below a key) is
+        # indented further, so an element such as `- https://crm…` never starts a system.
+        item = re.match(r"^ {0,2}-\s+(\w+):\s*(.*)$", line)
+        field = re.match(r"^\s+(\w+):\s*(.*)$", line)
+        element = re.match(r"^ {3,}-\s+(.*)$", line)
+        if re.match(r"^(version|systems):", line):
+            if line.startswith("systems:") and line.split(":", 1)[1].strip() not in ("", "[]"):
+                raise ValueError("systems: is a block list")
+            continue
+        if item:
+            systems.append({})
+            key, raw = item.group(1), item.group(2)
+        elif field and systems:
+            key, raw = field.group(1), field.group(2)
+        elif element and systems and key in _SOR_LISTS:
+            systems[-1].setdefault(key, []).append(_sor_value(element.group(1)))
+            continue
+        else:
+            raise ValueError(f"unexpected line {line!r}")
+        if key in _SOR_LISTS:
+            systems[-1][key] = _sor_list(raw) if raw.strip() else []
+        else:
+            systems[-1][key] = _sor_value(raw)
+    for sor in systems:
+        if not sor.get("name") or not sor.get("owner"):
+            raise ValueError("a system of record needs a name and an owner")
+        if not sor.get("binaries") and not sor.get("targets"):
+            raise ValueError(f"{sor['name']}: declare binaries or targets")
+        sor["reads"] = [re.compile(r, re.IGNORECASE) for r in sor.get("reads", [])]
+    return systems
+
+
+def _load_systems(path: Path = SYSTEMS_OF_RECORD) -> list[dict]:
+    """[] when absent or malformed: the guard fails open, as it always has (ADR-0100)."""
+    try:
+        return _parse_systems(path.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+
+
+def _reached(command: str, systems: list[dict]) -> list[dict]:
+    """The declared systems a command reaches: a target named anywhere in it, or a segment led by
+    a declared binary of a system that declares no targets."""
+    low = command.lower()
+    leaders = {_leading_token(seg) for seg in _SEGMENT_SPLIT.split(command)}
+    return [
+        sor
+        for sor in systems
+        if any(t.lower() in low for t in sor.get("targets", []))
+        or (not sor.get("targets") and leaders & set(sor.get("binaries", [])))
+    ]
+
+
+def _writes_to_system_of_record(command: str, systems: list[dict]) -> bool:
+    reached = _reached(command, systems)
+    if not reached:
+        return False
+    reads = [r for sor in reached for r in sor["reads"]]
+    for segment in _SEGMENT_SPLIT.split(command):
+        seg = segment.strip()
+        if not seg:
+            continue
+        if _leading_token(seg) in _READ_ONLY_LEADERS and not _CMD_SUBST.search(seg):
+            continue
+        if not any(r.search(seg) for r in reads):
+            return True
+    return False
+
+
 _EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 
 _CMD_LABEL = "push / PR-create / PR-merge / release / deploy / rollback / flag-change"
 _PATH_LABEL = "edit to a governance-controlled path (guardrails / HITL / feature flags)"
+_SOR_LABEL = "write to a declared system of record (ADR-0100)"
 
 
 def _as_str(value: object) -> str:
@@ -185,6 +292,8 @@ def _is_risky(payload: dict) -> tuple[bool, str]:
             command = _as_str(tool_input.get("command"))
             if _command_is_risky(command):
                 return True, _CMD_LABEL
+            if _writes_to_system_of_record(command, _load_systems()):
+                return True, _SOR_LABEL
         elif tool_name in _EDIT_TOOLS:
             path = _as_str(tool_input.get("file_path")) or _as_str(tool_input.get("notebook_path"))
             if SENSITIVE_PATH.search(path):

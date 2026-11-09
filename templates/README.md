@@ -26,8 +26,9 @@ once in its adoption layers (#107) and once in the set it tracks upstream.
 | `data-contract-template.md`    | a data owner, by hand                              | an entry in `specs/data/data-contracts.md`   |
 | `datasheet-template.md`        | a data owner, by hand                              | a datasheet under `docs/data/datasheets/`    |
 | `model-card-template.md`       | an AI governance owner, by hand                    | a model card under `docs/ai-governance/`     |
+| `system-of-record-client-template.md` | a developer, by hand (ADR-0100)             | the read-only client contract and its CI test |
 
-Six of the thirteen are materialised by a script, so they are exercised on every smoke run; the
+Six of the fourteen are materialised by a script, so they are exercised on every smoke run; the
 rest are filled by an agent or a person and are only as current as the last time someone read them.
 
 ## The two files called a spec template
