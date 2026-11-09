@@ -2,7 +2,7 @@
 
 # ADR-0098 — Adoption Profiles and a Declared "Not Applicable"
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-09
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — adoption and governance policy

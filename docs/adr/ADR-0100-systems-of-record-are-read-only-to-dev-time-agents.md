@@ -2,7 +2,7 @@
 
 # ADR-0100 — Systems of Record Are Read-Only to Dev-Time Agents
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-09
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — dev-time agent governance

@@ -2,7 +2,7 @@
 
 # ADR-0097 — Adopter ADRs Are Numbered From 1000
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-09
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — numbering policy for the corpus and the repositories that adopt it

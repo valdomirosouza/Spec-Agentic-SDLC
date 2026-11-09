@@ -2,7 +2,7 @@
 
 # ADR-0099 — A Retro-Spec for Code Already in Production
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-09
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — specification process; it extends `docs/sdlc/spec-persistence-model.md`
