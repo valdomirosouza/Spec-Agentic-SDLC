@@ -171,6 +171,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0097](ADR-0097-adopter-adrs-are-numbered-from-1000.md) | Adopter ADRs numbered from 1000; the corpus keeps 0001–0999, collisions restated, never renamed | Proposed   | 2026-11-09 |
 | [ADR-0098](ADR-0098-adoption-profiles-and-declared-not-applicable.md) | Adoption profiles (`service`, `batch-data`) beside the tiers; a declared, expiring `n/a` instead of a permanent failure; the control floor is never `n/a` | Proposed   | 2026-11-09 |
 | [ADR-0099](ADR-0099-retro-spec-for-code-already-in-production.md) | Retro-spec for code already in production: intended behaviour with evidence, a divergence register decided at approval, no "code prevails" clause | Proposed   | 2026-11-09 |
+| [ADR-0100](ADR-0100-systems-of-record-are-read-only-to-dev-time-agents.md) | Systems of record read-only to dev-time agents: declared systems, the guard asks before a write, a read-only client in code | Proposed   | 2026-11-09 |
 
 ### AI Agents Module _(opt-in)_
 
