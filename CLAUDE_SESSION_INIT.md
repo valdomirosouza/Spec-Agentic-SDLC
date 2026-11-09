@@ -15,8 +15,8 @@
 - **Current version:** `version.txt` (1.0.0) · changes in `CHANGELOG.md`
 - **Root of authority:** `memory/constitution.md` (nine articles) → `CLAUDE.md` (operating contract)
 - **Branch convention:** `main` only; feature work on `feature/SPEC-<DOMAIN>-NNN-<slug>` (ADR-0085)
-- **Provenance:** Repository-Template-v2 (Waves 11–15) + github/spec-kit primitives (ADR-0090,
-  upstream pinned at `d848fb4`, v1.0.6)
+- **Provenance:** Repository-Template-v2 (Waves 11–15) + github/spec-kit primitives (ADR-0090;
+  pin of record in `docs/sdlc/spec-kit-upstream.json`, `c438494`, v1.3.2, as of 1.1.0)
 
 ## What exists here vs. what the adopting repository provides
 
