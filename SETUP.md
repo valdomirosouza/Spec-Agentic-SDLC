@@ -85,8 +85,9 @@ protected Constitution article are refused; C21 lists every declaration on each 
 
 - The corpus version is `version.txt`; changes are in `CHANGELOG.md`. Record the version you
   adopted in your own changelog.
-- The spec-kit primitives are pinned to github/spec-kit `d848fb4` (v1.0.6) in
-  `docs/sdlc/spec-kit-upstream.json`; the adoption decisions are in ADR-0090 and
+- The spec-kit primitives are pinned to a github/spec-kit commit in
+  `docs/sdlc/spec-kit-upstream.json`, the source of record for the pin (`c438494`, v1.3.2, as of
+  1.1.0); the adoption decisions are in ADR-0090 and
   `docs/sdlc/spec-kit-comparison.md`, the sync procedure in `docs/sdlc/spec-kit-sync.md`.
 - Number your own ADRs from **ADR-1000** (ADR-0097): ADR-0001–0999 belong to the corpus, so a
   sync never collides with yours. Index them in a "Local ADRs (1000+)" table in

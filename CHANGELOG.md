@@ -9,6 +9,10 @@ authorises them.
 
 ## [Unreleased]
 
+### Fixed
+
+- `SETUP.md` §4 and `CLAUDE_SESSION_INIT.md` cited the spec-kit pin as `d848fb4` (v1.0.6), stale since the re-pin in #141. Both now name `docs/sdlc/spec-kit-upstream.json` as the source of record and gives the current pin, `c438494` (v1.3.2).
+
 ## [1.1.0] — 2026-11-09
 
 > **Minor.** Nothing published in 1.0.0 is broken: `asdd_state.py` was added *after* that
