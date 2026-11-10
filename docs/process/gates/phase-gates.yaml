@@ -420,6 +420,10 @@ phases:
     allowed_agent_actions: [read, draft_doc, run_ci]
     prohibited_agent_actions: [deploy, rollback, change_feature_flag]
     exit_criteria: "PRR >= 90%; probe lint green; OTel spans + metrics verified for new paths"
+    profile_readings: # ADR-0101 §5 — what this phase checks under a profile; approvals and blocking are unchanged
+      batch-data:
+        ci_checks: ["scripts/python/run_record.py check <run history>"]
+        exit_criteria: "PRR >= 90%; every run is wrapped so its record is written even on failure (ADR-0101 §1–§2), and the history passes run_record.py check; run SLOs declared under docs/sre/slo/slo.yaml › pipelines (§4). These replace probe lint and dashboards"
     applicability: # ADR-0064 — conditional on a new failure mode at low tiers; required once shipping (governed+).
       control_phase: false
       condition: new_failure_mode

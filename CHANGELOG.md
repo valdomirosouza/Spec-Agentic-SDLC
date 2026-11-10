@@ -11,6 +11,17 @@ authorises them.
 
 ### Added
 
+- The batch run record (ADR-0101). `scripts/python/run_record.py` (stdlib) wraps a run, in Python
+  with `Run(...)` or for shell steps with `run_record.py exec`, and appends one JSON line to the run
+  history whatever the outcome. The line holds the run ID, the commit and dirty flag recorded before
+  the first step, the status, and per-step counts. A production run from a dirty tree is refused
+  and recorded as `aborted`. `run_record.py check` validates a history. The schema is
+  `docs/sre/slo/schema/run-record.schema.json`, which joins the minimal layer, and the usage is in
+  `templates/run-wrapper-template.md`. Also added:
+  - a `pipelines:` block in `slo.yaml`, with budgets counted in runs;
+  - a batch section in the golden-signals skill;
+  - the Phase 11 reading under `batch-data` (`phase-gates.yaml` › `profile_readings`);
+  - `tests/scripts/test_run_record.py` (17 tests) (#174).
 - ADR-0103 (Proposed): reconciliation controls for batch runs. A pipeline's spec declares each reconciliation, with a tolerance that is zero unless declared. Every reconciliation ends a run as `match`, `within_tolerance`, `break` or `not_run`, and a `break` or `not_run` fails the run. An exception covers one reconciliation in one run, is approved by someone other than the operator, and leaves the verdict unchanged (#170).
 - ADR-0102 (Proposed): IPE data evidence for batch runs. Each data-producing step writes a manifest (query hash at the commit, parameters, output hashes and counts). Outputs are copied to write-once storage with a hash-chained ledger, and an audit package is built from the run's commit. Write-once copies hold no personal data until retention above the classification cap has a decided route (#168).
 - ADR-0101 (Proposed): a batch run record and run SLOs for the `batch-data` profile. A run gets an ID and the commit it executes before its first step, and appends its record even on failure. It is measured with the four Golden Signals and held to `run_success`, `freshness` and `duration` objectives, with budgets counted in runs (#166).

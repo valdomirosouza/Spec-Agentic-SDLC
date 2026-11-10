@@ -1,5 +1,5 @@
-version: "1.2"
-last_updated: "2026-05-31"
+version: "1.3"
+last_updated: "2026-11-09"
 owner: sre-lead
 dora_mttr_target_seconds: 3600 # DORA Elite threshold — MTTR p50 < 1h (ADR-0028)
 
@@ -204,3 +204,27 @@ services:
             threshold: 12
             severity: warning
             runbook: docs/sre/runbooks/hitl-queue-backlog.md
+
+# ── Batch pipelines (ADR-0101 §4) ────────────────────────────────────────────
+# A pipeline is held to objectives per run, not per request. Its error budget is counted in runs:
+# a monthly pipeline has twelve a year, so its budget reads "at most N late or failed runs per
+# year", and a breach is reviewed per run rather than by a burn rate. Each run's record
+# (scripts/python/run_record.py, docs/sre/slo/schema/run-record.schema.json) is the SLI source.
+#
+# Each entry:
+#   name       the pipeline, as in its run IDs (`<name>-<UTC start>`)
+#   schedule   when a run is due, in words or cron (for example "monthly, close day 1")
+#   slos       one or more of the three SLI types:
+#     run_success  share of scheduled runs that end `succeeded`;   target: percent
+#     freshness    data available by its deadline;                 deadline: words, e.g. "close day + 2 business days"
+#     duration     run finishes within its allowed window;         window_minutes: integer
+#   budget_runs_per_year   late or failed runs allowed in a year, across all three SLIs
+#
+#   - name: o2c
+#     schedule: "monthly, close day 1"
+#     slos:
+#       - { sli_type: run_success, target: 100 }
+#       - { sli_type: freshness, deadline: "close day + 2 business days" }
+#       - { sli_type: duration, window_minutes: 240 }
+#     budget_runs_per_year: 1
+pipelines: []

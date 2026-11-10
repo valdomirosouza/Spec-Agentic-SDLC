@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/valdomirosouza/Spec-Agentic-SDLC/docs/sre/slo/schema/run-record.schema.json",
+  "title": "Batch run record (one line of a run history)",
+  "description": "One JSON line per run, appended to an append-only history whatever the outcome (ADR-0101 §1–§2). Written and checked by scripts/python/run_record.py. Counts and identifiers only, never data values.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "pipeline",
+    "commit",
+    "dirty",
+    "production",
+    "operator",
+    "started_at",
+    "ended_at",
+    "status",
+    "steps"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*-[0-9]{8}T[0-9]{6}Z$",
+      "description": "<pipeline>-<started_at as YYYYMMDDTHHMMSSZ>. Unique in the history: a rerun is a new run."
+    },
+    "pipeline": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "description": "git rev-parse HEAD, recorded before the first step."
+    },
+    "dirty": {
+      "type": "boolean",
+      "description": "The working tree had uncommitted or untracked changes at the start."
+    },
+    "production": {
+      "type": "boolean",
+      "description": "A production run. With dirty: true it is refused, and recorded as aborted with no steps."
+    },
+    "operator": { "type": "string", "minLength": 1 },
+    "started_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "ended_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    },
+    "status": {
+      "enum": ["succeeded", "failed", "aborted"],
+      "description": "aborted: interrupted, or refused before its first step. A succeeded run has only succeeded steps."
+    },
+    "steps": {
+      "type": "array",
+      "description": "The steps that started, in order. A step after the one that failed is not listed.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "status",
+          "duration_seconds",
+          "rows_in",
+          "rows_out",
+          "rows_rejected"
+        ],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["succeeded", "failed", "aborted"] },
+          "duration_seconds": { "type": "number", "minimum": 0 },
+          "rows_in": { "type": ["integer", "null"], "minimum": 0 },
+          "rows_out": { "type": ["integer", "null"], "minimum": 0 },
+          "rows_rejected": { "type": ["integer", "null"], "minimum": 0 }
+        }
+      }
+    }
+  }
+}

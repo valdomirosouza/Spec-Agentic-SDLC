@@ -1,6 +1,6 @@
 # Skill — Golden Signals
 
-**Owner:** SRE Lead | **Reviewer:** Tech Lead | **Status:** Active | **Last updated:** 2026-05-24
+**Owner:** SRE Lead | **Reviewer:** Tech Lead | **Status:** Active | **Last updated:** 2026-11-09
 
 Activate this skill for any observability work, SLO monitoring, alert triage, or on-call response.
 
@@ -16,6 +16,34 @@ Activate this skill for any observability work, SLO monitoring, alert triage, or
 | **Latency**    | Time to serve a request — p50, p95, p99            | `histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))`       |
 
 A signal breach means the service is degraded. Two or more signal breaches simultaneously = SLO at risk.
+
+---
+
+## Batch Pipelines (`batch-data` profile, ADR-0101)
+
+A batch pipeline is not up to be scraped, so the signals are measured **per run**, from the run
+record that `scripts/python/run_record.py` appends whatever the outcome
+(`templates/run-wrapper-template.md`):
+
+| Signal         | For a run                                                                              | From the record                                   |
+| -------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **Traffic**    | rows read and rows written, per step and in total                                      | `steps[].rows_in`, `steps[].rows_out`             |
+| **Error Rate** | failed steps, and rows rejected as a share of rows read                                | `steps[].status`, `rows_rejected / rows_in`       |
+| **Saturation** | run duration as a share of the window the run is allowed (for example, a close window) | `ended_at − started_at` over the declared window  |
+| **Latency**    | run duration, and **freshness**: from the end of the data period to data available     | `ended_at`, against the pipeline's deadline       |
+
+Run SLOs are declared under `pipelines:` in `docs/sre/slo/slo.yaml`, with three SLI types:
+`run_success`, `freshness` and `duration`. The error budget is counted in **runs**, not minutes: a
+monthly pipeline has twelve a year, so a breach is reviewed per run rather than by a burn rate.
+
+Triage a failed or late run in this order:
+
+1. **Find the run.** Its ID is `<pipeline>-<UTC start>`. Its record names the commit and whether the
+   tree was dirty, so the code that ran is `git show <commit>`, not the working tree.
+2. **Find where it stopped.** The last step listed is the one that failed or was interrupted.
+   Steps after it never started.
+3. **Rerun as a new run.** A rerun gets a new ID and a new record. Never edit or delete an earlier
+   line of the history.
 
 ---
 
