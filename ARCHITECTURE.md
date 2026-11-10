@@ -81,13 +81,13 @@ because its suite is the guard.
 <!-- generated: check_architecture_doc.py --update — do not edit by hand -->
 | Measured | Value |
 | --- | --- |
-| Named checks in the verifier | 67 |
+| Named checks in the verifier | 68 |
 | Of those, proved able to fail | 50 |
 | Checks containing logic, all proved | 45 |
 | `sdd-*` commands rendered to four tools | 11 |
-| Files in the `minimal` layer | 81 |
-| Files in the `governed` layer | 378 |
-| Files in the `full` layer | 623 |
+| Files in the `minimal` layer | 83 |
+| Files in the `governed` layer | 381 |
+| Files in the `full` layer | 626 |
 <!-- /generated -->
 
 ## What this corpus is not
