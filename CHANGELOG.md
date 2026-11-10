@@ -11,6 +11,7 @@ authorises them.
 
 ### Added
 
+- ADR-0102 (Proposed): IPE data evidence for batch runs. Each data-producing step writes a manifest (query hash at the commit, parameters, output hashes and counts). Outputs are copied to write-once storage with a hash-chained ledger, and an audit package is built from the run's commit. Write-once copies hold no personal data until retention above the classification cap has a decided route (#168).
 - ADR-0101 (Proposed): a batch run record and run SLOs for the `batch-data` profile. A run gets an ID and the commit it executes before its first step, and appends its record even on failure. It is measured with the four Golden Signals and held to `run_success`, `freshness` and `duration` objectives, with budgets counted in runs (#166).
 
 ### Fixed
