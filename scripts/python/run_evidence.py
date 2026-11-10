@@ -11,7 +11,8 @@ the run ID, the step, the path, the file's SHA-256, and `prev`, the SHA-256 of t
 exact bytes (64 zeros for the first). Deleting, editing or reordering a line breaks the chain from
 there on. Shape: docs/audit/schema/evidence-ledger.schema.json. A chain proves nothing on its own
 if the whole ledger can be rewritten, and an edit to the last line breaks no later link. So the
-ledger is copied write-once when the run ends, and its head (the SHA-256 of its last line) is kept
+ledger is copied write-once when the run ends (for a run with a reconciliation `break` or
+`not_run`, once its exceptions are recorded, ADR-0103 §4), and its head (the SHA-256 of its last line) is kept
 with the copy: `verify --expect-head` compares against it.
 
 Python:
@@ -41,6 +42,8 @@ import re
 import subprocess
 import sys
 
+import reconcile as rc
+
 ZERO = "0" * 64
 HEX = re.compile(r"^[0-9a-f]{64}$")
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -52,6 +55,8 @@ LEDGER_FIELDS = ("seq", "run_id", "step", "path", "sha256", "prev")
 MANIFEST_FIELDS = ("run_id", "commit", "step", "inputs", "outputs")
 INPUT_FIELDS = ("source", "query_path", "query_sha256", "parameters", "extracted_at")
 OUTPUT_FIELDS = ("path", "sha256", "rows", "columns_sha256", "copy")
+# ADR-0103 §2: the verdicts of the reconciliations the step judged, when it judged any.
+OPTIONAL_FIELDS = ("reconciliations",)
 
 
 def sha256_file(path):
@@ -87,8 +92,10 @@ def output(path, rows=None, columns=None, copy="full"):
             "columns_sha256": columns_sha256(columns) if columns is not None else None, "copy": copy}
 
 
-def manifest(run_id, commit, step, inputs, outputs):
+def manifest(run_id, commit, step, inputs, outputs, reconciliations=None):
     m = {"run_id": run_id, "commit": commit, "step": step, "inputs": inputs, "outputs": outputs}
+    if reconciliations is not None:
+        m["reconciliations"] = reconciliations
     problems = manifest_problems(m)
     if problems:
         raise ValueError("; ".join(problems))
@@ -179,10 +186,22 @@ def manifest_problems(m):
     out = [f"missing {k}" for k in MANIFEST_FIELDS if k not in m]
     if out:
         return out
-    out += [f"unknown field {k}" for k in m if k not in MANIFEST_FIELDS]
+    out += [f"unknown field {k}" for k in m if k not in MANIFEST_FIELDS + OPTIONAL_FIELDS]
+    verdicts = m.get("reconciliations")
+    if "reconciliations" in m:
+        if not isinstance(verdicts, list) or not verdicts:
+            out.append("reconciliations must be a non-empty list")
+            verdicts = None
+        else:
+            for v in verdicts:
+                out += rc.verdict_problems(v)
+                if isinstance(v, dict) and v.get("step") != m["step"]:
+                    out.append(f"{v.get('id')}: a verdict in this manifest was judged by another step")
     if not isinstance(m["commit"], str) or not SHA_RE.match(m["commit"]):
         out.append("commit is not a full 40-character SHA")
     for kind, fields, items in (("input", INPUT_FIELDS, m["inputs"]), ("output", OUTPUT_FIELDS, m["outputs"])):
+        if kind == "output" and verdicts and items == []:
+            continue  # a step that only reconciles produces no data
         if not isinstance(items, list) or not items:
             out.append(f"{kind}s must be a non-empty list")
             continue

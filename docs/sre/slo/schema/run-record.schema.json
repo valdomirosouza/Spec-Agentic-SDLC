@@ -73,6 +73,12 @@
           "rows_rejected": { "type": ["integer", "null"], "minimum": 0 }
         }
       }
+    },
+    "reconciliations": {
+      "type": "array",
+      "minItems": 1,
+      "description": "ADR-0103 §2. Present when the pipeline declares reconciliations: one verdict per declaration, a declared one the run never reached being not_run. A succeeded run has no break or not_run.",
+      "items": { "$ref": "https://github.com/valdomirosouza/Spec-Agentic-SDLC/docs/audit/schema/reconciliation.schema.json#/$defs/verdict" }
     }
   }
 }

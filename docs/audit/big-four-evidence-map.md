@@ -85,6 +85,9 @@ Legend — **Mode**: ✓ produced automatically by a CI gate · ◐ CI emits, hu
 | Completeness and accuracy of the data | Row counts, output SHA-256 and column-list hash per output, fixed at the time of the run; per-step rows in, out and rejected in the run record | step manifests; run history (`scripts/python/run_record.py`, ADR-0101) | ◐ | regime in scope |
 | The data was not altered after the run | Write-once copies, a hash-chained ledger and its sealed head; `run_evidence.py verify --root --expect-head` recomputes the chain and every copy's hash | `<store>/<run-id>/ledger.jsonl`, `ledger.head`; shape `docs/audit/schema/evidence-ledger.schema.json` | ✓ | regime in scope; personal data only pseudonymised or as a hash (ADR-0102 §5) |
 | The run was authorised and ran reviewed code | Run record: commit, `dirty: false` for production (a dirty production run is refused), operator, outcome; the commit's `Refs:` trailer leads to its PR and approval | run history; §1 for the change itself | ◐ | regime in scope |
+| The reconciliations that show completeness and accuracy, and their tolerances | Declarations beside the pipeline's spec: the two sides, the measure, a tolerance that is zero unless declared and states its reason, an owner; a tolerance changes only through a reviewed spec change | `specs/…/reconciliations.json`; shape `docs/audit/schema/reconciliation.schema.json`; `scripts/python/reconcile.py check-declarations` (ADR-0103 §1) | ✓ | life of the spec, in git |
+| Each reconciliation's result, run after run | One verdict per declaration (`match`, `within_tolerance`, `break`, `not_run`) with both measured values and the difference, aggregates only; a `break` or `not_run` fails the run | run history (`reconciliations`); the judging step's manifest (ADR-0103 §2–§3) | ✓ | regime in scope |
+| Who accepted a difference, and why | One exception per reconciliation per run: the recorded verdict and difference, the reason, an approver who is not the operator; it does not carry over, and the verdict is not rewritten; `reconcile.py relied-on` decides whether the run's outputs may be relied on | `<store>/<run-id>/exceptions/`, appended to the run's ledger (ADR-0103 §4) | ✓ | regime in scope |
 | Complete evidence for a sampled run | Audit package built from the run's commit, with its verification result and `SHA256SUMS`; building it twice gives the same sums | `templates/audit-package-template.md` | ◐ | built on request |
 
 ## 8. Sampling guide for auditors
@@ -93,7 +96,7 @@ Legend — **Mode**: ✓ produced automatically by a CI gate · ◐ CI emits, hu
 2. Pick a commit → its `Refs:` trailer gives issue, spec id and ADR ids → the spec's `verified_by` lists the tests → CI run for that SHA shows the gates.
 3. Pick a quarter → `docs/sox/access-review-YYYY-QN.md` for access, `docs/sre/dora-report-YYYY-MM.md` for performance, `docs/postmortems/` for incidents.
 4. Pick a control id (ASVS `V…`, SOX `CC…`, ISO `A.…`) → the matrix row names the implementing path, the verifying test and the CI job.
-5. Pick a run of a `batch-data` pipeline (its ID is `<pipeline>-<UTC start>`) → build its audit package (`templates/audit-package-template.md`) → `verification.txt` gives the chain, the sealed head and every copy's hash; `code/` is the commit that ran.
+5. Pick a run of a `batch-data` pipeline (its ID is `<pipeline>-<UTC start>`) → build its audit package (`templates/audit-package-template.md`) → `verification.txt` gives the chain, the sealed head, every copy's hash and whether the outputs may be relied on; `exceptions/` holds each accepted reconciliation difference; `code/` is the commit that ran.
 
 ## Known gaps (tracked)
 
