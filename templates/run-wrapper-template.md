@@ -62,6 +62,31 @@ echo "rows_rejected=$dropped" >> "$RUN_STEP_COUNTS"
 
 Exit codes: `0` succeeded, `1` failed, `2` refused, `130` interrupted.
 
+## Reconciliations
+
+When the pipeline's spec declares reconciliations (ADR-0103), pass them to the run, and judge them
+in the run's last step, so a `break` stops the run there. Copy `scripts/python/reconcile.py` with
+the wrapper. The record then holds one verdict per declaration, and a declaration the run never
+reached is `not_run`.
+
+```python
+import reconcile as rc
+
+declared = rc.load("specs/features/SPEC-DATA-001-o2c/reconciliations.json")
+with Run("o2c", history="/var/lib/o2c/history.jsonl", production=True, reconciliations=declared) as run:
+    ...
+    with run.step("reconcile") as step:
+        step.reconcile({"extract-vs-load": (rows_extracted, rows_loaded)})
+```
+
+In a shell pipeline, pass `--reconciliations <file>` to `exec`. The step writes one
+`id=source,target` line per reconciliation to `$RUN_RECONCILIATIONS`. For keys present on one
+side only, it writes `id=source_count,target_count,one_side_count`.
+
+A run that failed on a reconciliation is relied on only through an exception for that run,
+recorded with `reconcile.exception_for` by someone other than the operator.
+`reconcile.py relied-on <run-id>` reports whether the outputs may be relied on.
+
 ## In CI and at Phase 11
 
 ```sh

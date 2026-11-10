@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/valdomirosouza/Spec-Agentic-SDLC/docs/audit/schema/reconciliation.schema.json",
+  "title": "Reconciliation declarations, verdicts and exceptions",
+  "description": "ADR-0103. A pipeline's declarations file (the root) sits beside its spec; a verdict is written to the run record and the step manifest; an exception is written to the run's exceptions/ directory and appended to its ledger. Written and checked by scripts/python/reconcile.py. Verdicts and exceptions hold aggregates only, never keys or data values.",
+  "$ref": "#/$defs/declarations",
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "decimal": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+      "description": "An exact decimal, as a string: a sum of money is not a binary float."
+    },
+    "declarations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pipeline", "reconciliations"],
+      "properties": {
+        "pipeline": { "$ref": "#/$defs/id" },
+        "reconciliations": {
+          "type": "array",
+          "minItems": 1,
+          "description": "IDs are unique within the pipeline.",
+          "items": { "$ref": "#/$defs/declaration" }
+        }
+      }
+    },
+    "side": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "query_path"],
+      "properties": {
+        "kind": { "enum": ["output", "external"] },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The step output, or the external source."
+        },
+        "query_path": {
+          "type": ["string", "null"],
+          "description": "Required for an external source; null for a step output, whose query is in its manifest."
+        }
+      }
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source",
+        "target",
+        "measure",
+        "column",
+        "tolerance",
+        "owner"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "source": { "$ref": "#/$defs/side" },
+        "target": { "$ref": "#/$defs/side" },
+        "measure": { "enum": ["row_count", "column_sum", "one_side_keys"] },
+        "column": {
+          "type": ["string", "null"],
+          "description": "The column summed, or the key column; null for a row count."
+        },
+        "tolerance": {
+          "description": "null is zero (ADR-0103 §1). Otherwise exactly one of absolute (in the measure's unit) or relative (a share of the source side, below 1), with its reason.",
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["absolute", "reason"],
+              "properties": {
+                "absolute": { "type": ["number", "string"] },
+                "reason": { "type": "string", "minLength": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["relative", "reason"],
+              "properties": {
+                "relative": { "type": ["number", "string"] },
+                "reason": { "type": "string", "minLength": 1 }
+              }
+            }
+          ]
+        },
+        "owner": { "type": "string", "minLength": 1 }
+      }
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "step",
+        "measure",
+        "source",
+        "target",
+        "difference",
+        "verdict"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "step": {
+          "type": ["string", "null"],
+          "description": "The step that judged it; null when the run never reached it."
+        },
+        "measure": { "enum": ["row_count", "column_sum", "one_side_keys"] },
+        "source": {
+          "oneOf": [{ "$ref": "#/$defs/decimal" }, { "type": "null" }]
+        },
+        "target": {
+          "oneOf": [{ "$ref": "#/$defs/decimal" }, { "type": "null" }]
+        },
+        "difference": {
+          "oneOf": [{ "$ref": "#/$defs/decimal" }, { "type": "null" }],
+          "description": "target minus source; for one_side_keys, the count of keys on one side only. null when not_run."
+        },
+        "verdict": { "enum": ["match", "within_tolerance", "break", "not_run"] }
+      }
+    },
+    "exception": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "reconciliation_id",
+        "verdict",
+        "difference",
+        "reason",
+        "approver",
+        "approved_at"
+      ],
+      "description": "Covers one reconciliation in one run and does not carry over. The verdict it covers is never rewritten.",
+      "properties": {
+        "run_id": { "type": "string" },
+        "reconciliation_id": { "$ref": "#/$defs/id" },
+        "verdict": { "enum": ["break", "not_run"] },
+        "difference": {
+          "oneOf": [{ "$ref": "#/$defs/decimal" }, { "type": "null" }]
+        },
+        "reason": { "type": "string", "minLength": 1 },
+        "approver": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Not the run's operator."
+        },
+        "approved_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "description": "Not before the run ended."
+        }
+      }
+    }
+  }
+}

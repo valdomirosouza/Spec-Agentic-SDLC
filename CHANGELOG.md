@@ -11,6 +11,29 @@ authorises them.
 
 ### Added
 
+- Reconciliation controls for batch runs (ADR-0103). `scripts/python/reconcile.py` (stdlib) does
+  four things:
+  - it checks a pipeline's declarations, kept in `reconciliations.json` beside its spec. Each one
+    gives two sides, a measure (row count, column sum, or keys on one side only) and an owner. The
+    tolerance is zero unless declared, absolute or relative but not both, and states its reason;
+  - it judges each declaration into one verdict, `match`, `within_tolerance`, `break` or
+    `not_run`. Values are exact decimals and keys are only counted;
+  - it records an exception for one reconciliation in one run. The approver is not the operator,
+    and the verdict is never rewritten;
+  - `relied-on` decides whether a run's outputs may be relied on.
+
+  Also changed or added:
+  - `run_record.py` takes the declarations (`reconciliations=`, or `exec --reconciliations`),
+    writes one verdict per declaration to the run record, and fails the step on a `break` or
+    `not_run`;
+  - step manifests carry the verdicts of the step that judged them;
+  - `docs/audit/schema/reconciliation.schema.json`;
+  - a reconciliation section in the spec template;
+  - three rows in evidence map §7;
+  - the audit package carries `exceptions/` and reports whether the run may be relied on. Its
+    builder now runs Python with `-B`, so no bytecode lands in the package;
+  - the Phase 11 and Phase 12 readings under `batch-data`;
+  - `tests/scripts/test_reconcile.py` (33 tests) (#178).
 - IPE evidence for batch runs (ADR-0102). `scripts/python/run_evidence.py` (stdlib) does four things:
   - it writes and checks a manifest for each data-producing step: the query's SHA-256 at the run's
     commit, the parameters, and each output's hash, row count and column-list hash. It holds

@@ -120,6 +120,19 @@ _Example of a marked ambiguity — remove before approval:_
 | Errors     |            | error_rate      |
 | Saturation |            |                 |
 
+### Reconciliations _(only under the `batch-data` profile — ADR-0103)_
+
+<!--
+  Each reconciliation the pipeline runs is declared in reconciliations.json beside this spec
+  (shape: docs/audit/schema/reconciliation.schema.json; check: scripts/python/reconcile.py
+  check-declarations). The tolerance is zero unless declared, and a declared one states its
+  reason. Changing it is a change to this spec. Summarise each one here for the reviewer.
+-->
+
+| ID | Source → target | Measure | Tolerance and reason | Owner |
+| -- | --------------- | ------- | -------------------- | ----- |
+|    |                 |         | zero                 |       |
+
 ## 9. Acceptance Criteria _(gate: canonical, machine-traceable)_
 
 | ID    | Given / When / Then (one line) | Covers FR(s) | Verified by (test path or `requirement` marker)  |

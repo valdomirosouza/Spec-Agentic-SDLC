@@ -180,7 +180,8 @@ class AuditPackage(unittest.TestCase):
         self.repo = os.path.join(self.d, "repo")
         git = ["git", "-C", self.repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid"]
         os.makedirs(os.path.join(self.repo, "scripts", "python"))
-        shutil.copy(SCRIPT, os.path.join(self.repo, "scripts", "python"))
+        for script in (SCRIPT, os.path.join(HERE, "scripts", "python", "reconcile.py")):
+            shutil.copy(script, os.path.join(self.repo, "scripts", "python"))
         subprocess.run(["git", "init", "-q", self.repo], check=True)
         subprocess.run(git + ["add", "."], check=True)
         subprocess.run(git + ["commit", "-q", "-m", "tooling"], check=True)
