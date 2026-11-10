@@ -180,6 +180,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0100](ADR-0100-systems-of-record-are-read-only-to-dev-time-agents.md) | Systems of record read-only to dev-time agents: declared systems, the guard asks before a write, a read-only client in code | Accepted   | 2026-11-09 |
 | [ADR-0101](ADR-0101-batch-run-record-and-run-slos.md) | Batch run record and run SLOs: a run ID and commit at start, a record written even on failure, Golden Signals per run, budgets counted in runs | Proposed   | 2026-11-09 |
 | [ADR-0102](ADR-0102-ipe-data-evidence-for-batch-runs.md) | IPE data evidence for batch runs: a manifest per step, write-once copies with a hash-chained ledger, an audit package built from the run's commit | Proposed   | 2026-11-09 |
+| [ADR-0103](ADR-0103-reconciliation-controls-for-batch-runs.md) | Reconciliation controls for batch runs: declared tolerances (zero unless declared), one verdict vocabulary, an exception limited to one run | Proposed   | 2026-11-09 |
 
 ### AI Agents Module _(opt-in)_
 
