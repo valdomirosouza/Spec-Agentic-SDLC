@@ -422,8 +422,8 @@ phases:
     exit_criteria: "PRR >= 90%; probe lint green; OTel spans + metrics verified for new paths"
     profile_readings: # ADR-0101 §5 — what this phase checks under a profile; approvals and blocking are unchanged
       batch-data:
-        ci_checks: ["scripts/python/run_record.py check <run history>"]
-        exit_criteria: "PRR >= 90%; every run is wrapped so its record is written even on failure (ADR-0101 §1–§2), and the history passes run_record.py check; run SLOs declared under docs/sre/slo/slo.yaml › pipelines (§4). These replace probe lint and dashboards"
+        ci_checks: ["scripts/python/run_record.py check <run history>", "scripts/python/run_evidence.py check-manifest <manifest>"]
+        exit_criteria: "PRR >= 90%; every run is wrapped so its record is written even on failure (ADR-0101 §1–§2), and the history passes run_record.py check; run SLOs declared under docs/sre/slo/slo.yaml › pipelines (§4); every data-producing step writes a manifest, copies its outputs write-once and appends to the run's ledger, which is sealed when the run ends (ADR-0102 §1–§3). These replace probe lint and dashboards"
     applicability: # ADR-0064 — conditional on a new failure mode at low tiers; required once shipping (governed+).
       control_phase: false
       condition: new_failure_mode
@@ -448,6 +448,10 @@ phases:
     allowed_agent_actions: [read, draft_doc, run_ci]
     prohibited_agent_actions: [deploy, rollback, change_feature_flag]
     exit_criteria: "Chaos + model-contract tests green; SBOM; rc-approved label applied"
+    profile_readings: # ADR-0102 — what this phase checks under a profile; approvals and blocking are unchanged
+      batch-data:
+        ci_checks: ["scripts/python/run_evidence.py verify <ledger> --root <run dir> --expect-head <sealed head>"]
+        exit_criteria: "Chaos + model-contract tests green where they apply; SBOM; an audit package builds from a sample run's commit and its verification is green (templates/audit-package-template.md); write-once copies hold no personal data beyond a pseudonymised extract or a hash (ADR-0102 §5); rc-approved label applied"
     applicability: # ADR-0064 — conditional on this cycle cutting a release; required for governed+.
       control_phase: false
       condition: ships_release

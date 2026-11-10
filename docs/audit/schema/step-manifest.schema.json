@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/valdomirosouza/Spec-Agentic-SDLC/docs/audit/schema/step-manifest.schema.json",
+  "title": "Step manifest (IPE)",
+  "description": "Written beside a data-producing step's output (ADR-0102 §1). Ties each output to the run, the commit, the query at that commit and its parameters. Metadata only, never data values. Written and checked by scripts/python/run_evidence.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "commit", "step", "inputs", "outputs"],
+  "properties": {
+    "run_id": { "type": "string", "description": "The run's ID (ADR-0101 §1)." },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "step": { "type": "string", "minLength": 1 },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "query_path", "query_sha256", "parameters", "extracted_at"],
+        "properties": {
+          "source": { "type": "string", "description": "The source system, as named in systems-of-record.yaml where it is one." },
+          "query_path": { "type": ["string", "null"], "description": "The query or script, as a path in the repository." },
+          "query_sha256": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "SHA-256 of the query as committed (git show <commit>:<path>), present exactly when query_path is."
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": { "type": ["string", "number", "boolean", "null"] },
+            "description": "Period, filters: flat scalars only."
+          },
+          "extracted_at": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" }
+        }
+      }
+    },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "rows", "columns_sha256", "copy"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 of the full file, kept even when the file is not." },
+          "rows": { "type": ["integer", "null"], "minimum": 0 },
+          "columns_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$", "description": "SHA-256 of the column names, newline-joined, in order." },
+          "copy": {
+            "enum": ["full", "pseudonymised", "hash_only"],
+            "description": "What the write-once copy holds (ADR-0102 §5): the file (non-personal data), a pseudonymised extract, or nothing but this hash."
+          }
+        }
+      }
+    }
+  }
+}

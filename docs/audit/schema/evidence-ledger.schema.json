@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/valdomirosouza/Spec-Agentic-SDLC/docs/audit/schema/evidence-ledger.schema.json",
+  "title": "Evidence ledger entry (one line of a run's ledger)",
+  "description": "One JSON line per file copied write-once (ADR-0102 §3). `prev` is the SHA-256 of the previous line's exact bytes, without its newline, or 64 zeros for the first line. The ledger's head (the SHA-256 of its last line) is kept with its write-once copy. Written and verified by scripts/python/run_evidence.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["seq", "run_id", "step", "path", "sha256", "prev"],
+  "properties": {
+    "seq": { "type": "integer", "minimum": 1, "description": "1, 2, 3… in file order." },
+    "run_id": { "type": "string", "description": "One run per ledger." },
+    "step": { "type": "string", "minLength": 1 },
+    "path": { "type": "string", "minLength": 1, "description": "The file's path in the write-once copy." },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "prev": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

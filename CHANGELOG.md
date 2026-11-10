@@ -11,6 +11,23 @@ authorises them.
 
 ### Added
 
+- IPE evidence for batch runs (ADR-0102). `scripts/python/run_evidence.py` (stdlib) does four things:
+  - it writes and checks a manifest for each data-producing step: the query's SHA-256 at the run's
+    commit, the parameters, and each output's hash, row count and column-list hash. It holds
+    metadata only, and records whether the write-once copy is the full file, a pseudonymised
+    extract or only the hash;
+  - it appends each write-once copy to a hash-chained ledger, one per run;
+  - `verify` recomputes the chain and each copy's hash;
+  - `--expect-head` checks the head sealed when the run ends, which catches an edit to the last line.
+
+  Also added:
+  - the schemas `docs/audit/schema/step-manifest.schema.json` and `evidence-ledger.schema.json`,
+    which join the minimal layer;
+  - `templates/audit-package-template.md`, a builder that works from `git archive <commit>` and
+    checks itself against `SHA256SUMS`;
+  - evidence map §7, "Data processing evidence (IPE)";
+  - the Phase 11 and Phase 12 readings under `batch-data`;
+  - `tests/scripts/test_run_evidence.py` (22 tests), which also runs the template's builder (#176).
 - The batch run record (ADR-0101). `scripts/python/run_record.py` (stdlib) wraps a run, in Python
   with `Run(...)` or for shell steps with `run_record.py exec`, and appends one JSON line to the run
   history whatever the outcome. The line holds the run ID, the commit and dirty flag recorded before

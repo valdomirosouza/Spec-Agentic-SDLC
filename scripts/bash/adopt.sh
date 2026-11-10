@@ -9,7 +9,8 @@
 #   minimal   memory/ templates/ scripts/bash/ (minus check-corpus.sh) scripts/python/ specs/spec-frontmatter.schema.json
 #             specs/features/README.md .claude/skills/sdd-*/ .claude/settings.json .claude/hooks/
 #             docs/governance/systems-of-record{,.sample}.yaml (read by the guard)
-#             docs/sre/slo/schema/run-record.schema.json (the run record's shape) .markdownlint-cli2.jsonc version.txt
+#             docs/sre/slo/schema/run-record.schema.json docs/audit/schema/ (run and IPE evidence shapes)
+#             .markdownlint-cli2.jsonc version.txt
 #   governed  minimal + CLAUDE.md AGENTS.md CLAUDE_SESSION_INIT.md SETUP.md skills/ .claude/ (all)
 #             …and every file those point at: the layer is closed under reference (#107)
 #             docs/adr/ docs/process/ docs/sdlc/ docs/governance/ docs/reference/ specs/security/
@@ -44,7 +45,7 @@ SRC="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 mkdir -p "$TARGET"; TARGET="$(CDPATH="" cd "$TARGET" && pwd)"
 [ "$SRC" != "$TARGET" ] || { echo "ERROR: target is the corpus itself" >&2; exit 1; }
 
-MINIMAL="memory templates scripts/bash scripts/python tests/hooks specs/spec-frontmatter.schema.json specs/features/README.md .claude/settings.json .claude/hooks docs/governance/systems-of-record.yaml docs/governance/systems-of-record.sample.yaml docs/sre/slo/schema/run-record.schema.json .markdownlint-cli2.jsonc .gitattributes .editorconfig version.txt LICENSE"
+MINIMAL="memory templates scripts/bash scripts/python tests/hooks specs/spec-frontmatter.schema.json specs/features/README.md .claude/settings.json .claude/hooks docs/governance/systems-of-record.yaml docs/governance/systems-of-record.sample.yaml docs/sre/slo/schema/run-record.schema.json docs/audit/schema .markdownlint-cli2.jsonc .gitattributes .editorconfig version.txt LICENSE"
 GOVERNED="CLAUDE.md AGENTS.md CLAUDE_SESSION_INIT.md SETUP.md skills .claude docs/adr docs/process docs/sdlc docs/governance docs/reference specs/security specs/README.md harness .github/ISSUE_TEMPLATE .github/PULL_REQUEST_TEMPLATE .github/DISCUSSION_TEMPLATE .github/pull_request_template.md .github/CODEOWNERS .github/workflows/corpus-check.yml tests/scripts CHANGELOG.md CONTRIBUTING.md CUSTOMISING.md docs/glossary.md docs/troubleshooting.md docs/ai-governance/ai-safety-checklist.md docs/sre/prr/PRR-TEMPLATE.md specs/SPEC-TEMPLATE.md docs/dependency-manifest.yaml docs/privacy/pii-inventory.md CODE_OF_CONDUCT.md README.md docs/quickstart/add-new-service.md CITATION.cff specs/system/SPEC-LGS-001-log-based-golden-signals.md"
 FULL="docs specs prompts README.md CONTRIBUTING.md CUSTOMISING.md SECURITY.md PRIVACY.md CODE_OF_CONDUCT.md CHANGELOG.md CITATION.cff"
 
