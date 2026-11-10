@@ -2,7 +2,7 @@
 
 # Big Four audit evidence map
 
-> **Owner:** Tech Lead + Security Lead · **Status:** Living · **Last updated:** 2026-09-12
+> **Owner:** Tech Lead + Security Lead · **Status:** Living · **Last updated:** 2026-11-10
 > Maps the evidence requests an external auditor typically issues during an IT General
 > Controls (ITGC) walkthrough, a SOC 2 examination or an ISO 27001 audit to the artefact in this
 > corpus (or in the adopting product repository) that answers it. Framework references:
@@ -77,12 +77,23 @@ Legend — **Mode**: ✓ produced automatically by a CI gate · ◐ CI emits, hu
 | Retention and deletion               | Retention policy and the retention job's compliance verdict                                  | `docs/privacy/data-retention-policy.md`, `specs/privacy/data-retention.md` (ADR-0013)                     | ✓    | job logs      |
 | Data-subject rights handling         | DSR procedure (access, rectification, erasure, portability)                                  | `skills/privacy/data-subject-rights.md`, `skills/privacy/gdpr.md`, `skills/privacy/lgpd.md`, `PRIVACY.md` | ✋   | ticket system |
 
-## 7. Sampling guide for auditors
+## 7. Data processing evidence (IPE) (SOX ITGC and substantive testing of information produced by the entity; ADR-0102, `batch-data` profile)
+
+| Auditor request | Evidence | Where | Mode | Retention |
+| --- | --- | --- | --- | --- |
+| The query and parameters behind a report | Step manifest: source, query path and its SHA-256 at the run's commit, parameters, extraction time; the query text from `git show <commit>:<path>` | `<store>/<run-id>/manifests/`; shape `docs/audit/schema/step-manifest.schema.json`; `scripts/python/run_evidence.py` | ✓ | regime in scope (SOX: 7 years, ADR-0026) |
+| Completeness and accuracy of the data | Row counts, output SHA-256 and column-list hash per output, fixed at the time of the run; per-step rows in, out and rejected in the run record | step manifests; run history (`scripts/python/run_record.py`, ADR-0101) | ◐ | regime in scope |
+| The data was not altered after the run | Write-once copies, a hash-chained ledger and its sealed head; `run_evidence.py verify --root --expect-head` recomputes the chain and every copy's hash | `<store>/<run-id>/ledger.jsonl`, `ledger.head`; shape `docs/audit/schema/evidence-ledger.schema.json` | ✓ | regime in scope; personal data only pseudonymised or as a hash (ADR-0102 §5) |
+| The run was authorised and ran reviewed code | Run record: commit, `dirty: false` for production (a dirty production run is refused), operator, outcome; the commit's `Refs:` trailer leads to its PR and approval | run history; §1 for the change itself | ◐ | regime in scope |
+| Complete evidence for a sampled run | Audit package built from the run's commit, with its verification result and `SHA256SUMS`; building it twice gives the same sums | `templates/audit-package-template.md` | ◐ | built on request |
+
+## 8. Sampling guide for auditors
 
 1. Pick a release tag → open `docs/governance/release-evidence/<version>.md` → follow the eleven pointers.
 2. Pick a commit → its `Refs:` trailer gives issue, spec id and ADR ids → the spec's `verified_by` lists the tests → CI run for that SHA shows the gates.
 3. Pick a quarter → `docs/sox/access-review-YYYY-QN.md` for access, `docs/sre/dora-report-YYYY-MM.md` for performance, `docs/postmortems/` for incidents.
 4. Pick a control id (ASVS `V…`, SOX `CC…`, ISO `A.…`) → the matrix row names the implementing path, the verifying test and the CI job.
+5. Pick a run of a `batch-data` pipeline (its ID is `<pipeline>-<UTC start>`) → build its audit package (`templates/audit-package-template.md`) → `verification.txt` gives the chain, the sealed head and every copy's hash; `code/` is the commit that ran.
 
 ## Known gaps (tracked)
 

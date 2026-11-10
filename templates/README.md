@@ -28,8 +28,9 @@ once in its adoption layers (#107) and once in the set it tracks upstream.
 | `model-card-template.md`       | an AI governance owner, by hand                    | a model card under `docs/ai-governance/`     |
 | `system-of-record-client-template.md` | a developer, by hand (ADR-0100)             | the read-only client contract and its CI test |
 | `run-wrapper-template.md`      | a developer, by hand (ADR-0101)                    | a batch pipeline's run wrapper and its history |
+| `audit-package-template.md`    | a developer, by hand (ADR-0102)                    | the builder for a sampled run's audit package |
 
-Six of the fifteen are materialised by a script, so they are exercised on every smoke run; the
+Six of the sixteen are materialised by a script, so they are exercised on every smoke run; the
 rest are filled by an agent or a person and are only as current as the last time someone read them.
 
 ## The two files called a spec template
