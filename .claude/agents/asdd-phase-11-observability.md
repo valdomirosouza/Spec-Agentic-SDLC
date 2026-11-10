@@ -18,6 +18,14 @@ Phase 11, phase-gates id 11). **This phase ends at a human gate** (PRR sign-off)
 
 ## Steps
 
+0. Read the adoption profile: `adoption_profile` in `docs/governance/applicability-matrix.yml`,
+   `service` when absent (ADR-0098). Under `batch-data`, Phase 11's
+   `profile_readings.batch-data` in `docs/process/gates/phase-gates.yaml` replaces steps 1–3. Run
+   its `ci_checks` instead: `run_record.py check` on the run history, `run_evidence.py
+   check-manifest` on each manifest, and `reconcile.py check-declarations` on the pipeline's
+   declarations. Judge against its `exit_criteria`, which cover the run wrapper, the run SLOs
+   under `slo.yaml` › `pipelines`, the manifests and ledger, and the declared reconciliations
+   (ADR-0101–0103). Steps 4–5 and the PRR sign-off apply under every profile.
 1. Verify OTel spans on new critical paths and GenAI conventions on new LLM calls
    (`skills/observability/otel-instrumentation.md`).
 2. Verify Prometheus metrics + a Grafana panel cover the new critical path; confirm SLO impact.

@@ -51,6 +51,10 @@ given other phases' tasks, chat history, the durable `STATE.md` ledger, or unrel
 1. **Scope-load only what this phase needs** (respect the ≤2-skill budget, ADR-0060):
    - Read `docs/process/gates/phase-gates.yaml` entry for `id == PHASE` (required_artifacts,
      required_approvals, ci_checks, allowed/prohibited actions, exit_criteria).
+   - Read the adoption profile: `adoption_profile` in `docs/governance/applicability-matrix.yml`,
+     or `service` when the file or the key is absent (ADR-0098). When the phase entry has
+     `profile_readings.<profile>`, its `ci_checks` and `exit_criteria` replace the entry's own for
+     this run. Required artifacts, approvals, applicability and human gates stay as they are.
    - Read only the `GOVERNING_ADRS` and the spec sections relevant to this phase. Do not read
      the whole repo.
 2. **Do the phase work for the given `MODE`.**
@@ -99,7 +103,8 @@ given other phases' tasks, chat history, the durable `STATE.md` ledger, or unrel
      **after** running the targets and `git checkout -- <path>` any tracked file that the run
      newly dirtied (restore the delta only — never a file already dirty before you ran, and never
      the gitignored `reports/<SLUG>/` sandbox). Report the restored paths in your return.
-4. **Evaluate the gate** against `exit_criteria` from phase-gates.yaml → PASS / FAIL / N-A.
+4. **Evaluate the gate** against `exit_criteria` from phase-gates.yaml, or the profile's reading
+   when step 1 found one → PASS / FAIL / N-A. Name the profile in the gate result.
    Phase 10 is `N-A` when the change touches no AI/agent surface.
 
 ## Hard rules (both modes)
