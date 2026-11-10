@@ -19,6 +19,16 @@ authorises them.
 
 - `SETUP.md` §4 and `CLAUDE_SESSION_INIT.md` cited the spec-kit pin as `d848fb4` (v1.0.6), stale since the re-pin in #141. Both now name `docs/sdlc/spec-kit-upstream.json` as the source of record and give the current pin, `c438494` (v1.3.2).
 
+### Changed
+
+- **ADR-0101 to ADR-0103 are Accepted** (#172). These are the three batch-data ADRs that ADR-0098 §1
+  deferred:
+  - a run record and run SLOs;
+  - IPE data evidence;
+  - reconciliation controls.
+
+  Only the status lines and index rows change. Each ADR's implementation follows separately.
+
 ## [1.1.0] — 2026-11-09
 
 > **Minor.** Nothing published in 1.0.0 is broken: `asdd_state.py` was added *after* that

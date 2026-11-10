@@ -2,7 +2,7 @@
 
 # ADR-0103 — Reconciliation Controls for Batch Runs
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-09
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — data controls for the `batch-data` adoption profile

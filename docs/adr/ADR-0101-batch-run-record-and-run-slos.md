@@ -2,7 +2,7 @@
 
 # ADR-0101 — A Batch Run Record and Run SLOs
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-11-09
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** N/A — observability and operations for the `batch-data` adoption profile
