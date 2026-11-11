@@ -36,7 +36,11 @@ exist, return `gate: BLOCKED` with the reason — do not guess. If `MODE` is abs
 `DRY-RUN` (the safe mode); only a non-empty value that is neither dry-run nor code is
 "unrecognised" → `gate: BLOCKED`. If `TIER` is absent, default to `GOVERNED` (conservative —
 resolve this phase's `required`/`conditional`/`waivable` status from `phase-gates.yaml`
-`applicability`; never waive a `control_phase`). If `LANGUAGE` is absent, default to `PYTHON`.
+`applicability`; never waive a `control_phase`). A `conditional` phase's condition takes the
+default the repository's adoption profile gives it in `phase-gates.yaml › adoption_profiles`
+(step 1 reads the profile), unless the spec says this delivery differs; the default never changes
+a tier, a `required`/`waivable` status or a control phase (ADR-0098). If `LANGUAGE` is absent,
+default to `PYTHON`.
 `LANGUAGE` changes only **where** code lands and **which** validation targets run — never a gate,
 guardrail, or human-stop.
 
