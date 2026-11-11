@@ -72,6 +72,11 @@ authorises them.
 
 ### Changed
 
+- The Phase 11 and Phase 12 agents and the `phase-executor` behind `/deliver` now read the adoption
+  profile (`applicability-matrix.yml` › `adoption_profile`, `service` when absent). Where the phase
+  has `profile_readings.<profile>` in `phase-gates.yaml`, its checks and exit criteria replace the
+  phase's own. Under `batch-data` that means the run history, manifests, ledger and reconciliations
+  instead of probes and dashboards. Approvals and human gates are unchanged (#180).
 - **ADR-0101 to ADR-0103 are Accepted** (#172). These are the three batch-data ADRs that ADR-0098 §1
   deferred:
   - a run record and run SLOs;
