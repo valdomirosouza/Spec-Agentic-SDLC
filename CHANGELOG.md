@@ -72,6 +72,11 @@ authorises them.
 
 ### Changed
 
+- The orchestrator, `/deliver` and the `phase-executor` now apply the adoption profile's condition
+  defaults (`phase-gates.yaml` › `adoption_profiles`, ADR-0098 §1) when they resolve a
+  `conditional` phase. Under `batch-data`, `deploys_prod` defaults to `false`. A spec can say a
+  delivery differs, and the plan or state notes record the profile and the defaults used. A
+  default never changes a tier, a `required` or `waivable` status, or a control phase (#182).
 - The Phase 11 and Phase 12 agents and the `phase-executor` behind `/deliver` now read the adoption
   profile (`applicability-matrix.yml` › `adoption_profile`, `service` when absent). Where the phase
   has `profile_readings.<profile>` in `phase-gates.yaml`, its checks and exit criteria replace the

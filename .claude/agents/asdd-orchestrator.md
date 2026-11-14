@@ -32,6 +32,13 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
    - A defect cites the spec it violates; unspecified behaviour gets the missing spec section
      written first, or a `REM-NNN`. See `spec_for_defect` in the same file.
    - Record any skipped phase in the state notes with the rationale.
+   - Read the adoption profile: `adoption_profile` in `docs/governance/applicability-matrix.yml`,
+     or `service` when the file or the key is absent. Its entry in `phase-gates.yaml` ›
+     `adoption_profiles` gives the default of each condition it names. Under `batch-data`,
+     `deploys_prod` is `false`. Use the default when resolving a `conditional` phase, unless the
+     intake or spec says this delivery differs, and then record why. A default only decides a
+     `conditional` phase: it never changes a tier, a `required` or `waivable` status, or which phases are control phases (ADR-0098 §1). Record the profile and the defaults
+     used in the state notes, and pass the profile to each phase agent.
 
 2a. **Phase 0 verdict.** Phase 0 hands back a *recommended* verdict. Ask the human for the
    decision before invoking Phase 1. On `kill`, stop and write the final report with the

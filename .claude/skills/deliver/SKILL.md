@@ -174,7 +174,10 @@ Let `SLUG` = the spec filename without extension. All output goes under `reports
    summary, risk class, the 15-phase plan with the governing ADR(s) per phase **and each phase's
    `required`/`conditional`/`waivable` status for `TIER`** (resolved from `phase-gates.yaml ›
 phases[*].applicability`; mark waived process phases `PHASE_WAIVED` with a reason, and list the
-   `escalation_triggers` that would promote the tier mid-run — ADR-0064), the guardrails in scope,
+   `escalation_triggers` that would promote the tier mid-run — ADR-0064), the adoption profile
+   (`docs/governance/applicability-matrix.yml` › `adoption_profile`, `service` when absent) and
+   each condition default it supplies from `phase-gates.yaml › adoption_profiles` (ADR-0098),
+   the guardrails in scope,
    the evidence strategy, and — for `code` — the list of human gates where the run will STOP.
    **Control phases (`applicability.control_phase: true`) are listed as running in every tier.**
 3. Decompose the spec into `reports/<SLUG>/backlog.yaml` — a list of items, each with:
@@ -199,7 +202,9 @@ SLUG: <SLUG>
 MODE: <DRY-RUN | CODE>   # emit the CANONICAL upper-case token (normalise dry-run/dryrun/code first)
 TIER: <TRIVIAL | STANDARD | GOVERNED | REGULATED>   # scope axis (ADR-0064); default GOVERNED
   (Resolve this phase's applicability for TIER from phase-gates.yaml id=<N> applicability:
-   required → run it; conditional → run only if its `condition` holds, else record N/A;
+   required → run it; conditional → run only if its `condition` holds, else record N/A
+   (a condition the repository's adoption profile names in phase-gates.yaml › adoption_profiles
+   takes that default, unless the spec says this delivery differs);
    waivable → skip ONLY if control_phase is false, emitting `PHASE_WAIVED: phase=<N> tier=<TIER>
    reason=<…>`. control_phase:true phases run in EVERY tier — never waive a control phase.
    If a safety-valve trigger fires mid-phase (scope-ceiling/coverage-drop/new-dependency/
