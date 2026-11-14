@@ -72,6 +72,11 @@ authorises them.
 
 ### Changed
 
+- Quarterly review of `docs/eol-inventory.yaml`, overdue since 2026-08-29. Four recorded dates were
+  wrong and every entry still read `active`. Go 1.24, Spring Boot 3.4, Next.js 15 and EKS 1.32 are
+  now `eol`. Node.js 22, Redis 7 and Confluent Platform 7.8 are `approaching`. Each changed date
+  cites its source, and the dates no source confirmed are marked to verify. The versions in use are
+  unchanged, so the upgrades remain open. Next review: 2027-02-12 (#186).
 - Three privacy open items move from 2026-11-13 to 2026-12-15, because the privacy review cycle moved
   and the DPO and the data custodian re-dated them. They are the supplier assessment in the
   sub-processor register, the environment register in test-data management, and the position on

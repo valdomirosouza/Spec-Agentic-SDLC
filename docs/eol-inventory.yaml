@@ -3,8 +3,8 @@
 # Update trigger: any dependency change or new EOL announcement.
 
 schema_version: "1.0"
-last_reviewed: "2026-05-31"
-next_review_due: "2026-08-29"
+last_reviewed: "2026-11-14" # prepared in #186; signed off when platform-team approves the PR
+next_review_due: "2027-02-12"
 owner: platform-team
 
 runtimes:
@@ -22,14 +22,14 @@ runtimes:
 
   - name: Go
     version: "1.24"
-    eol_date: "2026-08-01"
-    status: active # Upgraded from 1.23 (EOL); closes #31
+    eol_date: "2026-02-11" # endoflife.date/go; was recorded as 2026-08-01
+    status: eol # 1.24 left support when 1.26 shipped; upgrade is due
     action_if_eol: Upgrade Go toolchain and rebuild event-worker
 
   - name: Node.js
     version: "22"
     eol_date: "2027-04-30"
-    status: active # Upgraded from 20 (EOL); closes #32
+    status: approaching # under six months on 2026-11-14
     action_if_eol: Upgrade Node.js version in Dockerfile and devcontainer
 
 frameworks:
@@ -41,14 +41,14 @@ frameworks:
 
   - name: Spring Boot
     version: "3.4.5"
-    eol_date: "2026-11-21"
-    status: active # Upgraded from 3.3.5 (EOL); closes #33
+    eol_date: "2025-12-31" # OSS support end (3.4.13 was the last OSS release); was recorded as 2026-11-21
+    status: eol # commercial support reportedly to 2026-12-31 — uncertain, verify at spring.io/support-policy
     action_if_eol: Migrate to next supported minor version
 
   - name: Next.js
     version: "15.2.4"
-    eol_date: "2026-10-01"
-    status: active # Upgraded from 14.2.29 (EOL); closes #34
+    eol_date: "2026-10-21" # two years of maintenance LTS from 15.0 (third-party trackers); was recorded as 2026-10-01 — verify
+    status: eol
     action_if_eol: Upgrade to next major, verify HITL UI compatibility
 
 infrastructure:
@@ -60,18 +60,18 @@ infrastructure:
 
   - name: Redis
     version: "7"
-    eol_date: "2027-01-31"
-    status: active # Tracking redis:7 (7.4.x); EOL 2027-01-31
+    eol_date: "2027-01-31" # unchanged; no source found that confirms it for ElastiCache — verify
+    status: approaching # tracking redis:7 (7.4.x); under six months on 2026-11-14
     action_if_eol: Upgrade ElastiCache engine version
 
   - name: Apache Kafka
     version: "3.8" # Confluent Platform 7.8.0 ships Apache Kafka 3.8
-    eol_date: "2026-10-01"
-    status: active # Upgraded from 3.7/CP 7.7.0 (EOL); closes #35
+    eol_date: "2026-12-02" # Confluent standard end of support for CP 7.8.x (Platinum: 2027-12-02); was recorded as 2026-10-01
+    status: approaching
     action_if_eol: Upgrade broker and Schema Registry versions together
 
   - name: Kubernetes (EKS)
     version: "1.32"
-    eol_date: "2026-12-28"
-    status: active # Upgraded from 1.31 (EOL); closes #36
+    eol_date: "2026-03-23" # EKS end of standard support; extended support to 2027-03-23 at extra cost; was recorded as 2026-12-28 — verify with `aws eks describe-cluster-versions`
+    status: eol # in extended support at best
     action_if_eol: Upgrade EKS cluster version via Terraform, test Helm chart compatibility
