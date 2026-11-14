@@ -72,6 +72,11 @@ authorises them.
 
 ### Changed
 
+- Three privacy open items move from 2026-11-13 to 2026-12-15, because the privacy review cycle moved
+  and the DPO and the data custodian re-dated them. They are the supplier assessment in the
+  sub-processor register, the environment register in test-data management, and the position on
+  retraining after an erasure request. They remain dates, so they fail again if they are still
+  open then (#184).
 - The orchestrator, `/deliver` and the `phase-executor` now apply the adoption profile's condition
   defaults (`phase-gates.yaml` › `adoption_profiles`, ADR-0098 §1) when they resolve a
   `conditional` phase. Under `batch-data`, `deploys_prod` defaults to `false`. A spec can say a
