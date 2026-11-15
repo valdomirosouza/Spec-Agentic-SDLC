@@ -71,7 +71,7 @@ We will close the loop **without changing the gateway**:
 - **Resume inside the orchestrator by re-running the request after approval.** Rejected: it
   would re-run perception and reasoning and could propose a different action than the one
   approved.
-- **Execute directly from the `/v1/hitl/{id}/decide` handler.** Rejected: puts tool execution
+- **Execute directly from the `/v1/hitl/requests/{id}/decision` handler.** Rejected: puts tool execution
   on the API request path and bypasses the event contract (`specs/api/async-api-design.md`).
 - **Modify the gateway to call the executor.** Rejected: dual-approval surface, and the gateway
   should stay a decision recorder, not an executor.

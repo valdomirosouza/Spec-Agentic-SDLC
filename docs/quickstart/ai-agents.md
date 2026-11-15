@@ -49,15 +49,20 @@ curl http://localhost:8000/v1/requests/$REQUEST_ID | python3 -m json.tool
 **Approve or reject:**
 
 ```bash
+# The approver is the operator whose JWT is sent (hitl:operator role, specs/security/rbac-model.md),
+# never a field in the body (REM-001). Contract: docs/api/openapi/v1/openapi.yaml, submitDecision.
+
 # Approve
-curl -s -X POST http://localhost:8000/v1/hitl/$HITL_ID/decide \
+curl -s -X POST http://localhost:8000/v1/hitl/requests/$HITL_ID/decision \
+  -H "Authorization: Bearer $OPERATOR_JWT" \
   -H "Content-Type: application/json" \
-  -d '{"decision": "approve", "reviewer": "alice@example.com"}'
+  -d '{"decision": "APPROVED", "rationale": "reviewed the proposed action"}'
 
 # Reject
-curl -s -X POST http://localhost:8000/v1/hitl/$HITL_ID/decide \
+curl -s -X POST http://localhost:8000/v1/hitl/requests/$HITL_ID/decision \
+  -H "Authorization: Bearer $OPERATOR_JWT" \
   -H "Content-Type: application/json" \
-  -d '{"decision": "reject", "reviewer": "alice@example.com", "reason": "out of scope"}'
+  -d '{"decision": "REJECTED", "rationale": "out of scope for this request"}'
 ```
 
 HITL timeout behaviour is `reject` — requests never auto-approve (ADR-0011, PRR-AI-005).

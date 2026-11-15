@@ -103,7 +103,7 @@ RequestConsumer (asyncio task in lifespan; Kafka or in-memory subscription) cons
       ├─ Perception: PII masking via pii_filter.py
       ├─ Reason:     LLM call via AnthropicLLMClient (prompt_injection_guard first)
       └─ Act:        HITLGateway
-                      ├─ HITL (default): store as waiting_for_human_approval; POST /v1/hitl/{id}/decision →
+                      ├─ HITL (default): store as waiting_for_human_approval; POST /v1/hitl/requests/{id}/decision →
                       │     agent.action.approved → ApprovalConsumer executes the stored action (ADR-0086)
                       └─ HOTL (autonomous): execute if autonomy level allows (feature flags)
 ```

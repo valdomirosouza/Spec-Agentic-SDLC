@@ -87,7 +87,7 @@ FULL > MEDIUM_RISK > LOW_RISK > TESTS_ONLY > READ_ONLY > NONE
 Agent proposes action
     └─ HITLGateway.request_approval(action, context)
         ├─ autonomy_level < action.risk_level?
-        │   ├─ YES → Store in HITLRedisStore (encrypted); POST /v1/hitl/{id}/decide
+        │   ├─ YES → Store in HITLRedisStore (encrypted); POST /v1/hitl/requests/{id}/decision
         │   │         Block agent execution
         │   │         Operator reviews in HITL approval UI (frontend/)
         │   │         → Approved: resume execution

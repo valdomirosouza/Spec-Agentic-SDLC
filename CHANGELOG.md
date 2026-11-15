@@ -72,6 +72,13 @@ authorises them.
 
 ### Changed
 
+- Every mention of the HITL decision endpoint now matches the OpenAPI contract,
+  `POST /v1/hitl/requests/{request_id}/decision`. Eleven files wrote `/v1/hitl/{id}/decide` or
+  `/v1/hitl/{id}/decision`, among them two ADRs, four specs and `CLAUDE.md`. The AI-agents
+  quickstart's `curl` also sent a body the contract rejects (`approve`, no `rationale`). It put the
+  approver's identity in the body, the impersonation pattern REM-001 removed. It now sends the
+  operator JWT and a contract-valid body. The Reviewer Dashboard body in `hitl-notification.md`
+  still disagrees with the contract and needs the spec owners' decision (#189).
 - ADR-0035's own criterion for making the AI review blocking, under 5% false positives over 20 PRs,
   is amended to defer to ADR-0070. ADR-0070 governs every gate's move to blocking: at least 15
   consecutive runs or 14 days with zero false positives, as a `normal-change`. The two had given
