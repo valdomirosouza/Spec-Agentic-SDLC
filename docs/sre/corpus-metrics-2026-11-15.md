@@ -15,10 +15,10 @@ measured*, and one data point is what separates the two.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 157 | git log over the full history; a day is active when it carries >= 1 commit |
+| Commits on the default branch | 158 | git log over the full history; a day is active when it carries >= 1 commit |
 | Active days | 15 (span 65 days) | — |
-| Commits per active day | 10.47 | — |
-| First / last commit | 2026-09-12T23:14:09 → 2026-11-15T15:05:34 | — |
+| Commits per active day | 10.53 | — |
+| First / last commit | 2026-09-12T23:14:09 → 2026-11-15T17:21:19 | — |
 
 **Reading it honestly.** A commit is the unit that reaches the default branch here, so
 commits per active day is the deployment-frequency analogue and nothing more. The history
@@ -30,20 +30,20 @@ against.
 | Metric | Value | Method |
 | --- | --- | --- |
 | Completed CI runs | 99 | the last 100 workflow runs; failure rate is failed/completed; recovery is the wall-clock gap from a failed run to the next successful one |
-| Failed runs | 17 | — |
-| Change failure rate | 17.2% | failed ÷ completed |
-| Median run duration | 627 s | — |
-| Recoveries observed | 17, median 4549 s | gap from a failed run to the next success |
+| Failed runs | 15 | — |
+| Change failure rate | 15.2% | failed ÷ completed |
+| Median run duration | 640 s | — |
+| Recoveries observed | 15, median 3017 s | gap from a failed run to the next success |
 
 ## 3. Corpus shape
 
 | Metric | Value |
 | --- | --- |
 | Markdown files | 562 |
-| Markdown lines | 64720 |
-| Executable lines (scripts + hooks) | 7591 |
-| Test lines | 4048 |
-| Verification lines (scripts + hooks + tests) | 11639 |
+| Markdown lines | 64738 |
+| Executable lines (scripts + hooks) | 7603 |
+| Test lines | 4055 |
+| Verification lines (scripts + hooks + tests) | 11658 |
 | Prose to verification ratio | 5.6 : 1 |
 | Check families in `check-corpus.sh` | 21 |
 | ADRs | 103 |
@@ -59,9 +59,9 @@ computing this table, and at 2% a newly added ADR was invisible (R6-T1).
 | Metric | Value | Smallest move this threshold can see |
 | --- | ---: | ---: |
 | Markdown files | 562 | 6 |
-| Executable lines (scripts + hooks) | 7591 | 76 |
-| Test lines | 4048 | 40 |
-| Verification lines (scripts + hooks + tests) | 11639 | 116 |
+| Executable lines (scripts + hooks) | 7603 | 76 |
+| Test lines | 4055 | 41 |
+| Verification lines (scripts + hooks + tests) | 11658 | 117 |
 | Check families in `check-corpus.sh` | 21 | 1 |
 | ADRs | 103 | 1 |
 
@@ -74,10 +74,10 @@ two reports is the signal to stop writing and start checking.
 
 | Metric | Value | Method |
 | --- | --- | --- |
-| Commits on the default branch | 157 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
-| Elapsed wall-clock | 1527.9 h | first commit to last |
+| Commits on the default branch | 158 | wall-clock from the first to the last commit on the default branch; this is elapsed time, not effort, and includes every pause |
+| Elapsed wall-clock | 1530.1 h | first commit to last |
 | Commits per elapsed hour | 0.1 | — |
-| Cumulative diff | 544 files changed, 28034 insertions(+), 1658 deletions(-) | `git diff --shortstat` from the first commit |
+| Cumulative diff | 545 files changed, 28084 insertions(+), 1671 deletions(-) | `git diff --shortstat` from the first commit |
 
 **There is deliberately no speedup ratio here.** The corpus previously published a
 withdrawn claim of ≈160× faster, by dividing a measured agent wall-clock by a sum of

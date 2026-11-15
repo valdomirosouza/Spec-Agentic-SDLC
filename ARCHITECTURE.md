@@ -81,9 +81,9 @@ because its suite is the guard.
 <!-- generated: check_architecture_doc.py --update — do not edit by hand -->
 | Measured | Value |
 | --- | --- |
-| Named checks in the verifier | 70 |
-| Of those, proved able to fail | 52 |
-| Checks containing logic, all proved | 47 |
+| Named checks in the verifier | 71 |
+| Of those, proved able to fail | 53 |
+| Checks containing logic, all proved | 48 |
 | `sdd-*` commands rendered to four tools | 11 |
 | Files in the `minimal` layer | 83 |
 | Files in the `governed` layer | 381 |
