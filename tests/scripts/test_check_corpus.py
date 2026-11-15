@@ -11,6 +11,7 @@ the failure name the problem. A mutation that leaves the check green is the bug 
 
 Restoration is guaranteed by try/finally per case, and a final guard asserts the tree is clean.
 """
+import json
 import os
 import re
 import shutil
@@ -453,8 +454,12 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             "render_commands --check")
 
     def test_a_registry_that_disagrees_with_disk_is_caught(self):
+        """The count is read, not written here: a literal 58 stopped mutating anything once the
+        59th spec landed (#199), and the test then failed for the wrong reason."""
+        with open(os.path.join(HERE, "docs", "governance", "spec-registry.json")) as f:
+            count = json.load(f)["count"]
         self.assert_mutation_is_caught(
-            Mutation("docs/governance/spec-registry.json", '"count": 58', '"count": 57'),
+            Mutation("docs/governance/spec-registry.json", f'"count": {count}', f'"count": {count - 1}'),
             "spec registry matches disk")
 
     def test_an_approved_retro_spec_without_its_register_is_caught(self):
