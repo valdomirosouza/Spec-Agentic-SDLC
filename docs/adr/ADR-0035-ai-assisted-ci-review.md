@@ -76,6 +76,14 @@ Add `.github/workflows/ci-ai-review.yml`:
 
 ## Path to Blocking Gate
 
+> **Amended 2026-11-15 (ADR-0070, issue #190).** The criterion below, under 5% false positives
+> over 20 PRs, predates ADR-0070, which governs every gate's move from report mode to blocking.
+> Two binding ADRs gave two rules for one transition. Resolved: the AI review is promoted under
+> ADR-0070. It needs at least 15 consecutive PR runs or 14 calendar days with zero false-positive
+> failures, recorded in `docs/governance/gate-lifecycle.md`, and it is flipped as a
+> `normal-change` with HITL approval. The criterion below is kept for the record. Steps 1 to 3
+> still describe how the gate is made to block.
+
 When the team has confidence in prompt quality (target: < 5% false-positive rate over
 20 PRs), promote the gate by:
 

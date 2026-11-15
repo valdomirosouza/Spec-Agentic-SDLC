@@ -72,6 +72,10 @@ authorises them.
 
 ### Changed
 
+- ADR-0035's own criterion for making the AI review blocking, under 5% false positives over 20 PRs,
+  is amended to defer to ADR-0070. ADR-0070 governs every gate's move to blocking: at least 15
+  consecutive runs or 14 days with zero false positives, as a `normal-change`. The two had given
+  two rules for one transition (#190).
 - Quarterly review of `docs/eol-inventory.yaml`, overdue since 2026-08-29. Four recorded dates were
   wrong and every entry still read `active`. Go 1.24, Spring Boot 3.4, Next.js 15 and EKS 1.32 are
   now `eol`. Node.js 22, Redis 7 and Confluent Platform 7.8 are `approaching`. Each changed date
