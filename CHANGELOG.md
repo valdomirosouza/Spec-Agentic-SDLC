@@ -72,6 +72,12 @@ authorises them.
 
 ### Changed
 
+- The `/sdd-implement` ↔ `/sdd-converge` loop is bounded at 3 rounds, the same for every tier, as
+  the Tech Lead decided. A round is one implement and the converge after it. If the third converge
+  still finds gaps, it does not append them: it emits `[HITL-ESCALATE]` with the findings table and
+  a human decides. This adds an eighth `CLAUDE.md` §14.1 trigger, recorded as an ADR-0034
+  amendment. A C8 invariant keeps the limit, the escalation and the §14.1 number in step, and the
+  Copilot, Cursor, Codex and Gemini copies are re-rendered (#196).
 - The delivery machinery no longer restates the coverage floor as 80%. ADR-0022 has said 85% since
   RFC-0020, but `phase-gates.yaml` kept `coverage_min_percent: 80`, the Phase 8 agent ran
   `--cov-fail-under=80`, and the agent roster, `/deliver`, the spec template, the change-management

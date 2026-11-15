@@ -533,6 +533,7 @@ Emit `[HITL-ESCALATE]` and **stop all file writes** when ANY is true:
 | Coverage would fall below the declared floor (ADR-0022)          | Quality gate — exception needs approval; the trigger tracks the floor rather than a separate number, which previously sat at 75% and so never fired between 85% and 75% |
 | Enabling/disabling/modifying any feature flag                   | Autonomy changes need governance (ADR-0015) |
 | A requirement conflicts with a binding ADR or another `approved` spec | Contradictory requirements are resolved by humans, never silently by the agent (W13-T9) |
+| `/sdd-implement` ↔ `/sdd-converge` has not converged after 3 rounds (`/sdd-converge`) | A loop that does not converge needs a human decision, not another round (#196) |
 | A `[HITL-ESCALATE]` already emitted this session and unresolved | Cascading escalations must not auto-resolve |
 
 ### 14.2 Escalation Block Format

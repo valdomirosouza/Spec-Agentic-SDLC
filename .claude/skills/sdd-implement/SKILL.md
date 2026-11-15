@@ -41,7 +41,8 @@ Scoping is expected for anything non-trivial: `only the Setup and Foundational p
 6. **Hard stops** (`[HITL-ESCALATE]`, CLAUDE.md §14.1): touching the adopting repository's
    `src/guardrails/` or the HITL
    gateway · any feature-flag change · > 3 ADRs · coverage would fall below the declared floor (ADR-0022) · a spec
-   reference cannot be found · a requirement contradicts an ADR or another approved spec.
+   reference cannot be found · a requirement contradicts an ADR or another approved spec · `/sdd-converge` has escalated after
+   its third round (its round limit).
 7. **Never**: bypass a gate (`--no-verify`), weaken or delete a test, reduce the abuse-case
    count, commit a secret or real PII, invent an API (Constitution IV, II, III, IX).
 8. **Per task** commit with the conventional message and trailer

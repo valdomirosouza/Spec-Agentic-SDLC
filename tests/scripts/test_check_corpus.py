@@ -652,6 +652,16 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             with self.subTest(path=path):
                 self.assert_mutation_is_caught(Mutation(path, old, new), "only the ADR-0022 floor")
 
+    def test_an_unbounded_converge_loop_is_caught(self):
+        """#196. Converge said "repeat until Converged" with no bound and no stop."""
+        for path, old, new in (
+                (".claude/skills/sdd-converge/SKILL.md", "**At most 3 rounds**", "**Rounds**"),
+                (".claude/skills/sdd-converge/SKILL.md", "findings in round 3 → do not touch tasks.md",
+                 "findings in round 3 → append them"),
+                ("CLAUDE.md", "has not converged after 3 rounds", "has not converged after 5 rounds")):
+            with self.subTest(path=path, old=old):
+                self.assert_mutation_is_caught(Mutation(path, old, new), "converge loop is bounded")
+
     def test_a_stale_measurement_report_is_caught(self):
         """R5-T5. `--check` compared only section headings, so no number could fail it."""
         report = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))
