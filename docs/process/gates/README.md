@@ -54,6 +54,11 @@ Each entry in `phases`:
 Optional per-phase fields: `gate_checklist`, `coverage_min_percent`,
 `prr_min_percent`, `requires_cab_approval`.
 
+Which phases stop for a human is not a field of this file. The nine mandatory human gates are
+listed in [`docs/sdlc/agentic-spec-driven-delivery.md`](../../sdlc/agentic-spec-driven-delivery.md)
+§Required human gates. Each one is declared by its agent's `--human-gate` handoff, and
+`check-corpus.sh` C8 keeps the list and the agents in step (#191).
+
 ---
 
 ## Consumption contract
