@@ -41,7 +41,7 @@ This repository uses **flow-forward for history** and **living spec for the cont
 The decision above says what is kept **after** delivery. Delivering a change is the same loop
 under any model: `/sdd-specify` (or a revised `spec.md`) → `/sdd-plan` → `/sdd-tasks` →
 `/sdd-analyze` → `/sdd-implement` → `/sdd-converge`, repeating implement and converge until
-converge reports `Converged`. Adapted from spec-kit's _Evolving Specs in Existing Projects_ guide.
+converge reports `Converged`, for at most 3 rounds before it escalates to a human (#196). Adapted from spec-kit's _Evolving Specs in Existing Projects_ guide.
 
 - **No command reconciles the artefacts.** Analyze only reports; converge only appends tasks;
   `/sdd-plan` never overwrites an existing file. When `spec.md` changes, a person (or the agent at

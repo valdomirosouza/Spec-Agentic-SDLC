@@ -91,3 +91,14 @@ phase-executor return envelope gains `open_questions`, `assumptions` and `confid
 `/deliver` FINAL-REPORT carries an Ambiguity ledger, so unresolved ambiguity is surfaced
 mechanically at every phase boundary instead of living only in prose. `uncertain — verify`
 (CLAUDE.md §3.6) is the artefact-level marker; `confidence: low` is its envelope-level twin.
+
+## Amendment 2026-11-15 (issue #196)
+
+An eighth mandatory trigger is added to CLAUDE.md §14.1: **`/sdd-implement` ↔ `/sdd-converge`
+has not converged after 3 rounds**. Converge said to repeat until it reported Converged, with
+no bound. The runtime harness already stops after `harness_max_iterations` and escalates with a
+fixed payload (`specs/ai/harness-design.md` §1.4, §6.2), and the orchestrator retries a blocked
+phase at most twice. A round is one implement and the converge after it. In the third round,
+converge does not append its findings; it escalates with them. The limit of 3, the same for
+every tier, is the Tech Lead's decision and lives in `.claude/skills/sdd-converge/SKILL.md`.
+`check-corpus.sh` C8 keeps it there.

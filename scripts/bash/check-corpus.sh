@@ -26,7 +26,8 @@
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept;
 #      vcs.sh keeps its refusal list; asdd_state.py touches no version control; the gate counts
 #      (13 blocking, 9 human) still match the agents and phase-gates.yaml; the coverage floor is
-#      referenced, not restated, in the constitution and CLAUDE.md; no unqualified speedup ratio
+#      referenced, not restated, in the constitution and CLAUDE.md; no unqualified speedup ratio;
+#      the implement ↔ converge loop keeps its round limit and escalation (#196)
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
 #      .claude/skills/sdd-*/SKILL.md (scripts/python/render_commands.py --check)
 #  C10 docs/sdlc/spec-kit-upstream.json parses and carries commit, release, dates and tracked paths
@@ -319,6 +320,17 @@ if [ "$n_human" = 9 ] && [ "$n_block" = 13 ]; then
 else
     result "gates: 13 blocking, 9 requiring a human" fail "found $n_block blocking and $n_human human — update the docs that state these numbers, then this assertion"
 fi
+# The implement <-> converge loop is bounded (#196): the skill declares the limit, escalates at it
+# instead of appending, and CLAUDE.md §14.1 names the same number. Dropping any of the three
+# would let the loop run unbounded again without a gate noticing.
+conv=.claude/skills/sdd-converge/SKILL.md
+conv_n=$(grep -oE '\*\*At most [0-9]+ rounds\*\*' "$conv" | grep -oE '[0-9]+' | head -1)
+conv_bad=""
+[ -n "$conv_n" ] || conv_bad="[$conv declares no round limit]"
+[ -z "$conv_n" ] || grep -q "findings in round $conv_n → do not touch tasks.md" "$conv" || conv_bad="$conv_bad [no escalation in round $conv_n]"
+[ -z "$conv_n" ] || grep -q "has not converged after $conv_n rounds" CLAUDE.md || conv_bad="$conv_bad [CLAUDE.md §14.1 does not name $conv_n rounds]"
+[ -z "$conv_bad" ] && result "the implement ↔ converge loop is bounded and escalates" ok "${conv_n} rounds" \
+    || result "the implement ↔ converge loop is bounded and escalates" fail "$conv_bad"
 # Behaviour, not word count. Counting occurrences of `refuse "` passed with every refusal
 # neutralised to a no-op, leaving the one script that touches git guarded by a grep (R5-T2).
 vcs_bad=""
