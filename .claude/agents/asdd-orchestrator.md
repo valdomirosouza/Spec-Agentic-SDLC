@@ -55,8 +55,10 @@ dedicated subagent. You **coordinate**; you do not do the phases' work yourself.
 
 5. **On `human_gate: true`** — **STOP and request explicit human approval** before
    invoking the next phase. The nine mandatory gates are: Discovery (2), Specification
-   (4), Architecture (5, when ADR/threat model), Code Review (7), Security (9, high/
-   critical), AI Safety (10), PRR (11), Release (12), and Post-Deploy (14). Never
+   (4), Architecture (5, when ADR/threat model), Code Review (7), AI Safety (10), PRR (11),
+   Release (12), Production (13) and Post-Deploy (14); canonical list in
+   `docs/sdlc/agentic-spec-driven-delivery.md` §Required human gates. Security (9) also stops
+   when it finds HIGH or CRITICAL findings. Never
    auto-proceed past a human gate; never merge/deploy/release/change autonomy flags on
    the human's behalf (CLAUDE.md §3.3).
 

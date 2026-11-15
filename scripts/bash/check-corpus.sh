@@ -25,7 +25,8 @@
 #      tasks template; scripts never create/switch branches, push, merge or commit; constitution
 #      articles I–IX and version line present; PreToolUse high-risk guard wired; --require-approved kept;
 #      vcs.sh keeps its refusal list; asdd_state.py touches no version control; the gate counts
-#      (13 blocking, 9 human) still match the agents and phase-gates.yaml; the coverage floor is
+#      (13 blocking, 9 human) still match the agents and phase-gates.yaml, and the canonical gate
+#      list names the same nine phases; the coverage floor is
 #      referenced, not restated, in the constitution and CLAUDE.md; no unqualified speedup ratio;
 #      the implement ↔ converge loop keeps its round limit and escalation (#196)
 #   C9 the Copilot/Cursor/Codex/Gemini copies of the sdd-* commands match a fresh render of
@@ -331,6 +332,17 @@ conv_bad=""
 [ -z "$conv_n" ] || grep -q "has not converged after $conv_n rounds" CLAUDE.md || conv_bad="$conv_bad [CLAUDE.md §14.1 does not name $conv_n rounds]"
 [ -z "$conv_bad" ] && result "the implement ↔ converge loop is bounded and escalates" ok "${conv_n} rounds" \
     || result "the implement ↔ converge loop is bounded and escalates" fail "$conv_bad"
+# Which nine. The count above passed while the orchestrator and the canonical list named Phase 9
+# instead of Phase 13 (#191): the list must name exactly the phases whose agents hand off with
+# --human-gate.
+gates_doc=docs/sdlc/agentic-spec-driven-delivery.md
+gates_listed=$(sed -n '/^## Required human gates/,/^## /p' "$gates_doc" | grep -E '^[0-9]+\. ' \
+    | grep -oE '\(Phase [0-9]+\)' | grep -oE '[0-9]+' | sort -n | tr '\n' ' ')
+gates_agents=$(grep -l -- "--human-gate" .claude/agents/asdd-phase-*.md | sed -E 's/.*asdd-phase-([0-9]+)-.*/\1/' \
+    | sort -n | tr '\n' ' ')
+[ -n "$gates_listed" ] && [ "$gates_listed" = "$gates_agents" ] \
+    && result "the canonical human-gate list names the agents' gates" ok "phases ${gates_listed% }" \
+    || result "the canonical human-gate list names the agents' gates" fail "listed: ${gates_listed:-none}; agents: $gates_agents"
 # Behaviour, not word count. Counting occurrences of `refuse "` passed with every refusal
 # neutralised to a no-op, leaving the one script that touches git guarded by a grep (R5-T2).
 vcs_bad=""

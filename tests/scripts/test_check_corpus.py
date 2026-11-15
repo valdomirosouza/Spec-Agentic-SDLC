@@ -662,6 +662,13 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
             with self.subTest(path=path, old=old):
                 self.assert_mutation_is_caught(Mutation(path, old, new), "converge loop is bounded")
 
+    def test_a_canonical_gate_list_naming_the_wrong_phase_is_caught(self):
+        """#191. Nine gates were counted, but the list named Phase 9 where the agents gate Phase 13."""
+        self.assert_mutation_is_caught(
+            Mutation("docs/sdlc/agentic-spec-driven-delivery.md",
+                     "8. **Production rollout** (Phase 13)", "8. **Security approval** (Phase 9)"),
+            "canonical human-gate list")
+
     def test_a_stale_measurement_report_is_caught(self):
         """R5-T5. `--check` compared only section headings, so no number could fail it."""
         report = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))

@@ -159,17 +159,22 @@ ADR-0053). The two governance tiers:
 
 ## Required human gates
 
-Mandatory human review boundaries:
+The nine mandatory human gates. This list is canonical: each gate is the phase whose agent
+hands off with `--human-gate`, and `check-corpus.sh` C8 compares the two (#191).
 
-1. **Discovery approval** before specification starts.
-2. **Specification approval** before implementation starts.
-3. **Architecture approval** when an ADR or threat model is required.
-4. **Code review approval** before merge.
-5. **Security approval** for high/critical findings.
-6. **AI governance approval** for AI/LLM/agentic capabilities.
-7. **Production readiness approval** (PRR) before release-candidate promotion.
-8. **Release approval** before canary rollout.
-9. **Post-deploy review** after rollout completion.
+1. **Discovery approval** (Phase 2) before specification starts.
+2. **Specification approval** (Phase 4) before implementation starts.
+3. **Architecture approval** (Phase 5) when an ADR or threat model is required.
+4. **Code review approval** (Phase 7) before merge.
+5. **AI governance approval** (Phase 10) for AI/LLM/agentic capabilities.
+6. **Production readiness approval** (Phase 11), the PRR, before release-candidate promotion.
+7. **Release approval** (Phase 12): a human applies `rc-approved`.
+8. **Production rollout** (Phase 13): a human executes the canary rollout and the GitHub Release.
+9. **Post-deploy review** (Phase 14) after rollout completion.
+
+Not one of the nine, but a mandatory stop when it fires: **security approval** in Phase 9.
+When DevSecOps finds unmitigated HIGH or CRITICAL findings, a Security Lead must accept or
+mitigate them before the run continues.
 
 Role accountability per phase: [`docs/process/RACI.md`](../process/RACI.md).
 

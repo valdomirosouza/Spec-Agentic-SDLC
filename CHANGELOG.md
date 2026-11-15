@@ -72,6 +72,12 @@ authorises them.
 
 ### Changed
 
+- The nine mandatory human gates are phases 2, 4, 5, 7, 10, 11, 12, 13 and 14, the phases whose
+  agents hand off with `--human-gate`, as the Tech Lead decided (#191, option A). The canonical list
+  in `agentic-spec-driven-delivery.md` and the orchestrator's own list had named Security (Phase 9)
+  instead of Production (Phase 13). Phase 9 still stops on unmitigated HIGH or CRITICAL findings, as
+  a conditional stop outside the nine. The canonical list now names each gate's phase, the gates
+  README points at it, and a C8 check compares it with the agents' declarations.
 - The `/sdd-implement` ↔ `/sdd-converge` loop is bounded at 3 rounds, the same for every tier, as
   the Tech Lead decided. A round is one implement and the converge after it. If the third converge
   still finds gaps, it does not append them: it emits `[HITL-ESCALATE]` with the findings table and
