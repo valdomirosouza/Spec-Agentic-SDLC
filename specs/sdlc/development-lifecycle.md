@@ -81,7 +81,7 @@ All gates are defined in `harness/code-check.yml` and enforced by `.github/workf
 | Gate            | Tool                                                                                                                                        | Threshold                  | Blocking |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | -------- |
 | Lint            | ruff + mypy strict                                                                                                                          | Zero violations            | Yes      |
-| Unit tests      | pytest                                                                                                                                      | ≥ 80% line coverage        | Yes      |
+| Unit tests      | pytest                                                                                                                                      | ADR-0022 floor (lines)     | Yes      |
 | SAST            | bandit                                                                                                                                      | No MEDIUM/HIGH findings    | Yes      |
 | Secret scan     | detect-secrets                                                                                                                              | No new secrets vs baseline | Yes      |
 | PII leakage     | `tests/security/test_pii_leakage.py`                                                                                                        | All assertions pass        | Yes      |

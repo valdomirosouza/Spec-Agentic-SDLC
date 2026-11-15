@@ -72,6 +72,13 @@ authorises them.
 
 ### Changed
 
+- The delivery machinery no longer restates the coverage floor as 80%. ADR-0022 has said 85% since
+  RFC-0020, but `phase-gates.yaml` kept `coverage_min_percent: 80`, the Phase 8 agent ran
+  `--cov-fail-under=80`, and the agent roster, `/deliver`, the spec template, the change-management
+  gates and the development-lifecycle spec all said 80%. Prose now refers to the ADR-0022 floor;
+  where a number is needed (data, a command) it is 85. A new C8 check compares every number stated
+  in `phase-gates.yaml`, `.claude/agents/` and `.claude/skills/` with ADR-0022, so this cannot drift
+  again unseen. The `coverage-drop` trigger no longer cites the retired 75% hard stop (#188).
 - Every mention of the HITL decision endpoint now matches the OpenAPI contract,
   `POST /v1/hitl/requests/{request_id}/decision`. Eleven files wrote `/v1/hitl/{id}/decide` or
   `/v1/hitl/{id}/decision`, among them two ADRs, four specs and `CLAUDE.md`. The AI-agents

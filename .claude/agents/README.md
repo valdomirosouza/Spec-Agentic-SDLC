@@ -26,7 +26,7 @@ and emits a structured **handoff** (see
 | `asdd-phase-5-architecture`   | 5     | ADR (if needed) + threat model                                                                                                          |
 | `asdd-phase-6-development`    | 6     | Implementation branch, lint + unit tests                                                                                                |
 | `asdd-phase-7-code-review`    | 7     | PR, DoD, CI gates (human approval)                                                                                                      |
-| `asdd-phase-8-testing`        | 8     | Unit ≥80% + integration + security + abuse cases                                                                                        |
+| `asdd-phase-8-testing`        | 8     | Unit ≥ ADR-0022 floor + integration + security + abuse cases                                                                            |
 | `asdd-phase-9-devsecops`      | 9     | SAST/SCA/Trivy/SBOM/DAST                                                                                                                |
 | `asdd-phase-10-ai-safety`     | 10    | Injection/leakage tests, tool-permission review (AI/agent only)                                                                         |
 | `asdd-phase-11-observability` | 11    | OTel/metrics verified; PRR sign-off                                                                                                     |

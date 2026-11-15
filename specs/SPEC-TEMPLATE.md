@@ -97,7 +97,7 @@ slo_ref: docs/sre/slo/slo.yaml # where this feature's SLOs are/were recorded
 
 ## 6. Non-Functional Requirements
 
-<!-- Cover: containerisation, runtime, logging/trace, config-via-env, coverage ≥80% (CLAUDE.md §3.5),
+<!-- Cover: containerisation, runtime, logging/trace, config-via-env, coverage at the ADR-0022 floor (CLAUDE.md §3.5),
      error handling, performance budget, pinned deps + SBOM. Flag any PII field here.
      Classify each NFR by the taxonomy in docs/product/nfr-taxonomy.md (category + evidence/gate). -->
 

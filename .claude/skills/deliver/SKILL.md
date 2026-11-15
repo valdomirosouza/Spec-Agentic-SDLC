@@ -126,7 +126,7 @@ code lands and **which** `make` targets run. Default `PYTHON`.
 | **other**                   | the stack's conventional layout (note it in `00-plan.md`) | the stack's standard lint + unit targets; if the repo has no target, run the toolchain directly and **document the gap**             | per the stack                            |
 
 - **Cross-cutting gates are language-agnostic** — DevSecOps (SAST/SCA/SBOM), AI-safety, OTel,
-  privacy/PII, coverage ≥80%, and every human gate apply regardless of `LANGUAGE`. Only the lint/
+  privacy/PII, the ADR-0022 coverage floor, and every human gate apply regardless of `LANGUAGE`. Only the lint/
   unit/build evidence commands and the code location change.
 - Register a new `services/`/`frontend/` entry in `services.yaml` and `.github/CODEOWNERS` per
   CLAUDE.md §0 (CODE mode drafts these; they are not outward-facing actions, so no human STOP —

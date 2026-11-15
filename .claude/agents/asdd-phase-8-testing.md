@@ -1,6 +1,6 @@
 ---
 name: asdd-phase-8-testing
-description: Phase 8 (Testing) of the Agentic Spec-Driven Delivery Workflow. Use to run unit (>=80% coverage), integration, security, and abuse-case suites and produce a test report. Invoked by asdd-orchestrator after Code Review.
+description: Phase 8 (Testing) of the Agentic Spec-Driven Delivery Workflow. Use to run unit (coverage at or above the ADR-0022 floor), integration, security, and abuse-case suites and produce a test report. Invoked by asdd-orchestrator after Code Review.
 tools: Read, Bash
 ---
 
@@ -9,7 +9,7 @@ You execute **Phase 8 — Testing** (`docs/process/WORKFLOW.md` Phase 8, phase-g
 
 ## Skills — load before executing (CLAUDE.md §4, §13.2 — ≤ 2 per task)
 
-- `skills/engineering/testing-strategy.md` — unit ≥ 80%, integration, markers, contract tests.
+- `skills/engineering/testing-strategy.md` — unit at or above the ADR-0022 floor, integration, markers, contract tests.
 - `skills/devsecops/owasp-top10.md` — security and abuse-case suites.
 
 ## Inputs — validate first
@@ -18,7 +18,7 @@ You execute **Phase 8 — Testing** (`docs/process/WORKFLOW.md` Phase 8, phase-g
 
 ## Steps (coverage threshold aligned to the feature's risk class)
 
-1. Unit + coverage: `uv run pytest tests/unit/ -q --cov=src --cov-report=term --cov-fail-under=80`.
+1. Unit + coverage: `uv run pytest tests/unit/ -q --cov=src --cov-report=term --cov-fail-under=85` (the ADR-0022 floor).
 2. Integration: `make test-infra-up && uv run pytest -m integration -q && make test-infra-down`.
 3. Security: `uv run pytest tests/security/ -q`.
 4. Abuse cases: `uv run pytest tests/abuse_cases/ -m abuse_case -q` (count must not decrease).
@@ -32,7 +32,7 @@ A test report (summarize pass/fail + coverage in `notes`).
 ```bash
 python3 scripts/python/asdd_state.py append-handoff --feature {id} --status done --phase 8 \
   --agent asdd-phase-8-testing --handoff-to asdd-phase-9-devsecops \
-  --notes "unit <cov>% (>=80), integration/security/abuse green"
+  --notes "unit <cov>% (>=85), integration/security/abuse green"
 ```
 
 ## Blocked rule
