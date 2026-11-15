@@ -643,6 +643,15 @@ class CheckCorpusIsNotVacuous(unittest.TestCase):
                      "- Unit coverage **MUST** be 80% per ADR-0022"),
             "bare number")
 
+    def test_a_stale_floor_in_the_delivery_machinery_is_caught(self):
+        """#188. phase-gates.yaml and the Phase 8 agent kept 80 after ADR-0022 moved to 85."""
+        for path, old, new in (
+                ("docs/process/gates/phase-gates.yaml", "coverage_min_percent: 85", "coverage_min_percent: 80"),
+                (".claude/agents/asdd-phase-8-testing.md", "--cov-fail-under=85", "--cov-fail-under=80"),
+                (".claude/agents/README.md", "Unit ≥ ADR-0022 floor", "Unit ≥80%")):
+            with self.subTest(path=path):
+                self.assert_mutation_is_caught(Mutation(path, old, new), "only the ADR-0022 floor")
+
     def test_a_stale_measurement_report_is_caught(self):
         """R5-T5. `--check` compared only section headings, so no number could fail it."""
         report = sorted(f for f in os.listdir(os.path.join(HERE, "docs", "sre"))

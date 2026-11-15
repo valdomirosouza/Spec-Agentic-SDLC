@@ -161,7 +161,7 @@ escalation_triggers:
     description: File / module / ADR count exceeds the declared tier's scope_ceiling.
     action: promote_one_tier
   - id: coverage-drop
-    description: Coverage would fall below 80% (CLAUDE.md §14 hard-stops at <75%).
+    description: Coverage would fall below the floor declared in ADR-0022 (CLAUDE.md §14.1 escalates at that floor).
     action: promote_to_governed
   - id: new-dependency
     description: A new dependency / image / pipeline step is added (ties to dependency-or-pipeline, ADR-0061).
@@ -360,11 +360,11 @@ phases:
     required_approvals: []
     ci_checks: [test-unit, test-integration, test-security]
     blocking: true
-    coverage_min_percent: 80
+    coverage_min_percent: 85 # = the floor declared in ADR-0022; check-corpus C8 compares them
     allowed_agent_actions: [read, write_code, write_tests, run_ci]
     prohibited_agent_actions: [deploy, rollback, change_feature_flag]
-    exit_criteria: ">=80% unit coverage; security + abuse-case tests green"
-    applicability: # ADR-0064 — CONTROL: coverage >=80% + security/abuse tests (§3.5). Never waivable.
+    exit_criteria: "unit coverage at or above the ADR-0022 floor; security + abuse-case tests green"
+    applicability: # ADR-0064 — CONTROL: coverage at the ADR-0022 floor + security/abuse tests (§3.5). Never waivable.
       control_phase: true
       trivial: required
       standard: required

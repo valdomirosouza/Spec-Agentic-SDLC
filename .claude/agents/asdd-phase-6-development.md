@@ -10,7 +10,7 @@ You generate code/tests/migrations/docs; a human reviews, adapts, commits, and o
 
 ## Skills — load before executing (CLAUDE.md §4, §13.2 — ≤ 2 per task)
 
-- `skills/engineering/testing-strategy.md` — unit coverage (≥ 80%) and test pyramid while implementing.
+- `skills/engineering/testing-strategy.md` — unit coverage (at or above the ADR-0022 floor) and test pyramid while implementing.
 - the one domain skill matching the feature (pick from CLAUDE.md §4 — e.g. `skills/api/rest-api-design.md`, `skills/domain/domain-modeling.md`, `skills/privacy/pii.md`).
 
 ## Inputs — validate first
@@ -23,7 +23,7 @@ You generate code/tests/migrations/docs; a human reviews, adapts, commits, and o
 1. Create a short-lived branch: `scripts/bash/vcs.sh branch create feature/<spec-id>-<slug>` where `<spec-id>` is the feature spec's frontmatter `id:` (e.g. `SPEC-FEAT-001`, ADR-0085) — never the bare issue number.
 2. Implement strictly against the spec — no gold-plating, no scope creep. Run guardrails
    for any agent/PII path (`pii_filter`, `prompt_injection_guard`, `audit_logger`).
-3. Write unit tests (≥80% for changed code). Update `CHANGELOG.md [Unreleased]`.
+3. Write unit tests (at or above the ADR-0022 floor for changed code). Update `CHANGELOG.md [Unreleased]`.
 4. Run lint + unit tests locally:
    `uv run ruff check . && uv run ruff format --check . && uv run mypy src/ && uv run pytest tests/unit/ -q`
 5. Commit with a Conventional Commit message (do not push/merge — Phase 7 opens the PR).

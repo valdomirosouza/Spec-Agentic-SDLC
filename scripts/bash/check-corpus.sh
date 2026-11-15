@@ -270,6 +270,15 @@ cov_bad=$(grep -nEi '(coverage[^.]{0,30}(7[0-9]|8[0-9]|9[0-9])%|(7[0-9]|8[0-9]|9
 [ -z "$cov_bad" ] && result "constitution and CLAUDE.md reference the floor, not a bare number" ok || result "constitution and CLAUDE.md reference the floor, not a bare number" fail "$cov_bad"
 cov_n=$(grep -oE 'declared coverage floor is [0-9]{2}%' docs/adr/ADR-0022-testing-strategy.md | grep -oE '[0-9]{2}%' | sort -u)
 [ "$(printf '%s' "$cov_n" | wc -w | tr -d ' ')" = 1 ] && result "ADR-0022 declares exactly one floor" ok "$cov_n" || result "ADR-0022 declares exactly one floor" fail "found: ${cov_n:-none}"
+# The delivery machinery carries the floor as data and as commands, so it has to state a number.
+# Every number it states is the ADR-0022 floor: phase-gates.yaml said 80 for months after the
+# ratchet to 85, and the Phase 8 agent ran --cov-fail-under=80 (#188).
+cov_floor=${cov_n%\%}
+cov_drift=$(grep -noEi 'coverage_min_percent: *[0-9]+|cov-fail-under=[0-9]+|(coverage|unit)[^.]{0,30}[0-9]{2}%|[0-9]{2}% *(unit|coverage)|>= *[0-9]{2}\)' \
+        docs/process/gates/phase-gates.yaml .claude/agents/*.md .claude/skills/*/SKILL.md 2>/dev/null \
+    | awk -F: -v f="${cov_floor:-none}" '{ m = $0; sub(/^[^:]*:[0-9]+:/, "", m); if (m !~ "(^|[^0-9])" f "([^0-9]|$)") print }' || true)
+[ -z "$cov_drift" ] && result "gates, agents and skills state only the ADR-0022 floor" ok "${cov_floor}%" \
+    || result "gates, agents and skills state only the ADR-0022 floor" fail "$cov_drift"
 # No unqualified performance ratio. The corpus published "≈160×" by dividing a measured
 # wall-clock by a sum of t-shirt estimates (issue #55). The claim was withdrawn AND the
 # instruction that produced it was removed, because fixing only the output regenerates it.

@@ -73,7 +73,7 @@ All gates must pass before merge. See `.github/workflows/ci.yml` for full pipeli
 | Gate             | Criterion                       | Blocks            |
 | ---------------- | ------------------------------- | ----------------- |
 | Lint             | Zero critical violations        | Merge             |
-| Unit tests       | Coverage ≥ 80%, zero failures   | Merge             |
+| Unit tests       | ADR-0022 floor, zero failures   | Merge             |
 | SAST             | Zero CRITICAL/HIGH findings     | Merge             |
 | Secret detection | Zero secrets detected           | Merge             |
 | Container scan   | Zero Critical CVEs              | Merge             |
