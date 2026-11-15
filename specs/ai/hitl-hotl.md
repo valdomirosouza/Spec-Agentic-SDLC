@@ -198,7 +198,7 @@ FULL`, ADR-0015). The orchestrator decision matrix:
 
 A `PENDING` HITL response is a **suspension state**, not a failure: the orchestrator
 returns `{"status": "waiting_for_human_approval", "hitl_request_id": ...}` and
-resumes when `POST /v1/hitl/{id}/decide` delivers a decision. `REJECTED`/`EXPIRED`
+resumes when `POST /v1/hitl/requests/{id}/decision` delivers a decision. `REJECTED`/`EXPIRED`
 raise; only `APPROVED` falls through to execution.
 
 ### 3. Tool-registry runtime enforcement (10-step)

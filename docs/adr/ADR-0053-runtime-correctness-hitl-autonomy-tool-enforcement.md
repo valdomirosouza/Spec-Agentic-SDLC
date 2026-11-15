@@ -67,7 +67,7 @@ failure. The orchestrator returns an application-level response and stops:
 ```
 
 `REJECTED` and `EXPIRED` raise `ValueError`. Only `APPROVED` falls through to
-execution. The action resumes when `POST /v1/hitl/{id}/decide` delivers a decision.
+execution. The action resumes when `POST /v1/hitl/requests/{id}/decision` delivers a decision.
 
 ### 2. Graduated autonomy (P0-2)
 

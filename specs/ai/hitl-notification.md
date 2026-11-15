@@ -51,7 +51,7 @@ sequenceDiagram
         NS-->>GW: delivered=False  [log + alert, do NOT block action]
     end
     CH->>R: push notification / email / Slack message
-    R->>GW: POST /v1/hitl/{request_id}/decide {decision, reason}
+    R->>GW: POST /v1/hitl/requests/{request_id}/decision {decision, reason}
 ```
 
 **Key invariant:** notification failure MUST NOT block action creation or prevent
@@ -74,7 +74,7 @@ class HITLNotification:
     risk_score: float
     risk_tier: str          # "LOW" | "MEDIUM" | "HIGH"
     context_summary: str    # PII-masked; max 500 chars
-    approve_url: str        # deep-link: POST /v1/hitl/{request_id}/decide
+    approve_url: str        # deep-link: POST /v1/hitl/requests/{request_id}/decision
     expires_at: str         # ISO8601 — reviewer deadline
     trace_id: str | None
 
@@ -114,7 +114,7 @@ HITL_WEBHOOK_TIMEOUT_SECONDS=10
   "risk_score": 0.75,
   "risk_tier": "HIGH",
   "context_summary": "<pii-masked string, ≤ 500 chars>",
-  "approve_url": "https://api.example.com/v1/hitl/<request_id>/decide",
+  "approve_url": "https://api.example.com/v1/hitl/requests/<request_id>/decision",
   "expires_at": "2026-05-27T15:00:00Z",
   "trace_id": "<w3c-traceparent>"
 }
@@ -167,7 +167,7 @@ to all of them concurrently and returns `True` only if at least one succeeds.
 The reviewer UI must call this endpoint to record a decision:
 
 ```
-POST /v1/hitl/{request_id}/decide
+POST /v1/hitl/requests/{request_id}/decision
 Content-Type: application/json
 
 {

@@ -24,7 +24,7 @@ graph TD
     Client([Client / Browser])
 
     subgraph API Layer
-        API[FastAPI :8000\n/v1/requests\n/v1/hitl/:id/decide\n/health  /ready  /metrics]
+        API[FastAPI :8000\n/v1/requests\n/v1/hitl/requests/:id/decision\n/health  /ready  /metrics]
     end
 
     subgraph Infra
@@ -52,7 +52,7 @@ graph TD
 
     Client -->|POST /v1/requests 202| API
     Client -->|GET /v1/requests/:id| API
-    Client -->|POST /v1/hitl/:id/decide| API
+    Client -->|POST /v1/hitl/requests/:id/decision| API
 
     API -->|save RequestState| Redis
     API -->|publish domain.request.created| Kafka
@@ -129,7 +129,7 @@ sequenceDiagram
         HITL->>Store: store HITLRequest (TTL 3600s)
         HITL->>Broker: publish agent.action.proposed
         Note over HITL: Blocks until decision or timeout
-        C->>API: POST /v1/hitl/:id/decide {APPROVE/REJECT}
+        C->>API: POST /v1/hitl/requests/:id/decision {APPROVE/REJECT}
         API->>HITL: record_decision()
         HITL->>Audit: immutable decision record
         HITL->>Broker: publish agent.action.approved
