@@ -11,6 +11,10 @@ authorises them.
 
 ### Added
 
+- ADR-0104 (`Proposed`): dev-time Judge and Advisor roles for SPEC-SDLC-002. The Judge runs read-only
+  before the Phase 7 gate, in report mode, with an allow-listed input envelope and both models
+  recorded. The Advisor recommends on a blocked retry or a second converge round and never clears
+  a gate. ADR-0035 gets a note: its same-model reason does not extend to the Judge (#199).
 - SPEC-SDLC-002 (dev-time Judge and Advisor roles) `approved` through its Spec-as-PR (#200,
   2026-11-15). Phase 5 (the ADR amending ADR-0035's model clause) and `/sdd-plan` can start (#199).
 - SPEC-SDLC-002 (draft, #199) specifies two dev-time delivery roles, from proposal P1 to P3.

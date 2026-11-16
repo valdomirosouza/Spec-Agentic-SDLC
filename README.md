@@ -57,7 +57,7 @@ templates/                      spec, plan, research, data-model, quickstart, co
 scripts/bash/                   create-new-feature.sh · check-prerequisites.sh · setup-plan.sh · tasks-to-issues.sh (JSON output for agents) · check-corpus.sh (corpus validation) · adopt.sh (copy a layer into a product repo)
 scripts/python/                 adopter_paths.py · render_commands.py · check_control_matrix.py
 specs/                          system, api, ai, privacy, security (control matrices), compliance, observability, features/
-docs/adr/                       ADR-0001 … ADR-0103 (index in docs/adr/README.md)
+docs/adr/                       ADR-0001 … ADR-0104 (index in docs/adr/README.md)
 docs/process/                   WORKFLOW (15 phases), RACI, HITL-GOVERNANCE, DoR / DoD / DoR-Release, gates/phase-gates.yaml
 docs/sdlc/                      agentic-spec-driven-delivery.md (canonical model), handoff schema, spec-kit comparison
 docs/governance/                traceability matrix, release evidence package, gate lifecycle, spec registry, RACI/RBAC matrices

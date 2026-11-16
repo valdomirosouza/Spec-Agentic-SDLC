@@ -181,6 +181,7 @@ These ADRs apply to every project using this template, regardless of whether the
 | [ADR-0101](ADR-0101-batch-run-record-and-run-slos.md) | Batch run record and run SLOs: a run ID and commit at start, a record written even on failure, Golden Signals per run, budgets counted in runs | Accepted   | 2026-11-09 |
 | [ADR-0102](ADR-0102-ipe-data-evidence-for-batch-runs.md) | IPE data evidence for batch runs: a manifest per step, write-once copies with a hash-chained ledger, an audit package built from the run's commit | Accepted   | 2026-11-09 |
 | [ADR-0103](ADR-0103-reconciliation-controls-for-batch-runs.md) | Reconciliation controls for batch runs: declared tolerances (zero unless declared), one verdict vocabulary, an exception limited to one run | Accepted   | 2026-11-09 |
+| [ADR-0104](ADR-0104-judge-advisor-roles-and-judge-independence.md) | Dev-time Judge and Advisor roles: a read-only Judge before the Phase 7 gate in report mode, an allow-listed input envelope, both models recorded; an Advisor that recommends and never clears a gate | Proposed   | 2026-11-15 |
 
 ### AI Agents Module _(opt-in)_
 
