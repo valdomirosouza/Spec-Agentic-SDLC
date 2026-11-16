@@ -1361,7 +1361,7 @@
       "path": "specs/features/SPEC-SDLC-002-judge-advisor-roles/spec.md",
       "id": "SPEC-SDLC-002",
       "kind": "feature-spec",
-      "status": "draft",
+      "status": "approved",
       "owner": "Tech Lead",
       "issue": 199,
       "last_updated": "2026-11-15",

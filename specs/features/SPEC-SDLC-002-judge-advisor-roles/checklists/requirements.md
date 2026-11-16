@@ -39,4 +39,4 @@ done.
 
 ## Notes
 
-- Pass 2 of 3: every item passes. Approval is the Spec-as-PR review by the Tech Lead and the Security Lead.
+- Pass 2 of 3: every item passes. Approved through the Spec-as-PR review (#200, merged 2026-11-15).
