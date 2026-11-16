@@ -41,6 +41,11 @@ Add `.github/workflows/ci-ai-review.yml`:
   4. PII literal detection
   5. Architecture rule violations (direct DB access, `eval`, SQL concatenation, hardcoded secrets)
 - **Model:** `claude-sonnet-4-6` — matches the active session model for consistency.
+
+  > **Amended 2026-11-15 (ADR-0104, SPEC-SDLC-002).** The reason above, consistency with the
+  > producing session's model, does not extend to the dev-time Judge (`asdd-judge`). For the
+  > Judge, a different model class from the producer is recommended, not required, and both
+  > models are recorded (ADR-0104 §2). This review's model pin is unchanged.
 - **Output:** findings posted as a PR comment via `gh pr comment`.
 - **Gate behaviour:** **informational only** — does not block merge. This is intentional;
   blocking requires operator confidence in the prompt quality over several sprints.
