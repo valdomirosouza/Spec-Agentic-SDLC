@@ -11,6 +11,8 @@ authorises them.
 
 ### Added
 
+- SPEC-SDLC-002 (dev-time Judge and Advisor roles) `approved` through its Spec-as-PR (#200,
+  2026-11-15). Phase 5 (the ADR amending ADR-0035's model clause) and `/sdd-plan` can start (#199).
 - SPEC-SDLC-002 (draft, #199) specifies two dev-time delivery roles, from proposal P1 to P3.
   - **Judge** (`asdd-judge`). Before the Phase 7 human gate, it gives a read-only verdict from an
     isolated context, seeing neither the producer's reasoning nor the Advisor's output. It never
