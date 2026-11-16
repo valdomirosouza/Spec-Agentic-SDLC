@@ -11,6 +11,9 @@ authorises them.
 
 ### Added
 
+- Threat model for SPEC-SDLC-002 (`draft`): 14 STRIDE entries over the dev-time Judge and Advisor.
+  The highest residual is an artefact written to persuade its judge (OWASP LLM01). No new rows in
+  the GenAI control matrix until the Phase 6 paths exist (#199).
 - ADR-0104 (`Proposed`): dev-time Judge and Advisor roles for SPEC-SDLC-002. The Judge runs read-only
   before the Phase 7 gate, in report mode, with an allow-listed input envelope and both models
   recorded. The Advisor recommends on a blocked retry or a second converge round and never clears
