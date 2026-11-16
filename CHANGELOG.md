@@ -11,6 +11,16 @@ authorises them.
 
 ### Added
 
+- SPEC-SDLC-002 (draft, #199) specifies two dev-time delivery roles, from proposal P1 to P3.
+  - **Judge** (`asdd-judge`). Before the Phase 7 human gate, it gives a read-only verdict from an
+    isolated context, seeing neither the producer's reasoning nor the Advisor's output. It never
+    fixes, approves or clears a gate. It enters in report mode (ADR-0070).
+  - **Advisor** (`asdd-advisor`). It is consulted before a blocked-phase retry and before the second
+    implement ↔ converge round. Its advice is recorded and never replaces a §14.1 escalation.
+
+  Clarifications settled: the Judge is a new agent; a different model from the producer's is
+  recommended, not required; and a human who approves past a Judge `fail` records a one-line
+  rationale. The spec stays `draft` until the Spec-as-PR review.
 - Reconciliation controls for batch runs (ADR-0103). `scripts/python/reconcile.py` (stdlib) does
   four things:
   - it checks a pipeline's declarations, kept in `reconciliations.json` beside its spec. Each one
