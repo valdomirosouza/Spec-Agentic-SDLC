@@ -11,6 +11,9 @@ authorises them.
 
 ### Added
 
+- ADR-0104 `Accepted` by the Tech Lead (2026-11-16). SPEC-SDLC-002 now lists it in `governing_adrs`,
+  and assumptions A2 (rubric source), A3 (record location) and A4 (timeout set in the plan) are
+  `confirmed` (#199).
 - Threat model for SPEC-SDLC-002 (`draft`): 14 STRIDE entries over the dev-time Judge and Advisor.
   The highest residual is an artefact written to persuade its judge (OWASP LLM01). No new rows in
   the GenAI control matrix until the Phase 6 paths exist (#199).

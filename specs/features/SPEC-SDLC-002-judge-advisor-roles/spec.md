@@ -4,13 +4,13 @@ kind: feature-spec # spec | policy | feature-spec | threat-model
 status: approved # draft | in-review | approved | implemented | superseded (ADR-0085)
 owner: Tech Lead
 issue: 199
-governing_adrs: [ADR-0011, ADR-0034, ADR-0035, ADR-0058, ADR-0060, ADR-0070, ADR-0080, ADR-0095]
-new_adrs_required: [judge-advisor-roles-and-judge-independence]
+governing_adrs: [ADR-0011, ADR-0034, ADR-0035, ADR-0058, ADR-0060, ADR-0070, ADR-0080, ADR-0095, ADR-0104]
+new_adrs_required: [] # judge-advisor-roles-and-judge-independence → ADR-0104, accepted 2026-11-16
 implemented_by: [] # filled at Phase 6
 verified_by: [] # tests that prove the acceptance criteria
 related_specs: [SPEC-AI-008, SPEC-AI-009, SPEC-AI-015, SPEC-COMP-010]
 roadmap: null # specs/features/<epic>/roadmap.md → entry R<n>, when this spec is a slice of an epic
-last_updated: 2026-11-15
+last_updated: 2026-11-16
 ---
 
 # Feature Specification: Dev-time Judge and Advisor roles
@@ -323,9 +323,9 @@ None. Q1, Q2 and Q3 were answered on 2026-11-15 (§Clarifications).
 | #   | Assumption                                                                                                                                                                                                                                                                        | Owner     | Resolve by (phase) | Status (open / confirmed / rejected) |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------ | ------------------------------------ |
 | A1  | The Advisor triggers are exactly the two in FR-14: blocked retry and round 2. Both are cheap to detect from state that already exists: the `blocked` status, and the count of Convergence sections (#196).                                                                        | Tech Lead | 4 — Specification  | open                                 |
-| A2  | The rubric for Phase 7 is built from the spec's ACs and the Phase 7 `exit_criteria` in `phase-gates.yaml`, with no criteria of its own.                                                                                                                                           | Tech Lead | 5 — Architecture   | open                                 |
-| A3  | Verdict and advice records live in the per-run state under `.agent/delivery/<feature_id>/`, which is gitignored and per run (`asdd_state.py`). They are summarised in the committed FINAL-REPORT. The State Ledger (`specs/ai/agent-memory.md` §5b) was not read and is not used. | Tech Lead | 5 — Architecture   | open                                 |
-| A4  | A Judge timeout is a fixed wall-clock limit set in the plan. FR-10 governs what happens at it.                                                                                                                                                                                    | Tech Lead | 5 — Architecture   | open                                 |
+| A2  | The rubric for Phase 7 is built from the spec's ACs and the Phase 7 `exit_criteria` in `phase-gates.yaml`, with no criteria of its own.                                                                                                                                           | Tech Lead | 5 — Architecture   | confirmed (ADR-0104 §4)              |
+| A3  | Verdict and advice records live in the per-run state under `.agent/delivery/<feature_id>/`, which is gitignored and per run (`asdd_state.py`). They are summarised in the committed FINAL-REPORT. The State Ledger (`specs/ai/agent-memory.md` §5b) was not read and is not used. | Tech Lead | 5 — Architecture   | confirmed (ADR-0104 §4)              |
+| A4  | A Judge timeout is a fixed wall-clock limit set in the plan. FR-10 governs what happens at it.                                                                                                                                                                                    | Tech Lead | 5 — Architecture   | confirmed (ADR-0104 §4)              |
 | A5  | The new ADR amends ADR-0035's "same model for consistency" clause: a different model class for the Judge is recommended and recorded, not required (Q2). | Tech Lead | 5 — Architecture | confirmed |
 
 ## 14. References
