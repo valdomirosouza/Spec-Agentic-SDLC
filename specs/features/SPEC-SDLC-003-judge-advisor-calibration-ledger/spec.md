@@ -10,7 +10,7 @@ implemented_by: [] # filled at Phase 6
 verified_by: [] # tests that prove the acceptance criteria
 related_specs: [SPEC-SDLC-002, SPEC-COMP-010]
 roadmap: null # specs/features/<epic>/roadmap.md → entry R<n>, when this spec is a slice of an epic
-last_updated: 2026-11-16
+last_updated: 2026-11-17
 ---
 
 # Feature Specification: Judge and Advisor calibration ledger
@@ -44,12 +44,21 @@ vocabulary)_
   the Tech Lead's decision, made after the Advisor pointed out that a first draft (+1 when
   confirmed, −1 when overridden) rewarded sycophancy.
 
+### Session 2026-11-17 (decisions after independent Judge reviews)
+
 - Q: Two rules in #206 conflict. "Never score for agreement with the Tech Lead" sits beside "−1 for a
-  false block", and a false block exists only when the human overrides. → A (Tech Lead, 2026-11-17):
-  a `fail` scores +1 when its cited evidence reproduces, whatever the human decided. The −1 applies
-  only to an overridden `fail` whose evidence did not reproduce and that no defect, revert or CI
-  failure followed. Agreement never yields a positive score (FR-04). An independent Judge review
-  found that the two earlier drafts let agreement earn +1.
+  false block", and a false block exists only when the human overrides. → A (Tech Lead): a `fail`
+  scores +1 when its cited evidence reproduces, whatever the human decided. The −1 applies only to
+  an overridden `fail` whose evidence did not reproduce and that no defect, revert or CI failure
+  followed. Agreement never yields a positive score (FR-04). An independent Judge review found that
+  the two earlier drafts let agreement earn +1.
+- Q: Being followed earned the Advisor +1 when nothing went wrong, which scores the calling agent's
+  agreement. → A (Tech Lead): advice that was followed and borne out scores 0, because the
+  alternative is unknown. Followed and failed scores −2. Not followed, with a human recording that
+  the advice would have avoided the failure, scores +1. Being followed never earns a point (FR-05).
+- Three Judge rounds did not converge, so per the `/sdd-specify` three-pass limit no fourth round
+  was run. The remaining MEDIUM and LOW findings were fixed, and the Spec-as-PR review is the next
+  check.
 
 ## 1. Context & Problem
 
@@ -148,8 +157,8 @@ score.
 - **Evidence arrives after the entry closed.** A defect is traced to a gate after the release
   retrospective. The entry is reopened with the evidence appended, and the next retrospective shows
   the correction. Nothing is overwritten.
-- **Evidence never arrives.** An entry closes at its release retrospective. A `pass`, or advice that
-  was followed, with no contrary evidence by then scores +1. A `fail` scores by FR-04 only: +1 if its
+- **Evidence never arrives.** An entry closes at its release retrospective. A shipped `pass` with no contrary evidence by
+  then scores +1, and followed advice scores 0. A `fail` scores by FR-04 only: +1 if its
   evidence reproduces, −1 for a false block, otherwise 0. A human accepting the `fail` is not
   evidence.
 - **The human overrides a `fail`, and a defect, revert or CI failure follows.** This is not a false
@@ -184,16 +193,16 @@ score.
 | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | -------- |
 | FR-01 | WHEN a human decides a gate that carried a Judge verdict, or a caller acts after Advisor advice, whether or not it follows the advice, the system SHALL record one calibration entry. The entry pairs the agent output with the human decision or the caller's action, and holds the human's rationale when one was given. | US1 | must |
 | FR-02 | WHEN later evidence about a decision is recorded (a CI failure, a revert, or a defect traced to it), the system SHALL append it to that decision's entry and SHALL NOT overwrite earlier evidence.                                                                                                                                              | US1   | must     |
-| FR-03 | Tracing a defect, a revert or a CI failure to a decision SHALL be recorded by a human at the retrospective. An agent MAY propose a trace, but the proposal SHALL NOT be recorded as evidence until a human confirms it. | US1 | must |
-| FR-04 | WHEN a Judge entry is scored, the system SHALL apply the first of these rules that matches. Every case they do not list scores 0. **`pass`:** −3 if a defect, revert or CI failure is traced to the gate by the entry's close (a false `pass`); otherwise +1. **`fail`:** +1 if the evidence the verdict cites reproduces when re-checked independently of the human decision, for example the cited test fails on the judged artefact; −1 if the `fail` was overridden with a rationale, its evidence did not reproduce, and no defect, revert or CI failure is traced to the gate by the close (a false block); otherwise 0. The human decision enters only the −1 case, because an override is the only evidence a false block can have. Agreement with the human SHALL NOT yield a positive score. | US1 | must |
-| FR-05 | WHEN an Advisor entry is scored, the system SHALL apply exactly one of these rules. Every other case, including advice not followed where the path taken succeeded, scores 0. **+1:** the advice was followed and no defect, revert or CI failure is traced to it by the close. **−2:** it was followed and one is. **+1:** it was not followed and a human records that the path taken failed in a way the advice would have avoided. | US1 | must |
-| FR-06 | WHEN an entry's agent output is `escalate` or "uncertain — verify", the system SHALL score it 0, whatever later evidence shows.                                                                                                                                                                                                                 | US1   | must     |
+| FR-03 | Tracing a defect, a revert or a CI failure to a decision, and re-checking whether a `fail` verdict's cited evidence reproduces, SHALL be recorded at the retrospective and confirmed by a human. The re-check MAY be run by an agent other than the Judge that gave the verdict and the producer whose work it judged. An agent's proposal SHALL NOT be recorded as evidence until a human confirms it. | US1 | must |
+| FR-04 | WHEN a Judge entry is scored and FR-06 does not apply, the system SHALL apply the first of these rules that matches. Every case they do not list scores 0. **`pass` that shipped:** −3 if a defect, revert or CI failure is traced to the gate by the entry's close (a false `pass`); otherwise +1. **`pass` the human rejected:** −3 if the rejection names a defect whose evidence reproduces; otherwise 0, because nothing shipped to bear it out. **`fail`:** +1 if the evidence the verdict cites reproduces (FR-03), whatever the human decided; −1 if the `fail` was overridden with a rationale, its evidence did not reproduce, and no defect, revert or CI failure is traced to the gate by the close (a false block); otherwise 0. The human decision enters only negative cases. Agreement with the human SHALL NOT yield a positive score. | US1 | must |
+| FR-05 | WHEN an Advisor entry is scored and FR-06 does not apply, the system SHALL apply the first of these rules that matches. Every other case scores 0, including advice that was followed and borne out, because the alternative is unknown, and advice not followed where the path taken succeeded. **−2:** the advice was followed and a defect, revert or CI failure is traced to it by the close. **+1:** it was not followed and a human records that the path taken failed in a way the advice would have avoided. Being followed SHALL NOT earn a point. | US1 | must |
+| FR-06 | WHEN an entry's agent output is `escalate`, or carries "uncertain — verify", the system SHALL score it 0, whatever later evidence shows. This rule takes precedence over FR-04 and FR-05. | US1 | must |
 | FR-07 | The system SHALL NOT give any score for agreement, whether between the agent and the human or between the Judge and the Advisor.                                                                                                                                                                                                                | US1   | must     |
-| FR-08 | WHEN the Phase 14 release retrospective is drafted, the system SHALL report these metrics per Judge gate and per Advisor trigger, per release. They are reported, never scored. **Agreement rate:** the share of closed entries where the human decision matched the agent output. **False-pass rate:** the share of Judge `pass` entries scored −3. A human rejection alone does not count, unlike proposal P6, because it would measure agreement. **Override-with-rationale rate:** the share of human decisions that differ from the agent output and carry a rationale. **Approval latency:** from gate open to human decision, P50 and P95. | US2 | must |
+| FR-08 | WHEN the Phase 14 release retrospective is drafted, the system SHALL report per release. The metrics are reported, never scored. **Per Judge gate:** the agreement rate, which is the share of closed entries where the human decision matched the verdict; the false-pass rate, which is the share of `pass` entries scored −3 (a human rejection alone does not count, unlike the proposal's P6, which is outside the corpus, because that would measure agreement); the override-with-rationale rate, which is the share of human decisions that differ from the verdict and carry a rationale; and the approval latency from gate open to human decision, P50 and P95. **Per Advisor trigger:** the share of advice followed, the share of followed advice scored −2, and the count scored +1. | US2 | must |
 | FR-09 | WHEN fewer than 10 entries for a gate or trigger are closed in the reporting period, the system SHALL withhold its totals, rates and automation-bias flag, and SHALL show the sample size instead. | US2 | must |
 | FR-10 | No score, total or rate SHALL be an automated input to autonomy, review depth, gate routing, a `required_approvals` entry or the Judge's report or blocking mode. A human MAY read the report when deciding a promotion under ADR-0070. That decision stays the human's. | US3 | must |
 | FR-11 | The Judge's input envelope and the Advisor's input SHALL NOT contain any ledger entry, score, total or rate.                                                                                                                                                                                                                                    | US3   | must     |
-| FR-12 | WHEN approval latency falls and the override rate (1 − agreement rate, FR-08) falls for the same gate between two consecutive releases, the report SHALL flag suspected automation bias (SPEC-COMP-010 §3). | US2 | must |
+| FR-12 | WHEN approval latency falls and the override rate (1 − agreement rate, FR-08) falls for the same Judge gate between two consecutive releases, the report SHALL flag suspected automation bias (SPEC-COMP-010 §3). | US2 | must |
 | FR-13 | WHEN evidence arrives for an entry that has already closed, the system SHALL reopen it, append the evidence, rescore it, and show the correction in the next retrospective.                                                                                                                                                                     | US1   | should   |
 
 ### Key Entities
@@ -203,12 +212,12 @@ score.
   - **Agent output**: the verdict (`pass` · `fail` · `escalate`) or the recommendation, including
     whether "uncertain — verify" was stated.
   - **Human side**: the human decision or the caller's action, with the rationale when given.
-  - **Evidence**: append-only. Each item has a kind (CI failure · revert · traced defect), a
-    reference, who confirmed the trace and when.
+  - **Evidence**: append-only. Each item has a kind (CI failure · revert · traced defect ·
+    reproduction re-check), a reference, who confirmed it and when.
   - **Score**: per FR-04 to FR-06.
   - **State**: open · closed · reopened.
 - **Calibration report**: one per release retrospective.
-  - The four FR-08 metrics per gate, the sample size, the automation-bias flag (FR-12), and the
+  - The FR-08 metrics per Judge gate and per Advisor trigger, the sample size, the automation-bias flag (FR-12), and the
     corrections from reopened entries (FR-13).
 
 ## 5. Non-Functional Requirements
@@ -226,7 +235,7 @@ score.
 | ID    | Measurable outcome                                                                              | Measurement                                                               |
 | ----- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | SC-01 | Every Judge verdict and every Advisor advice record in a release has a calibration entry.       | entries vs verdict and advice records, per release: 100%                  |
-| SC-02 | Every closed entry has a score that the FR-04 to FR-06 rules reproduce from its evidence alone. | recompute the scores from the evidence at the retrospective: 0 mismatches |
+| SC-02 | Every closed entry has a score that the FR-04 to FR-06 rules reproduce from its recorded evidence and human inputs. | recompute the scores at the retrospective: 0 mismatches |
 | SC-03 | No Judge or Advisor input in a release contains ledger content.                                 | inspection of the recorded envelopes, sampled per release: 0 found        |
 | SC-04 | No gate, approval, routing or mode record cites a score.                                        | audit of the gate and approval records per release: 0 found               |
 
@@ -266,11 +275,11 @@ The test paths below are planned for Phase 6 and do not exist yet.
 | AC-01 | Given a verdict and a human gate decision, when the decision is recorded, then one entry pairs them with the rationale when given.                                              | FR-01        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-01")` |
 | AC-02 | Given an entry with evidence, when more evidence is added, then both items are present and none was edited.                                                                     | FR-02        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-02")` |
 | AC-03 | Given an agent-proposed trace, when it is not confirmed by a human, then it is not scored as evidence.                                                                          | FR-03        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-03")` |
-| AC-04 | Given Judge entries for each FR-04 case, when scored, then each scores as listed: `pass` borne out +1; false `pass` −3; `fail` whose evidence reproduces +1, whether accepted or overridden; false block −1; `fail` accepted without reproduction 0. Changing an accepted `fail` to an override never raises a score. | FR-04, FR-07 | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-04")` |
-| AC-05 | Given Advisor entries for each FR-05 case (followed and borne out, followed and failed, not followed and vindicated, not followed and the path succeeded), when scored, then they score +1, −2, +1 and 0. | FR-05 | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-05")` |
-| AC-06 | Given an `escalate` or "uncertain — verify" entry with contrary evidence, when scored, then it scores 0.                                                                        | FR-06        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-06")` |
+| AC-04 | Given Judge entries for each FR-04 case, when scored, then each scores as listed. A shipped `pass` scores +1 when borne out and −3 when false. A rejected `pass` scores 0, or −3 when its named defect reproduces. A `fail` whose evidence reproduces scores +1, accepted or overridden. A false block scores −1. A `fail` accepted without reproduction scores 0, as does an overridden `fail` that did not reproduce but that a defect followed. Changing an accepted `fail` to an override never raises a score. | FR-04, FR-07 | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-04")` |
+| AC-05 | Given Advisor entries for each FR-05 case, when scored, then they score 0 for followed and borne out, −2 for followed and failed, +1 for not followed and vindicated, and 0 for not followed where the path succeeded. | FR-05 | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-05")` |
+| AC-06 | Given an `escalate` entry, or a `pass` or `fail` flagged "uncertain — verify", with contrary evidence, when scored, then it scores 0. | FR-06 | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-06")` |
 | AC-07 | Given 9 and then 10 closed entries for a gate, when the report is built, then totals, rates and the automation-bias flag are withheld at 9 and shown at 10, with the four FR-08 metrics computed as defined. | FR-08, FR-09 | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-09")` |
-| AC-08 | Given any scores, when routing, autonomy, review depth, approvals or the Judge mode are evaluated, then no score is read.                                                       | FR-10        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-10")` |
+| AC-08 | Given the orchestrator, gate, flag and agent definition files, when they are scanned, then none reads or references the ledger or a score. | FR-10 | `tests/scripts/test_calibration.py` (static scan) — `requirement("SPEC-SDLC-003/FR-10")` |
 | AC-09 | Given a ledger with entries, when a Judge envelope or an Advisor input is built, then it holds no ledger content.                                                               | FR-11        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-11")` |
 | AC-10 | Given two releases where latency and the override rate both fell for a gate, when the report is built, then the automation-bias flag is set. | FR-12        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-12")` |
 | AC-11 | Given a closed entry, when evidence arrives, then it is reopened and rescored, the earlier score stays visible, and the correction is listed.                                   | FR-13        | `tests/scripts/test_calibration.py` — `requirement("SPEC-SDLC-003/FR-13")` |

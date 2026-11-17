@@ -29,7 +29,7 @@ done.
 
 - [x] CHK008 Does every FR map to at least one AC, with a coverage footer of K = 0? [Traceability, Spec §10]
 - [x] CHK009 Does every AC name the test that will verify it, marked as planned for Phase 6? [Traceability, Spec §9]
-- [x] CHK010 Are the governing ADRs listed? Is it stated that no new ADR is needed, because demotion (which would amend ADR-0070) is out of scope? [Traceability, frontmatter, Spec §3]
+- [x] CHK010 Are the governing ADRs listed? Is the possible ADR on ledger persistence recorded in `new_adrs_required` and A2, for decision at Phase 5? Judge demotion, which would amend ADR-0070, is out of scope. [Traceability, frontmatter, Spec §3, §13]
 
 ## Governance
 
@@ -43,3 +43,4 @@ done.
 - Pass 1 of 3: an independent Judge review returned `fail`. A `fail` the human accepted was scored by that agreement (CHK014). Some Advisor cases were unscored, the FR-08 metrics were undefined, and a citation pointed outside the corpus.
 - Pass 2 of 3: a second Judge review returned `fail`. A `fail` was still scored by the human decision, and the spec contradicted itself on whether the ledger informs promotion. The NFR evidence was weak.
 - Pass 3 of 3: the Tech Lead decided the `fail` rule on 2026-11-17 (§Clarifications). FR-10 makes the ledger a human-read input, never an automated one. NFR-01 and NFR-03 have their own ACs (AC-12, AC-13). A2 leaves an ADR on ledger persistence to Phase 5. Every item passes. The spec stays `draft`, and approval is the Spec-as-PR review by the Tech Lead and the Security Lead.
+- After pass 3, a third Judge review returned `fail`. Being followed earned the Advisor +1, and there were five MEDIUM findings. The Tech Lead decided the Advisor rule on 2026-11-17. The remaining findings were fixed without a fourth round, because of the three-pass limit. The open points go to the Spec-as-PR review.

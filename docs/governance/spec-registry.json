@@ -1421,7 +1421,7 @@
       "status": "draft",
       "owner": "Tech Lead",
       "issue": 206,
-      "last_updated": "2026-11-16",
+      "last_updated": "2026-11-17",
       "governing_adrs": [
         "ADR-0011",
         "ADR-0026",
