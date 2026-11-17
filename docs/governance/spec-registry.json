@@ -1364,7 +1364,7 @@
       "status": "approved",
       "owner": "Tech Lead",
       "issue": 199,
-      "last_updated": "2026-11-15",
+      "last_updated": "2026-11-16",
       "governing_adrs": [
         "ADR-0011",
         "ADR-0034",
@@ -1373,11 +1373,10 @@
         "ADR-0060",
         "ADR-0070",
         "ADR-0080",
-        "ADR-0095"
+        "ADR-0095",
+        "ADR-0104"
       ],
-      "new_adrs_required": [
-        "judge-advisor-roles-and-judge-independence"
-      ],
+      "new_adrs_required": [],
       "implemented_by": [],
       "verified_by": [],
       "related_specs": [

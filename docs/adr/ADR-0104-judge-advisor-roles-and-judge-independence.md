@@ -2,7 +2,7 @@
 
 # ADR-0104 — Dev-time Judge and Advisor Roles, and the Judge's Independence
 
-**Status:** Proposed
+**Status:** Accepted (2026-11-16, Tech Lead)
 **Date:** 2026-11-15
 **Authors:** Tech Lead (drafted with Claude Code)
 **Spec:** `specs/features/SPEC-SDLC-002-judge-advisor-roles/spec.md`
