@@ -41,4 +41,5 @@ done.
 ## Notes
 
 - Pass 1 of 3: an independent Judge review returned `fail`. A `fail` the human accepted was scored by that agreement (CHK014). Some Advisor cases were unscored, the FR-08 metrics were undefined, and a citation pointed outside the corpus.
-- Pass 2 of 3: the scoring rules now list every case, and unlisted cases score 0. A `fail` scores only on independent evidence. The FR-08 metrics are defined, and the automation-bias flag is withheld below n = 10. Every item passes. The spec stays `draft`, and approval is the Spec-as-PR review by the Tech Lead and the Security Lead.
+- Pass 2 of 3: a second Judge review returned `fail`. A `fail` was still scored by the human decision, and the spec contradicted itself on whether the ledger informs promotion. The NFR evidence was weak.
+- Pass 3 of 3: the Tech Lead decided the `fail` rule on 2026-11-17 (§Clarifications). FR-10 makes the ledger a human-read input, never an automated one. NFR-01 and NFR-03 have their own ACs (AC-12, AC-13). A2 leaves an ADR on ledger persistence to Phase 5. Every item passes. The spec stays `draft`, and approval is the Spec-as-PR review by the Tech Lead and the Security Lead.

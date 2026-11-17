@@ -1429,7 +1429,9 @@
         "ADR-0070",
         "ADR-0104"
       ],
-      "new_adrs_required": [],
+      "new_adrs_required": [
+        "calibration-ledger-persistence"
+      ],
       "implemented_by": [],
       "verified_by": [],
       "related_specs": [
