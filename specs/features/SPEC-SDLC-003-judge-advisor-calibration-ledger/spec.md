@@ -1,7 +1,7 @@
 ---
 id: SPEC-SDLC-003
 kind: feature-spec # spec | policy | feature-spec | threat-model
-status: draft # draft | in-review | approved | implemented | superseded (ADR-0085)
+status: approved # draft | in-review | approved | implemented | superseded (ADR-0085)
 owner: Tech Lead
 issue: 206
 governing_adrs: [ADR-0011, ADR-0026, ADR-0058, ADR-0070, ADR-0104]

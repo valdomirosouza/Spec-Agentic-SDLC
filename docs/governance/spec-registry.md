@@ -7,7 +7,7 @@
 > this file or its JSON companion disagrees with disk, which is what let the registry drift
 > to 50 of 58 entries before issue #47.
 
-**61 specs** · approved: 52 · draft: 5 · implemented: 3 · superseded: 1
+**61 specs** · approved: 53 · draft: 4 · implemented: 3 · superseded: 1
 
 | Spec | Kind | Status | Owner | Issue | Path | Governing ADRs | Impl | Verif |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -62,7 +62,7 @@
 | SPEC-SDLC-001 | policy | approved | Tech Lead |  | `specs/sdlc/development-lifecycle.md` | ADR-0001, ADR-0003, ADR-0006 | 0 | 0 |
 | SPEC-SDLC-002 | feature-spec | approved | Tech Lead | 199 | `specs/features/SPEC-SDLC-002-judge-advisor-roles/spec.md` | ADR-0011, ADR-0034, ADR-0035, ADR-0058, ADR-0060, ADR-0070, ADR-0080, ADR-0095, ADR-0104 | 0 | 0 |
 | SPEC-SDLC-002 | threat-model | draft | Security Lead | 199 | `specs/security/threat-model-SPEC-SDLC-002-judge-advisor.md` | ADR-0011, ADR-0034, ADR-0035, ADR-0070, ADR-0104 | 0 | 0 |
-| SPEC-SDLC-003 | feature-spec | draft | Tech Lead | 206 | `specs/features/SPEC-SDLC-003-judge-advisor-calibration-ledger/spec.md` | ADR-0011, ADR-0026, ADR-0058, ADR-0070, ADR-0104 | 0 | 0 |
+| SPEC-SDLC-003 | feature-spec | approved | Tech Lead | 206 | `specs/features/SPEC-SDLC-003-judge-advisor-calibration-ledger/spec.md` | ADR-0011, ADR-0026, ADR-0058, ADR-0070, ADR-0104 | 0 | 0 |
 | SPEC-SEC-001 | policy | approved | Security Lead |  | `specs/security/pentest-checklist.md` | — | 0 | 0 |
 | SPEC-SEC-002 | spec | approved | Security Lead |  | `specs/security/rbac-model.md` | ADR-0008, ADR-0011, ADR-0023 | 1 (1 unmarked) | 0 |
 | SPEC-SEC-003 | policy | approved | Security Lead |  | `specs/security/threat-model.md` | ADR-0008, ADR-0011, ADR-0012, ADR-0016, ADR-0018, ADR-0019 | 0 | 1 (1 unmarked) |
