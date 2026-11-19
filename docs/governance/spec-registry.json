@@ -1418,7 +1418,7 @@
       "path": "specs/features/SPEC-SDLC-003-judge-advisor-calibration-ledger/spec.md",
       "id": "SPEC-SDLC-003",
       "kind": "feature-spec",
-      "status": "draft",
+      "status": "approved",
       "owner": "Tech Lead",
       "issue": 206,
       "last_updated": "2026-11-17",

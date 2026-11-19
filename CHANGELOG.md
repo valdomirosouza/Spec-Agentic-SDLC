@@ -11,6 +11,8 @@ authorises them.
 
 ### Added
 
+- SPEC-SDLC-003 (Judge and Advisor calibration ledger) `approved` through its Spec-as-PR (#207,
+  2026-11-19). Phase 5 (A2: whether ledger persistence needs an ADR) and `/sdd-plan` can start (#206).
 - SPEC-SDLC-003 draft: a calibration ledger for the dev-time Judge and Advisor (P6), measurement
   only. Each verdict or advice is scored against later evidence, never against agreement with the
   Tech Lead or between the agents. A false `pass` costs more than a false block, an escalation scores
