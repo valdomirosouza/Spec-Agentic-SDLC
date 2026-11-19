@@ -11,6 +11,10 @@ authorises them.
 
 ### Added
 
+- SPEC-SDLC-003 draft: a calibration ledger for the dev-time Judge and Advisor (P6), measurement
+  only. Each verdict or advice is scored against later evidence, never against agreement with the
+  Tech Lead or between the agents. A false `pass` costs more than a false block, an escalation scores
+  0, and totals appear only from 10 entries. No score reaches autonomy, review depth or a gate (#206).
 - ADR-0104 `Accepted` by the Tech Lead (2026-11-16). SPEC-SDLC-002 now lists it in `governing_adrs`,
   and assumptions A2 (rubric source), A3 (record location) and A4 (timeout set in the plan) are
   `confirmed` (#199).
